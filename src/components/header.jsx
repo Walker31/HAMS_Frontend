@@ -1,7 +1,7 @@
 const Header = () => {
 
     return <>
-    <p>Heyy mskdvmdl </p>
+    <div className="flex flex-col text-green-50">Heyy</div>
     </>
 }
 
