@@ -10,7 +10,7 @@ import {
 } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { HiOutlineLocationMarker } from "react-icons/hi";
-import LocationModal from './locationBox'
+import LocationModal from "./locationBox";
 const navigation = [
   { name: "Health", href: "#", current: false },
   { name: "Medicines & Health Services", href: "#", current: false },
@@ -21,7 +21,6 @@ const navigation = [
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
-
 
 export default function Example() {
   const [open, setOpen] = useState(false);

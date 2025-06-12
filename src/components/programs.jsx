@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import healthCarePrograms from "../constants/programs.js";
-import CurrencyRupeeIcon from '@mui/icons-material/CurrencyRupee';
+import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 const Programs = () => {
   const samplePrograms = healthCarePrograms;
   const carouselRef = useRef(null);
