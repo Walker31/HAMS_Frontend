@@ -10,16 +10,7 @@ import {
 } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { HiOutlineLocationMarker } from "react-icons/hi";
-import {
-  FaCity,
-  FaMonument,
-  FaBuilding,
-  FaHospital,
-  FaLandmark,
-} from "react-icons/fa";
-import { MdLocationCity } from "react-icons/md";
-import { GiIndianPalace, GiTempleGate } from "react-icons/gi";
-
+import LocationModal from './locationBox'
 const navigation = [
   { name: "Health", href: "#", current: false },
   { name: "Medicines & Health Services", href: "#", current: false },
@@ -31,42 +22,9 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-const cityIcons = {
-  Ahmedabad: <GiIndianPalace />,
-  Amritsar: <GiTempleGate />,
-  Aragonda: <FaHospital />,
-  Bangalore: <MdLocationCity />,
-  Bhopal: <FaCity />,
-  Bhubaneswar: <FaMonument />,
-  Bilaspur: <FaBuilding />,
-  Chennai: <MdLocationCity />,
-  Cochin: <FaBuilding />,
-  Delhi: <FaLandmark />,
-  Gandhinagar: <FaCity />,
-  Guwahati: <GiTempleGate />,
-  Hyderabad: <GiIndianPalace />,
-  Indore: <FaCity />,
-  Kakinada: <MdLocationCity />,
-  Karaikudi: <GiTempleGate />,
-  KarimNagar: <FaBuilding />,
-  Karur: <FaHospital />,
-  Kolkata: <FaLandmark />,
-  Lucknow: <GiIndianPalace />,
-  Madurai: <GiTempleGate />,
-  Mumbai: <FaCity />,
-  Mysore: <GiTempleGate />,
-  Nashik: <FaBuilding />,
-  Nellore: <MdLocationCity />,
-  Noida: <FaBuilding />,
-  Rourkela: <FaCity />,
-  Trichy: <GiTempleGate />,
-  Visakhapatnam: <FaCity />,
-  Warangal: <GiTempleGate />,
-  OtherCities: <FaBuilding />,
-};
 
 export default function Example() {
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(false);
 
   return (
     <>
@@ -180,36 +138,7 @@ export default function Example() {
           </div>
         </DisclosurePanel>
       </Disclosure>
-
-      {open && (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-lg p-6 w-[90%] max-w-4xl max-h-[80vh] overflow-y-auto scrollbar-hide">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Popular Cities</h2>
-              <button
-                onClick={() => setOpen(false)}
-                className="text-gray-600 hover:text-black"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-4 items-center md:grid-cols-5 gap-4">
-              {Object.entries(cityIcons).map(([city, icon]) => (
-                <div
-                  key={city}
-                  className="bg-gray-100 flex flex-row gap-2 items-center hover:bg-yellow-100 rounded-md p-3 cursor-pointer shadow-sm"
-                >
-                  <div className="text-xl mb-1 text-blue-800">{icon}</div>
-                  <div className="text-sm font-medium text-gray-800">
-                    {city}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      <LocationModal open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

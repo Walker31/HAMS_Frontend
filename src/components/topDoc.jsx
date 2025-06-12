@@ -40,10 +40,10 @@ const TopDoc = () => {
                 className="doc-img w-24 h-24 rounded-full mx-auto mb-4 object-cover"
               />
               <div className="doc-info space-y-1">
-                <p className="doc-name font-semibold text-gray-800">{d.name}</p>
-                <p className="doc-spec text-xs text-gray-500">
+                <div className="doc-name font-semibold text-gray-800">{d.name}</div>
+                <div className="doc-spec text-xs text-gray-500">
                   {d.specialization}, {d.location}
-                </p>
+                </div>
               </div>
               <button
                 onClick={() => alert(`Consulting ${d.name}`)}

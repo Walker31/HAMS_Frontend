@@ -43,25 +43,24 @@ const Programs = () => {
               <div className="doc-info space-y-1">
                 <p className="doc-name font-semibold text-gray-800">{p.name}</p>
                 <p className="doc-spec text-xs text-gray-500">
-                  <p className="note-preview">
+                  <span className="note-preview">
                     {p.description.substring(0, 100)}
                     {p.description.length > 100 ? "..." : ""}
-                  </p>
+                  </span>
                 </p>
                 <div className="mt-4 card-footer flex items-center justify-between mb-6">
-                    <p className="doc-spec font-bold text-md text-cyan-500">
-                        <CurrencyRupeeIcon/>
-                        {p.price}</p>
-             
-              <button
-                onClick={() => alert(`Booking ${p.name}`)}
-                className=" px-4 border border-solid border-[#10217D] text-[#10217D] text-sm font-medium py-2  hover:bg-indigo-50 "
-              >
-                Book Now
-              </button>
-               </div>
+                  <p className="doc-spec font-bold text-md text-cyan-500">
+                    <CurrencyRupeeIcon />
+                    {p.price}
+                  </p>
+                  <button
+                    onClick={() => alert(`Booking ${p.name}`)}
+                    className="px-4 border border-solid border-[#10217D] text-[#10217D] text-sm font-medium py-2 hover:bg-indigo-50"
+                  >
+                    Book Now
+                  </button>
                 </div>
-                
+              </div>
             </div>
           ))}
         </div>

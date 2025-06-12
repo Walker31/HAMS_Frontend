@@ -1,14 +1,8 @@
-import Header from "./components/header";
-import Navbar from "./components/navbar";
-import TopDoc from "./components/topDoc"; 
-import Programs from "./components/programs";
+import Home from "./Pages/Home";
 
 const App = () => {
   return <>
-  <Navbar/>
-  <Header/>
-  <TopDoc/>
-  <Programs/>
+  <Home/>
   </>
 } ;
 

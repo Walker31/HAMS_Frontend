@@ -20,8 +20,6 @@ const HeaderSection = () => {
     backgroundRepeat: 'no-repeat',
     height: '550px',
     width: '100vw',
-
-
   };
 
   return (
@@ -46,9 +44,13 @@ const HeaderSection = () => {
            <div style={{width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
               <DatePicker
-              
-                className=""
-                style ={{ width: '4%'}}
+              className='w-max'
+              sx={{ width: '100%' }}
+              slotProps={{
+                textField: {
+                  className: "text-center mb-2",
+                }
+              }}
                 label="Preferred Date"
                 value={selectedDate}
                 onChange={(newValue) => setSelectedDate(newValue)}
