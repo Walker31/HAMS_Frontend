@@ -10,8 +10,9 @@ import Home from "./Pages/Home";
 const Layout = () => {
   return (
     <>
+    <div className = "scrollbar-hide">
       <Navbar />
-      <Outlet />
+      <Outlet /></div>
     </>
   );
 };
