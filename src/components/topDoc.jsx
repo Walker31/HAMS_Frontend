@@ -26,13 +26,13 @@ const TopDoc = () => {
       <div className="relative">
         <div
           ref={carouselRef}
-          className="doc-list flex space-x-6 overflow-x-auto pb-2 -mx-4 px-4 no-scrollbar"
+          className="doc-list flex space-x-6 overflow-x-auto pb-2 -mx-4 px-2 no-scrollbar"
           style={{ scrollbarWidth: 'none' }}
         >
           {doctors.map((d, idx) => (
             <div
               key={idx}
-              className="doc-card flex-shrink-0 w-56 bg-white rounded-2xl shadow-lg p-5 text-center"
+              className="doc-card flex-shrink-0 w-45  bg-white rounded-xl shadow-lg p-2 text-center"
             >
               <img
                 src={d.photo}
@@ -47,7 +47,7 @@ const TopDoc = () => {
               </div>
               <button
                 onClick={() => alert(`Consulting ${d.name}`)}
-                className="mt-4 w-full border border-solid border-[#10217D] text-[#10217D] text-sm font-medium py-2 rounded-lg hover:bg-indigo-50 hover:translate-0.5"
+                className="mt-4 w-full border border-solid border-[#10217D] text-[#10217D] text-sm font-medium py-2  hover:bg-indigo-50 hover:translate-0.5"
               >
                 Consult Now
               </button>
