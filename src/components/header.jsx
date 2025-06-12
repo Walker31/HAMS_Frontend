@@ -41,7 +41,7 @@ const HeaderSection = () => {
             <button className="btn-close position-absolute top-0 end-0 m-2" onClick={handleClose}></button>
             <h5 className="mb-3">Book an Appointment</h5>
 
-            <input type="text" placeholder="Your Name" className="form-control mb-2 my-4 text-center" />
+            <input type="text" placeholder="Your Name" className="form-control mb-2 my-2 text-center" />
 
            <div style={{width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
             <LocalizationProvider dateAdapter={AdapterDayjs}>
