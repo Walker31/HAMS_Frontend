@@ -70,7 +70,7 @@ export default function Example() {
 
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
               <div className="flex shrink-0 items-center">
-                <h2 className="text-2xl font-bold text-black ml-2">HAMS</h2>
+                <h2 className="text-2xl font-bold text-teal ml-2">HAMS</h2>
               </div>
               <div className="hidden sm:ml-6 sm:block">
                 <div className="flex space-x-4">
@@ -168,7 +168,7 @@ export default function Example() {
             className="bg-gray-100 hover:bg-yellow-100 rounded-md p-3 text-center cursor-pointer shadow-sm"
           >
             <div className="text-xl mb-1 text-blue-800">{icon}</div>
-            <div className="text-sm font-medium text-gray-800">{city}</div>
+            <div className="text-sm font-medium text-gray-800 flex justify">{city}</div>
           </div>
         ))}
             </div>
