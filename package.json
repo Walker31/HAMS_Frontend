@@ -16,10 +16,19 @@
     "@heroicons/react": "^2.2.0",
     "@mui/icons-material": "^7.1.1",
     "@mui/material": "^7.1.1",
+<<<<<<< HEAD
     "@tailwindcss/vite": "^4.1.9",
+=======
+    "@mui/x-date-pickers": "^8.5.1",
+    "@tailwindcss/vite": "^4.1.8",
+    "bootstrap": "^5.3.6",
+    "dayjs": "^1.11.13",
+    "object-assign": "^4.1.1",
+>>>>>>> 621af4dda04d2a366027cf66c583ed01478a5d77
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-icons": "^5.5.0"
+    "react-icons": "^5.5.0",
+    "react-router-dom": "^7.6.2"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
