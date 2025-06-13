@@ -4,7 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 const HeaderSection = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
-  const [step, setStep] = useState(1); // Step 1: Specialization, Step 2: Hospital
+  const [step, setStep] = useState(1); 
 
   const handleBookClick = () => setShowPopup(true);
   const handleClose = () => {
