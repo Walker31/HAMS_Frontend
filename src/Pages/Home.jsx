@@ -1,7 +1,8 @@
 import Header from "../components/header";
 import TopDoc from "../components/topDoc";
 import Programs from "../components/programs";
-import Shopping from "../components/shopping";
+import shopping from "../components/shopping";
+
 
 const Home = () => {
   return (
@@ -9,6 +10,7 @@ const Home = () => {
       <Header />
       <TopDoc />
       <Programs />
+      <shopping />
     </>
   );
 };

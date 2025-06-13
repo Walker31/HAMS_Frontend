@@ -19,7 +19,6 @@ const HeaderSection = () => {
     height: "550px",
     width: "100vw",
   };
-  
 
   return (
     <div
