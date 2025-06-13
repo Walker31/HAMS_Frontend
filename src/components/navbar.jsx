@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Button from "@mui/material/Button";
 import {
   Disclosure,
   DisclosureButton,
@@ -29,7 +30,7 @@ export default function Example() {
     <>
       <Disclosure as="nav" className="bg-white shadow">
         <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-          <div className="relative flex h-16 items-center justify-between">
+          <div className="flex h-16 items-center justify-between">
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
               <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-black hover:bg-gray-200 hover:text-black focus:ring-2 focus:ring-black focus:outline-none">
                 <span className="sr-only">Open main menu</span>
@@ -45,10 +46,10 @@ export default function Example() {
             </div>
 
             <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-              <div className="flex shrink-0 items-center">
+              <div className="flex items-center">
                 <h2 className="text-2xl font-bold text-black ml-2">HAMS</h2>
               </div>
-              <div className="hidden sm:ml-6 sm:block">
+              <div className="hidden sm:flex justify-center flex-1">
                 <div className="flex space-x-4">
                   {navigation.map((item) => (
                     <a
@@ -57,9 +58,9 @@ export default function Example() {
                       aria-current={item.current ? "page" : undefined}
                       className={classNames(
                         item.current
-                          ? "hover:border-b-2 border-teal-700 transition"
+                          ? "border-b-2 border-teal-700"
                           : "text-black hover:border-b-2 border-teal-700 transition",
-                        " px-3 py-2 text-sm font-medium"
+                        "px-3 py-2 text-sm font-medium"
                       )}
                     >
                       {item.name}
@@ -69,21 +70,21 @@ export default function Example() {
               </div>
             </div>
 
-            <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+            <div className="flex items-center space-x-4">
               <button
                 type="button"
                 onClick={() => setOpen(true)}
                 className="relative rounded-full bg-white p-1 text-black hover:text-blue-600 focus:ring-2 focus:ring-white focus:outline-none"
-              >
+              > 
                 <span className="sr-only">View location</span>
                 <HiOutlineLocationMarker className="text-xl" />
               </button>
 
-              <Menu as="div" className="relative ml-3">
-                <div>
-                  <MenuButton className="bg-blue-900 text-white px-5 py-2 rounded-full font-medium hover:bg-blue-800 transition">
+              <Menu as="div" className="">
+                <div className="bg-blue-900 hover:bg-blue-800 transition rounded-3xl m-2">
+                  <Button className=" text-white p-2 rounded-full font-normal ">
                     SIGN UP / Register
-                  </MenuButton>
+                  </Button>
                 </div>
                 <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none">
                   <MenuItem>

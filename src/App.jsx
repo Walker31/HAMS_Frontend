@@ -1,4 +1,3 @@
-import Navbar from "./components/navbar";
 import {
   BrowserRouter as Router,
   Routes,
@@ -6,15 +5,24 @@ import {
   Outlet,
 } from "react-router-dom";
 import Home from "./Pages/Home";
+import NavbarAlt from "./components/navbarAlternate";
 
 const Layout = () => {
   return (
     <>
-      <Navbar />
-      <Outlet />
+      {/* Fixed Navbar */}
+      <div className="fixed top-0 left-0 w-full z-50">
+        <NavbarAlt />
+      </div>
+
+      {/* Scrollable content with top padding to avoid overlap */}
+      <div className="pt-16 min-h-screen overflow-y-auto">
+        <Outlet />
+      </div>
     </>
   );
 };
+
 
 const App = () => {
   return (
