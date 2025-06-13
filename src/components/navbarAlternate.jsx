@@ -14,7 +14,7 @@
     return classes.filter(Boolean).join(" ");
     }
 
-    const Navbar = () => {
+    const NavbarAlt = () => {
     const [selected, setSelected] = useState("Health");
     const [open, setOpen] = useState(false);
 
@@ -68,4 +68,4 @@
     );
     };
 
-    export default Navbar;
+    export default NavbarAlt;
