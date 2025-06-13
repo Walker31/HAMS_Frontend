@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import TextField from '@mui/material/TextField';
-import dayjs from 'dayjs';
 
 const HeaderSection = () => {
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedSpecialization, setSelectedSpecialization] = useState('');
+  const [step, setStep] = useState(1); // Step 1: Specialization, Step 2: Hospital
 
   const handleBookClick = () => setShowPopup(true);
-  const handleClose = () => setShowPopup(false);
+  const handleClose = () => {
+    setShowPopup(false);
+    setStep(1);
+    setSelectedSpecialization('');
+  };
 
   const sectionStyle = {
     backgroundImage: "url('/src/assets/headerpic.jpg')",
@@ -20,9 +20,38 @@ const HeaderSection = () => {
     backgroundRepeat: 'no-repeat',
     height: '550px',
     width: '100vw',
-
-
   };
+
+  const specializations = [
+    { name: 'General Physician', icon: '🩺' },
+    { name: 'Neurologist', icon: '🧠' },
+    { name: 'Psychiatrist', icon: '💬' },
+    { name: 'Neurosurgeon', icon: '🧬' },
+    { name: 'Cardiologist', icon: '💔' },
+    { name: 'Orthopedic Surgeon', icon: '🦴' },
+    { name: 'Rheumatologist', icon: '💊' },
+    { name: 'Obstetrician & Gynecologist', icon: '🤰' },
+    { name: 'Pediatrician', icon: '🧒' },
+    { name: 'Fertility Specialist', icon: '🧬' },
+    { name: 'Ophthalmologist', icon: '👁️' },
+    { name: 'ENT Specialist', icon: '👂' },
+    { name: 'Dentist', icon: '🦷' },
+    { name: 'Gastroenterologist', icon: '🍽️' },
+    { name: 'Pulmonologist', icon: '🌬️' },
+    { name: 'Urologist', icon: '🚽' },
+    { name: 'Oncologist', icon: '🎗️' },
+    { name: 'Dermatologist', icon: '🧴' }
+  ];
+
+  const hospitals = [
+    'HAMS Hospital',
+    'Janga Hospital',
+    'Durai Hospital',
+    'Jayyy Hospital',
+    'Shrudeepan Hospital',
+    'Mahimaa Hospital',
+    'Chairperson Hospital',
+  ];
 
   return (
     <div style={sectionStyle} className="d-flex justify-content-center align-items-center flex-column text-center m-0 p-0">
@@ -32,57 +61,80 @@ const HeaderSection = () => {
         onClick={handleBookClick}
       >
         <h5 className="text-primary fw-bold mb-2">Book Appointment</h5>
-        <p className="text-muted mb-0">Long established fact that...</p>
+        <p className="text-muted mb-0">Click to proceed with booking.</p>
       </div>
 
       {showPopup && (
         <div className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center z-3">
-          <div className="bg-white p-4 rounded position-relative" style={{ width: '350px' }}>
+          <div className="bg-white p-4 rounded position-relative d-flex" style={{ width: '800px', minHeight: '500px' }}>
             <button className="btn-close position-absolute top-0 end-0 m-2" onClick={handleClose}></button>
-            <h5 className="mb-3">Book an Appointment</h5>
 
-            <input type="text" placeholder="Your Name" className="form-control mb-2 my-2 text-center" />
+         
+            <div className="d-flex flex-column justify-content-start pe-4 border-end" style={{ width: '200px' }}>
+              <h4 className="mb-4">Hi</h4>
+              <p>Follow the steps below:</p>
+              <hr />
+              <div
+                className={`d-flex align-items-center mb-3 ${step === 1 ? 'fw-bold text-primary' : 'text-muted'}`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => setStep(1)}
+              >
+                <div className="border rounded-circle d-flex justify-content-center align-items-center" style={{ width: '30px', height: '30px' }}>1</div>
+                <span className="ms-2">Specialization</span>
+              </div>
+              <div
+                className={`d-flex align-items-center ${step === 2 ? 'fw-bold text-primary' : 'text-muted'}`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => setStep(2)}
+              >
+                <div className="border rounded-circle d-flex justify-content-center align-items-center" style={{ width: '30px', height: '30px' }}>2</div>
+                <span className="ms-2">Select Hospital</span>
+              </div>
+            </div>
 
-           <div style={{width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <DatePicker
-              
-                className=""
-                style ={{ width: '4%'}}
-                label="Preferred Date"
-                value={selectedDate}
-                onChange={(newValue) => setSelectedDate(newValue)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    className="form-control mb-2 text-center "
-                    fullWidth
-                  />
-                )}
-              />
-            </LocalizationProvider></div>
-            <select className="form-select align-items-center mb-2 my-2 text-center">
-              <option>Specialization</option>
-              <option>General Physician</option>
-              <option>Neurologist</option>
-              <option>Psychiatrist</option>
-              <option>Neurosurgeon</option>
-              <option>Cardiologist</option>
-              <option>Orthopedic Surgeon</option>
-              <option>Rheumatologist</option>
-              <option>Obstetrician & Gynecologist</option>
-              <option>Pediatrician</option>
-              <option>Fertility Specialist</option>
-              <option>Ophthalmologist</option>
-              <option>ENT Specialist </option>
-              <option>Dentist</option>
-              <option>Gastroenterologist</option>
-              <option>Pulmonologist</option>
-              <option>Urologist</option>
-              <option>Oncologist</option>
-              <option>Dermatologist</option>
-            </select>
-            <button className="btn btn-primary w-100">Submit</button>
+            
+            <div className="ps-4 w-100">
+              {step === 1 && (
+                <>
+                  <h5>Select Specialization</h5>
+                 <div className="overflow-auto" style={{ overflowY: 'auto', overflowX: 'hidden', maxHeight: '350px' }}>
+                    <div className="row row-cols-3 g-3">
+                      {specializations.map((spec) => (
+                        <div key={spec.name} className="col text-center">
+                          <div
+                            className={`border rounded py-3 bg-light ${selectedSpecialization === spec.name ? 'border-primary bg-primary text-white' : ''}`}
+                            style={{ cursor: 'pointer' }}
+                            onClick={() => {
+                              setSelectedSpecialization(spec.name);
+                              setStep(2);
+                            }}
+                          >
+                            <div style={{ fontSize: '24px' }}>{spec.icon}</div>
+                            <div style={{ fontSize: '14px', marginTop: '5px' }}>{spec.name}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {step === 2 && (
+                <>
+                  <h5 className="mb-3">Select Hospital</h5>
+                  <div className="row row-cols-2 g-3">
+                    {hospitals.map((hosp) => (
+                      <div key={hosp} className="col text-center">
+                        <div className="border rounded py-3 bg-light" style={{ cursor: 'pointer' }}>
+                          🏥
+                          <div style={{ fontSize: '14px', marginTop: '5px' }}>{hosp}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

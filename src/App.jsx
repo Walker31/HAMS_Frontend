@@ -1,6 +1,7 @@
 import Header from "./components/header";
 import Navbar from "./components/navbar";
-import TopDoc from "./components/topDoc"
+import TopDoc from "./components/topDoc";
+import Programs from "./components/programs";
 
 const App = () => {
   return <>
