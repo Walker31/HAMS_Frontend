@@ -16,7 +16,7 @@ const HeaderSection = () => {
   };
 
   const sectionStyle = {
-    backgroundImage: "url('/src/assets/headerpic.jpg')",
+    backgroundImage: "url('/src/assets/headerpic2.jpg')",
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
