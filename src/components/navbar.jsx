@@ -1,144 +1,71 @@
-import { useState } from "react";
-import Button from "@mui/material/Button";
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-} from "@headlessui/react";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { HiOutlineLocationMarker } from "react-icons/hi";
-import LocationModal from "./locationBox";
-const navigation = [
-  { name: "Health", href: "#", current: false },
-  { name: "Medicines & Health Services", href: "#", current: false },
-  { name: "Services", href: "#", current: false },
-  { name: "About Us", href: "#", current: false },
-];
+    import { useState } from "react";
+    import LocationModal from "./locationBox";
+    import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
+    // Navigation links
+    const navigation = [
+    { name: "Health", href: "#", current: false },
+    { name: "Medicines & Health Services", href: "#", current: false },
+    { name: "Services", href: "#", current: false },
+    { name: "About Us", href: "#", current: false },
+    ];
 
-export default function Example() {
-  const [open, setOpen] = useState(false);
+    function classNames(...classes) {
+    return classes.filter(Boolean).join(" ");
+    }
 
-  return (
-    <>
-      <Disclosure as="nav" className="bg-white shadow">
-        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-              <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-black hover:bg-gray-200 hover:text-black focus:ring-2 focus:ring-black focus:outline-none">
-                <span className="sr-only">Open main menu</span>
-                <Bars3Icon
-                  aria-hidden="true"
-                  className="block size-6 group-data-open:hidden"
-                />
-                <XMarkIcon
-                  aria-hidden="true"
-                  className="hidden size-6 group-data-open:block"
-                />
-              </DisclosureButton>
-            </div>
+    const Navbar = () => {
+    const [selected, setSelected] = useState("Health");
+    const [open, setOpen] = useState(false);
 
-            <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-              <div className="flex items-center">
-                <h2 className="text-2xl font-bold text-black ml-2">HAMS</h2>
-              </div>
-              <div className="hidden sm:flex justify-center flex-1">
-                <div className="flex space-x-4">
-                  {navigation.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.href}
-                      aria-current={item.current ? "page" : undefined}
-                      className={classNames(
-                        item.current
-                          ? "border-b-2 border-teal-700"
-                          : "text-black hover:border-b-2 border-teal-700 transition",
-                        "px-3 py-2 text-sm font-medium"
-                      )}
-                    >
-                      {item.name}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
+    return (
+        <>
+        <div className="flex items-center justify-between px-6 sm:px-12 h-16 shadow bg-white">
+            {/* Left: Logo */} 
+            <div className="text-2xl font-bold text-black">HAMS</div>
 
-            <div className="flex items-center space-x-4">
-              <button
-                type="button"
-                onClick={() => setOpen(true)}
-                className="relative rounded-full bg-white p-1 text-black hover:text-blue-600 focus:ring-2 focus:ring-white focus:outline-none"
-              > 
-                <span className="sr-only">View location</span>
-                <HiOutlineLocationMarker className="text-xl" />
-              </button>
-
-              <Menu as="div" className="">
-                <div className="bg-blue-900 hover:bg-blue-800 transition rounded-3xl m-2">
-                  <Button className=" text-white p-2 rounded-full font-normal ">
-                    SIGN UP / Register
-                  </Button>
-                </div>
-                <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black/5 focus:outline-none">
-                  <MenuItem>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Your Profile
-                    </a>
-                  </MenuItem>
-                  <MenuItem>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Settings
-                    </a>
-                  </MenuItem>
-                  <MenuItem>
-                    <a
-                      href="#"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    >
-                      Sign out
-                    </a>
-                  </MenuItem>
-                </MenuItems>
-              </Menu>
-            </div>
-          </div>
-        </div>
-
-        <DisclosurePanel className="sm:hidden">
-          <div className="space-y-1 px-2 pt-2 pb-3">
+            {/* Center: Navigation */}
+            <div className="hidden md:flex justify-center flex-1 space-x-6">
             {navigation.map((item) => (
-              <DisclosureButton
+                <div
                 key={item.name}
-                as="a"
                 href={item.href}
+                onClick={() => setSelected(item.name)}
                 aria-current={item.current ? "page" : undefined}
                 className={classNames(
-                  item.current
-                    ? "bg-gray-200 text-black"
-                    : "text-black hover:bg-gray-100 hover:text-black",
-                  "block rounded-md px-3 py-2 text-base font-medium"
+                selected === item.name
+                  ? "border-b-2 border-[#527C88] text-[#527C88]"
+                  : "hover:border-b-2 hover:text-[#527C88] border-[#527C88]",
+                "px-3 py-2 text-sm font-medium transition"
                 )}
-              >
+                >
                 {item.name}
-              </DisclosureButton>
+                </div>
             ))}
-          </div>
-        </DisclosurePanel>
-      </Disclosure>
-      <LocationModal open={open} onClose={() => setOpen(false)} />
-    </>
-  );
-}
+            </div>
+
+            {/* Right: Location + SignUp */}
+            <div className="flex items-center gap-4">
+            <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="rounded-full p-1 text-black hover:text-blue-600 focus:outline-none"
+            >
+                <span className="sr-only">View location</span>
+                <LocationOnOutlinedIcon className="text-xl" />
+            </button>
+
+            <div className="rounded-full bg-[#10217D] hover:bg-[#1a2bb8] transition">
+                <button className="text-white px-4 py-2 text-sm font-medium">
+                SignUp / Login
+                </button>
+            </div>
+            </div>
+        </div>
+
+        <LocationModal open={open} onClose={() => setOpen(false)} />
+        </>
+    );
+    };
+
+    export default Navbar;
