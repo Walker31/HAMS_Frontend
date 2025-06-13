@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useNavigate } from 'react-router-dom';
 
 const HeaderSection = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
-  const [step, setStep] = useState(1); 
+  const [step, setStep] = useState(1);
+  const navigate = useNavigate();
 
   const handleBookClick = () => setShowPopup(true);
   const handleClose = () => {
@@ -69,7 +71,6 @@ const HeaderSection = () => {
           <div className="bg-white p-4 rounded position-relative d-flex" style={{ width: '800px', minHeight: '500px' }}>
             <button className="btn-close position-absolute top-0 end-0 m-2" onClick={handleClose}></button>
 
-         
             <div className="d-flex flex-column justify-content-start pe-4 border-end" style={{ width: '200px' }}>
               <h4 className="mb-4">Hi</h4>
               <p>Follow the steps below:</p>
@@ -92,12 +93,11 @@ const HeaderSection = () => {
               </div>
             </div>
 
-            
             <div className="ps-4 w-100">
               {step === 1 && (
                 <>
                   <h5>Select Specialization</h5>
-                 <div className="overflow-auto" style={{ overflowY: 'auto', overflowX: 'hidden', maxHeight: '350px' }}>
+                  <div className="overflow-auto" style={{ overflowY: 'auto', overflowX: 'hidden', maxHeight: '350px' }}>
                     <div className="row row-cols-3 g-3">
                       {specializations.map((spec) => (
                         <div key={spec.name} className="col text-center">
@@ -125,7 +125,14 @@ const HeaderSection = () => {
                   <div className="row row-cols-2 g-3">
                     {hospitals.map((hosp) => (
                       <div key={hosp} className="col text-center">
-                        <div className="border rounded py-3 bg-light" style={{ cursor: 'pointer' }}>
+                        <div
+                          className="border rounded py-3 bg-light"
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => {
+                            setShowPopup(false);
+                            navigate('/doctor-details');
+                          }}
+                        >
                           🏥
                           <div style={{ fontSize: '14px', marginTop: '5px' }}>{hosp}</div>
                         </div>
