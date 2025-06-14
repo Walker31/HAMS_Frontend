@@ -1,5 +1,12 @@
 import { useRef } from "react";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import VitaminImg from "../assets/Vitamins.jpg"
+import NutritonalDrink from "../assets/Nutritonal Drink.jpg";
+import Skincare from "../assets/Skin Care.jpg";
+import Wellness from "../assets/Wellness.jpg";
+import Sexual from "../assets/sexualwellness.jpg";
+import home from "../assets/home.jpg";
+import pets from "../assets/pets.jpg";
 
 
 const shopping = () => {
@@ -7,27 +14,31 @@ const shopping = () => {
   const shopCart = [
   {
     title: "Vitamins",
-    image: require("src\assets\Vitamins.jpg"),
+    image: VitaminImg,
   },
   {
     title: "Nutritional Drink",
-    image: "https://via.placeholder.com/150?text=Nutritional+Drink",
+    image: NutritonalDrink,
   },
   {
     title: "Skin Care",
-    image: "https://via.placeholder.com/150?text=Skin+Care",
+    image: Skincare,
   },
   {
     title: "Wellness",
-    image: "https://via.placeholder.com/150?text=Wellness",
+    image: Wellness,
   },
   {
     title: "Sexual Wellness",
-    image: "https://via.placeholder.com/150?text=Sexual+Wellness",
+    image: Sexual,
   },
   {
-    title: "Homeopathy",
-    image: "https://via.placeholder.com/150?text=Homeopathy",
+    title: "Home",
+    image: home,
+  },
+  {
+    title: "Pet",
+    image: pets,
   },
 ];
 
@@ -80,15 +91,7 @@ const shopping = () => {
           <ArrowForwardIosIcon />
         </button>
       </div>
-
-      <div className="mt-4 text-left">
-        <a
-          href="#"
-          className="text-blue-600 text-sm font-medium underline flex items-center gap-1"
-        >
-          View All <ArrowForwardIosIcon fontSize="small" />
-        </a>
-      </div>
+      
     </div>
   );
 };
