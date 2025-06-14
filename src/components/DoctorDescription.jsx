@@ -9,33 +9,44 @@ const DoctorDescription = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [otpInput, setOtpInput] = useState("");
 
-  const handleSlotClick = (slot) => {
-    setSelectedSlot(slot);
-  };
+  const handleSlotClick = (slot) => setSelectedSlot(slot);
 
   const handleBookNow = () => {
     if (!selectedDate || !selectedSlot) {
       alert("Please select a date and time slot before booking.");
       return;
     }
-
     if (!isLoggedIn) {
       setShowLoginModal(true);
       return;
     }
-
     alert(`Appointment booked for ${selectedDate} at ${selectedSlot}`);
   };
 
-  const handleLogin = () => {
+  const handleSendOtp = () => {
     if (phoneNumber.trim().length === 10) {
-      setIsLoggedIn(true);
-      setShowLoginModal(false);
-      alert("Login successful! Proceeding to book appointment.");
-      alert(`Appointment booked for ${selectedDate} at ${selectedSlot}`);
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      setGeneratedOtp(otp);
+      setOtpSent(true);
+      alert(`OTP sent: ${otp}`); 
     } else {
       alert("Enter a valid 10-digit mobile number.");
+    }
+  };
+
+  const handleVerifyOtp = () => {
+    if (otpInput === generatedOtp) {
+      setIsLoggedIn(true);
+      setShowLoginModal(false);
+      setOtpInput("");
+      setOtpSent(false);
+      alert("Login successful! Proceeding to book appointment.");
+    } else {
+      alert("Invalid OTP. Please try again.");
     }
   };
 
@@ -50,25 +61,14 @@ const DoctorDescription = () => {
               className="img-fluid rounded"
               style={{ width: "160px", height: "230px", objectFit: "cover" }}
             />
-
             <div>
               <h3 className="fw-bold">Dr Jangaa Mani</h3>
-              <p className="text-primary mb-1"> 0 Years Experience</p>
-              <p className="mb-1">
-                <strong>Specialization:</strong> Corporate Criminal
-              </p>
-              <p className="mb-1">
-                <strong>Languages:</strong> English, Telugu, Hindi, Tamil, Malayalam, Kannada
-              </p>
-              <p className="mb-1">
-                <strong>Qualifications:</strong> B.tech-EEE, MBBS
-              </p>
-              <p className="mb-1">
-                <strong>Hospital:</strong> Janga Hospitals, Avadi, Chennai
-              </p>
-              <p className="mb-1">
-                <strong>Timings:</strong> MON-SAT (09:00 AM - 04:00 PM)
-              </p>
+              <p className="text-primary mb-1">0 Years Experience</p>
+              <p className="mb-1"><strong>Specialization:</strong> Corporate Criminal</p>
+              <p className="mb-1"><strong>Languages:</strong> English, Telugu, Hindi, Tamil, Malayalam, Kannada</p>
+              <p className="mb-1"><strong>Qualifications:</strong> B.tech-EEE, MBBS</p>
+              <p className="mb-1"><strong>Hospital:</strong> Janga Hospitals, Avadi, Chennai</p>
+              <p className="mb-1"><strong>Timings:</strong> MON-SAT (09:00 AM - 04:00 PM)</p>
             </div>
           </div>
         </div>
@@ -105,20 +105,39 @@ const DoctorDescription = () => {
 
       
       <Modal show={showLoginModal} onHide={() => setShowLoginModal(false)} centered>
-        <Modal.Body className="text-center">
+        <Modal.Body className="text-center py-5">
           <h5 className="fw-bold">Hello, Guest!</h5>
-          <p>Quick login using Mobile Number.</p>
-          <Form.Control
-            type="tel"
-            placeholder="+91"
-            maxLength={10}
-            className="mb-3"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          />
-          <Button variant="info" className="w-100 rounded-pill fw-bold" onClick={handleLogin}>
-            GET STARTED
-          </Button>
+          {!otpSent ? (
+            <>
+              <p>Quick login using Mobile Number.</p>
+              <Form.Control
+                type="tel"
+                placeholder="Enter 10-digit number"
+                maxLength={10}
+                className="mb-3"
+                value={phoneNumber}
+                onChange={(e) => setPhoneNumber(e.target.value)}
+              />
+              <Button variant="info" className="w-100 rounded-pill fw-bold" onClick={handleSendOtp}>
+                SEND OTP
+              </Button>
+            </>
+          ) : (
+            <>
+              <p>Enter the OTP sent to your number.</p>
+              <Form.Control
+                type="text"
+                placeholder="Enter OTP"
+                maxLength={6}
+                className="mb-3"
+                value={otpInput}
+                onChange={(e) => setOtpInput(e.target.value)}
+              />
+              <Button variant="success" className="w-100 rounded-pill fw-bold" onClick={handleVerifyOtp}>
+                VERIFY OTP
+              </Button>
+            </>
+          )}
           <div className="mt-3">
             <Button variant="link" onClick={() => setShowLoginModal(false)}>
               Go Back
