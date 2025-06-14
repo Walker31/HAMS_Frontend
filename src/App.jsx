@@ -7,7 +7,8 @@ import {
 
 import Navbar from "./components/navbar";
 import Home from "./Pages/Home";
-import DoctorDetails from "./components/DoctorDetails";
+import DoctorsAvailable from "./components/DoctorsAvailable";
+import DoctorDescription from "./components/DoctorDescription";
 
 const Layout = () => {
   return (
@@ -24,7 +25,8 @@ const App = () => {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/doctor-details" element={<DoctorDetails />} />
+          <Route path="/doctors-available" element={<DoctorsAvailable />} />
+          <Route path="/doctor-description" element={<DoctorDescription />} />
           {/* Add more routes here if needed */}
         </Route>
       </Routes>

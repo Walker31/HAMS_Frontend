@@ -130,7 +130,7 @@ const HeaderSection = () => {
                           style={{ cursor: 'pointer' }}
                           onClick={() => {
                             setShowPopup(false);
-                            navigate('/doctor-details');
+                            navigate('/doctors-available');
                           }}
                         >
                           🏥
