@@ -7,7 +7,7 @@ const shopping = () => {
   const shopCart = [
   {
     title: "Vitamins",
-    image: "https://via.placeholder.com/150?text=Vitamins",
+    image: require("src\assets\Vitamins.jpg"),
   },
   {
     title: "Nutritional Drink",
@@ -46,7 +46,7 @@ const shopping = () => {
         <h2 className="text-2xl sm:text-3xl font-semibold">
           <span className="text-green-600 font-bold">Shop</span>{" "}
           <span className="text-blue-900">for Medicines & Wellness</span>{" "}
-          <span className="inline-block text-blue-900 ml-1">🛒</span>
+          <span className="inline-block text-blue-900 ml-1"></span>
         </h2>
         <p className="text-gray-500 text-sm mt-2">
           Lorem Ipsum is simply dummy text of the printing and typesetting...

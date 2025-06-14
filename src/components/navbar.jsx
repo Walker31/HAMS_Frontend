@@ -1,6 +1,7 @@
     import { useState } from "react";
     import LocationModal from "./locationBox";
     import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+    import { useNavigate } from "react-router-dom";
 
     // Navigation links
     const navigation = [
@@ -17,12 +18,16 @@
     const Navbar = () => {
     const [selected, setSelected] = useState("Health");
     const [open, setOpen] = useState(false);
+    const navigate = useNavigate();
 
     return (
         <>
         <div className="flex items-center justify-between px-6 sm:px-12 h-16 shadow bg-white">
             {/* Left: Logo */} 
-            <div className="text-2xl font-bold text-black">HAMS</div>
+           <button className="text-4xl font-bold text-black bg-transparent border-0 p-0"
+           onClick={() => navigate('/')}>
+            HAMS
+            </button>
 
             {/* Center: Navigation */}
             <div className="hidden md:flex justify-center flex-1 space-x-6">

@@ -7,7 +7,7 @@ const shopping = () => {
   const shopCart = [
   {
     title: "Vitamins",
-    image: "https://via.placeholder.com/150?text=Vitamins",
+    image: require(""),
   },
   {
     title: "Nutritional Drink",
