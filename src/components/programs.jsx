@@ -1,23 +1,31 @@
 import { useRef } from "react";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import ScrollButton from "./scrollButton.jsx";
 import healthCarePrograms from "../constants/programs.js";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
+
 const Programs = () => {
   const samplePrograms = healthCarePrograms;
   const carouselRef = useRef(null);
 
-  const handleNext = () => {
+  const handleScroll = (offset) => {
     if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 600, behavior: "smooth" });
+      carouselRef.current.scrollBy({ left: offset, behavior: "smooth" });
     }
   };
 
+  if (!samplePrograms || samplePrograms.length === 0) {
+    return (
+      <div className="text-center py-10 text-gray-500">
+        No healthcare programs available at the moment.
+      </div>
+    );
+  }
+
   return (
     <div className="container max-w-7xl mx-auto px-4 py-8">
-      <div className="header flex items-center justify-between mb-6">
-        <h3 className="text-2xl font-bold  text-cyan-700">
-          Healthcare{" "}
-          <span className="highlight  text-indigo-900">Programs</span>{" "}
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-2xl font-bold text-cyan-700">
+          Healthcare <span className="text-indigo-900">Programs</span>
         </h3>
         <a href="#" className="text-sm text-blue-600 hover:underline">
           View All
@@ -27,35 +35,34 @@ const Programs = () => {
       <div className="relative">
         <div
           ref={carouselRef}
-          className="prog-list flex space-x-6 overflow-x-auto pb-2 -mx-4 px-4 no-scrollbar"
-          style={{ scrollbarWidth: "none" }}
+          className="flex space-x-6 overflow-x-auto pb-2 -mx-4 px-4 no-scrollbar scroll-smooth bg-white"
+
         >
           {samplePrograms.map((p, idx) => (
             <div
               key={idx}
-              className="prog-card border border-solid border-gray-200 flex-shrink-0 w-56 bg-white shadow-lg p-4 text-left"
+              className="flex-shrink-0 w-56 bg-white border border-gray-200 shadow-md p-4 rounded-lg"
             >
               <img
                 src={p.icon}
-                alt="prog-icon"
-                className="doc-img w-12 h-12 rounded-full mb-4 object-cover"
+                alt={`${p.name} icon`}
+                loading="lazy"
+                className="w-12 h-12 rounded-full mb-4 object-cover"
               />
-              <div className="doc-info space-y-1">
-                <p className="doc-name font-semibold text-gray-800">{p.name}</p>
-                <p className="doc-spec text-xs text-gray-500">
-                  <span className="note-preview">
-                    {p.description.substring(0, 100)}
-                    {p.description.length > 100 ? "..." : ""}
-                  </span>
+              <div className="space-y-1">
+                <p className="font-semibold text-gray-800">{p.name}</p>
+                <p className="text-xs text-gray-500">
+                  {p.description.substring(0, 100)}
+                  {p.description.length > 100 ? "..." : ""}
                 </p>
-                <div className="mt-4 card-footer flex items-center justify-between mb-6">
-                  <p className="doc-spec font-bold text-md text-cyan-500">
-                    <CurrencyRupeeIcon />
+                <div className="mt-4 flex items-center justify-between">
+                  <p className="text-cyan-600 font-bold text-sm flex items-center">
+                    <CurrencyRupeeIcon fontSize="small" className="mr-1" />
                     {p.price}
                   </p>
                   <button
                     onClick={() => alert(`Booking ${p.name}`)}
-                    className="px-4 border border-solid border-[#10217D] text-[#10217D] text-sm font-medium py-2 hover:bg-indigo-50"
+                    className="px-3 py-1 text-sm text-[#10217D] border border-[#10217D] rounded hover:bg-indigo-50 transition"
                   >
                     Book Now
                   </button>
@@ -65,15 +72,21 @@ const Programs = () => {
           ))}
         </div>
 
-        <button
-          onClick={handleNext}
-          className="absolute right-0 top-1/2 -translate-y-1/2  text-[#10217D] font-bold bg-white rounded-full p-3 shadow"
-        >
-          <ArrowForwardIosIcon />
-        </button>
+        {/* Scroll Buttons */}
+        <ScrollButton
+          direction="left"
+          onClick={() => handleScroll(-600)}
+          className="left-0"
+        />
+        <ScrollButton
+          direction="right"
+          onClick={() => handleScroll(600)}
+          className="right-0"
+        />
       </div>
     </div>
   );
 };
 
 export default Programs;
+  
