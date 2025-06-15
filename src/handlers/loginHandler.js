@@ -1,6 +1,6 @@
 import { loginUser } from '../apiControllers/userAPI';
 
-export default async function handleUserLogin(e, formData) {
+export const handleUserLogin = async (e, formData) => {
   e.preventDefault();
   try {
     const response = await loginUser(formData);

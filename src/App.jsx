@@ -8,6 +8,7 @@ import {
 import Navbar from "./components/navbar";
 import TopDoc from "./components/topDoc";
 import Programs from "./components/programs";
+import Header from "./components/header"
 
 const App = () => {
   return <>
