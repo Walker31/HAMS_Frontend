@@ -22,10 +22,10 @@ const Feedback = () => {
         Our  <span className="text-teal-600"> patients</span> feedback about us
       </h3>
 
-      <div className=" flex flex-col bg-[#e8eaf6]  rounded-lg h-80" >
+      <div className=" flex flex-col bg-[#e8eaf6]  rounded-lg h-80 " >
         <div className="flex flex-col md:flex-row items-start">
-          {/* Image Container */}
-          <div className="m-17 md:w-80 h-80 border-2 border-teal-400 rounded-lg  flex-shrink-0">
+      
+          <div className="m-5 md:w-80 h-80 border-3 border-teal-400 rounded-lg  flex-shrink-0">
             <img
               src={photo}
               alt={name}
@@ -33,16 +33,15 @@ const Feedback = () => {
             />
           </div>
 
-          {/* Review Container */}
           <div className="s:flex-1 p-8 rounded-lg  mt-20 mr-30  ml-30 flex items-center justify-center" >
             <p className="text-xl text-gray-700 leading-relaxed ">
-               "{review}"
+               "{review} " 
             </p>
           </div>
         </div>
 
-        {/* Name and Customer Info Container - Below the image */}
-        <div className="  flex items-center justify-between ">
+        
+        <div className="  bg-amber-400 flex items-center justify-between ">
           <div>
             <p className="ml-150 font-semibold text-gray-900 text-lg">{name}</p>
             <p className="ml-150 text-sm text-gray-500">HAMSA Customer</p>
