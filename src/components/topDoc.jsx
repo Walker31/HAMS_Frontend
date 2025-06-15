@@ -27,7 +27,8 @@ const TopDoc = () => {
     <div className="container max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-2xl font-bold text-indigo-900">
-          Top Rated <span className="text-cyan-700">Doctors</span> Near You
+          Top Rated <span className="doc-highlight text-cyan-700">Doctors</span>{" "}
+          Near You
         </h3>
         <a href="#" className="text-sm text-blue-600 hover:underline">
           View All

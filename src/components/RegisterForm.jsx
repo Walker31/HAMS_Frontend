@@ -14,6 +14,36 @@ export default function RegisterForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await loginHandler(formData);
+      alert("Login successful!");
+      // Optionally redirect or reset form
+      // setFormData({});
+    } catch (err) {
+      console.error("Login failed:", err);
+      alert("Login failed. Please check your credentials.");
+    }
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (userType === "Customer") {
+        await patientHandler(formData);
+      } else if (userType === "Doctor") {
+        await doctorHandler(formData);
+      }
+      alert("Registration successful!");
+      // setFormData({});
+      // setUserType(null);
+    } catch (err) {
+      console.error("Registration failed:", err);
+      alert("Registration failed. Please try again.");
+    }
+  };
+
   return (
     <div className="w-full flex flex-col items-center space-y-3">
       {!userType && !isLogin && (
@@ -77,6 +107,17 @@ export default function RegisterForm() {
               Login
             </button>
           </form>
+
+          <button
+            onClick={() => {
+              setIsLogin(false);
+              setUserType(null);
+              setFormData({});
+            }}
+            className="text-sm text-gray-600 underline hover:text-black"
+          >
+            Back
+          </button>
         </div>
       )}
 
@@ -262,6 +303,7 @@ export default function RegisterForm() {
             onClick={() => {
               setUserType(null);
               setIsLogin(false);
+              setFormData({});
             }}
             className="text-sm text-gray-600 underline hover:text-black mt-2"
           >
