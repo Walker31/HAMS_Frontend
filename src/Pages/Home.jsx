@@ -13,7 +13,7 @@ const Home = () => {
       <TopDoc />
       <ShoppingCart />
       <Programs />
-      </main>
+      
       
     </>
   );
