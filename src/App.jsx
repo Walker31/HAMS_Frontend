@@ -1,8 +1,13 @@
-import Header from "./components/header";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Outlet,
+} from "react-router-dom";
+
 import Navbar from "./components/navbar";
 import TopDoc from "./components/topDoc";
 import Programs from "./components/programs";
-import Feedback from "./components/feedback";
 
 const App = () => {
   return <>
@@ -10,8 +15,6 @@ const App = () => {
   <Header/>
   <TopDoc/>
   <Programs/>
-  <Feedback/>
-
   </>
 } ;
 
