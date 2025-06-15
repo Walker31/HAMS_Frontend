@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:3000';
 
 export const createDoctor = async (doctorData) => {
   try {
-    const response = await axios.post(`http://localhost:3000/doctors/doctorsignup`, doctorData);
+    const response = await axios.post(`http://localhost:3000/doctors/signup`, doctorData);
     return response.data;
   } catch (error) {
     console.error('Doctor registration failed:', error.response?.data || error.message);

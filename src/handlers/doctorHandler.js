@@ -1,6 +1,6 @@
 import { createDoctor } from '../apiControllers/userAPI';
 
-export const handleDoctorRegistration = async (e, formData) => {
+export default async function handleDoctorRegistration (e, formData){
   e.preventDefault();
   try {
     const response = await createDoctor(formData);
