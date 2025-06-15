@@ -58,8 +58,8 @@ const DoctorDescription = () => {
             <img
               src="/src/assets/doctorpic2.jpg"
               alt="Doctor"
-              className="img-fluid rounded"
-              style={{ width: "160px", height: "230px", objectFit: "cover" }}
+              className="rounded-full"
+              style={{ width: "200px", height: "200px", objectFit: "cover" }}
             />
             <div>
               <h3 className="fw-bold">Dr Jangaa Mani</h3>
