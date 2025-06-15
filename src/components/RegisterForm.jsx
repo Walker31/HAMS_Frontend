@@ -1,7 +1,9 @@
+// RegisterForm.jsx
 import { useState } from "react";
-import loginHandler from "../handlers/loginHandler";
-import patientHandler from "../handlers/patientHandler";
-import doctorHandler from "../handlers/doctorHandler";
+import { handleUserLogin } from '../handlers/loginHandler';
+import { handlePatientRegistration } from '../handlers/patientHandler';
+
+import doctorHandler from '../handlers/doctorHandler';
 
 export default function RegisterForm() {
   const [userType, setUserType] = useState(null);
@@ -76,7 +78,13 @@ export default function RegisterForm() {
       {isLogin && (
         <div className="w-full max-w-md space-y-6">
           <h2 className="text-2xl font-semibold text-center">Login</h2>
-          <form className="space-y-4 gap-3" onSubmit={handleLoginSubmit}>
+          <form
+            className="space-y-4 gap-3"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleUserLogin(e, formData);
+            }}
+          >
             <input
               type="text"
               name="phone"
@@ -118,7 +126,32 @@ export default function RegisterForm() {
           <h2 className="text-2xl font-bold text-center">
             {userType} Registration
           </h2>
-          <form className="space-y-4" onSubmit={handleRegisterSubmit}>
+          <form
+            className="space-y-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+
+              if (userType === "Customer") {
+                handlePatientRegistration(formData);
+              } else if (userType === "Doctor") {
+                // Group latitude and longitude under location
+                const formattedData = {
+                  ...formData,
+                  location: {
+                    latitude: formData.latitude,
+                    longitude: formData.longitude,
+                  },
+                };
+
+                // Remove the separate latitude and longitude keys
+                delete formattedData.latitude;
+                delete formattedData.longitude;
+
+                // Call doctorHandler directly
+                doctorHandler(formattedData);
+              }
+            }}
+          >
             <input
               type="text"
               name="name"
