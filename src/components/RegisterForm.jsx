@@ -1,6 +1,8 @@
+// RegisterForm.jsx
 import { useState } from "react";
-import loginHandler from '../handlers/loginHandler';
-import patientHandler from '../handlers/patientHandler';
+import { handleUserLogin } from '../handlers/loginHandler';
+import { handlePatientRegistration } from '../handlers/patientHandler';
+
 import doctorHandler from '../handlers/doctorHandler';
 
 export default function RegisterForm() {
@@ -50,7 +52,7 @@ export default function RegisterForm() {
             className="space-y-4 gap-3"
             onSubmit={(e) => {
               e.preventDefault();
-              loginHandler(formData);
+              handleUserLogin(e, formData);
             }}
           >
             <input
@@ -87,10 +89,25 @@ export default function RegisterForm() {
             className="space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
+
               if (userType === "Customer") {
-                patientHandler(formData);
+                handlePatientRegistration(formData);
               } else if (userType === "Doctor") {
-                doctorHandler(formData);
+                // Group latitude and longitude under location
+                const formattedData = {
+                  ...formData,
+                  location: {
+                    latitude: formData.latitude,
+                    longitude: formData.longitude,
+                  },
+                };
+
+                // Remove the separate latitude and longitude keys
+                delete formattedData.latitude;
+                delete formattedData.longitude;
+
+                // Call doctorHandler directly
+                doctorHandler(formattedData);
               }
             }}
           >
