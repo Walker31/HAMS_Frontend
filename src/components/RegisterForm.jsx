@@ -1,7 +1,7 @@
 // RegisterForm.jsx
 import { useState } from "react";
-import { handleUserLogin } from '../handlers/loginHandler';
-import { handlePatientRegistration } from '../handlers/patientHandler';
+import handleUserLogin from '../handlers/loginHandler';
+import handlePatientRegistration from '../handlers/patientHandler';
 
 import doctorHandler from '../handlers/doctorHandler';
 
