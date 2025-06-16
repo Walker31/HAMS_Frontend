@@ -198,6 +198,7 @@ export default function RegisterForm() {
                   required
                 />
                 <input
+                  required="true"
                   type="text"
                   name="street"
                   placeholder="Street"
@@ -231,6 +232,7 @@ export default function RegisterForm() {
                   placeholder="Emergency Contact Name"
                   onChange={handleChange}
                   className="w-full p-3 border rounded-md"
+                  required
                 />
                 <input
                   type="text"
@@ -239,6 +241,7 @@ export default function RegisterForm() {
                   pattern="[0-9]{10}"
                   onChange={handleChange}
                   className="w-full p-3 border rounded-md"
+                  required
                 />
                 <input
                   type="text"
@@ -246,6 +249,7 @@ export default function RegisterForm() {
                   placeholder="Relation"
                   onChange={handleChange}
                   className="w-full p-3 border rounded-md"
+                  required
                 />
               </>
             )}
@@ -266,12 +270,22 @@ export default function RegisterForm() {
                   onChange={handleChange}
                   className="w-full p-3 border rounded-md"
                 />
+                
                 <input
                   type="text"
                   name="medicalReg"
                   placeholder="Medical Registration Number"
                   onChange={handleChange}
                   className="w-full p-3 border rounded-md"
+                  required
+                />
+                <input
+                  type="text"
+                  name="specialization"
+                  placeholder="Specialization" 
+                  onChange={handleChange}
+                  className="w-full p-3 border rounded-md"
+                  required
                 />
                 <input
                   type="text"
@@ -279,6 +293,7 @@ export default function RegisterForm() {
                   placeholder="Photo URL"
                   onChange={handleChange}
                   className="w-full p-3 border rounded-md"
+                  required
                 />
               </>
             )}
