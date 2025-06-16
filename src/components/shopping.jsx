@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import VitaminImg from "../assets/Vitamins.jpg"
 import NutritonalDrink from "../assets/Nutritonal Drink.jpg";
 import Skincare from "../assets/Skin Care.jpg";
