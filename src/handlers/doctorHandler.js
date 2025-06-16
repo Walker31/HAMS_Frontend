@@ -11,4 +11,7 @@ export default async function doctorHandler(formData) {
     alert('Doctor registration failed.');
   }
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> ec834354c90a0410f45778a97caee57dbf9c5ebf
