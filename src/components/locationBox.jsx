@@ -4,19 +4,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import SearchIcon from "@mui/icons-material/Search";
 import cityIcons from "../constants/cityIcons"; 
+import { getCityFromCoords } from "../utils/locationUtils";
 
-const getCityFromCoords = async (lat, lon) => {
-  try {
-    console.log(lat,lon);
-    const response = await fetch(
-      `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
-    );
-    const data = await response.json();
-    return data.city || data.locality || "Unknown";
-  } catch (err) {
-    return "Location Error";
-  }
-};
 
 export default function LocationModal({ open, onClose, setLocation }) {
   const [searchTerm, setSearchTerm] = useState("");

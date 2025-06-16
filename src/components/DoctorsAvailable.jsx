@@ -7,12 +7,14 @@ const DoctorsAvailable = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:3000/Doctors")
-      .then(res => {
+    const latitude = localStorage.getItem("latitude");
+    const longitude = localStorage.getItem("longitude");
+    axios.get(`http://localhost:3000/doctors/nearby/${latitude}/${longitude}`)
+      .then((res) => {
         console.log(res.data);
-        setDoctors(res.data); // ✅ Missing earlier
+        setDoctors(res.data);
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error(err));
   }, []);
 
   return (

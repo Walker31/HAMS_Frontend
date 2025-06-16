@@ -1,10 +1,4 @@
 import { useState, useEffect } from "react";
-import Home from "./Pages/Home";
-import Navbar from "./components/navbar";
-import DoctorsAvailable from "./components/DoctorsAvailable";
-import DoctorDescription from "./components/DoctorDescription";
-import RegisterForm from "./components/RegisterForm";
-import Confirmation from "./components/Confirmation";
 import {
   BrowserRouter as Router,
   Routes,
@@ -12,7 +6,16 @@ import {
   Outlet,
 } from "react-router-dom";
 
+import Home from "./Pages/Home";
+import Navbar from "./components/navbar";
+import DoctorsAvailable from "./components/DoctorsAvailable";
+import DoctorDescription from "./components/DoctorDescription";
+import RegisterForm from "./components/RegisterForm";
+import Confirmation from "./components/Confirmation";
+import { getCityFromCoords } from "./utils/locationUtils";
 
+
+// Layout component that receives location
 const Layout = ({ location, setLocation }) => (
   <>
     <Navbar location={location} setLocation={setLocation} />
@@ -22,26 +25,35 @@ const Layout = ({ location, setLocation }) => (
 
 const App = () => {
   const [location, setLocation] = useState("Select Location");
-
+  
+  // ⛳ Auto-detect location on app load
   useEffect(() => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const city = await getCityFromCoords(
-            position.coords.latitude,
-            position.coords.longitude
-          );
-          setLocation(city);
-        },
-        (error) => {
-          console.error("Geolocation error:", error);
-          setLocation("Unavailable");
-        }
-      );
-    } else {
-      setLocation("Not supported");
-    }
+    const savedLocation = localStorage.getItem("userLocation");
+      if (savedLocation) {
+        setLocation(savedLocation);
+      } else if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const city = await getCityFromCoords(
+              position.coords.latitude,
+              position.coords.longitude
+            );
+            setLocation(city);
+            localStorage.setItem("userLocation", city);
+            console.log(position.coords);
+            localStorage.setItem("latitude",position.coords.latitude);
+            localStorage.setItem("longitude",position.coords.longitude);
+          },
+          (error) => {
+            console.error("Geolocation error:", error);
+            setLocation("Unavailable");
+          }
+        );
+      } else {
+        setLocation("Not supported");
+      }
   }, []);
+
 
   return (
     <Router>

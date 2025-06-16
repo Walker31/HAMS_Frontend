@@ -2,7 +2,7 @@ import { useState } from "react";
 import LocationModal from "./locationBox";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import { useNavigate } from "react-router-dom";
-import RegisterForm from "./RegisterForm";
+import RegisterForm from "../Pages/Login/registerForm";
 
 const navigation = [
   { name: "Health", href: "#", current: false },
