@@ -11,3 +11,5 @@ export const handleDoctorRegistration = async (e, formData) => {
     alert('Doctor registration failed.');
   }
 };
+
+export default handleDoctorRegistration;

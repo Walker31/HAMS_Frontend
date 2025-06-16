@@ -1,7 +1,7 @@
 import { useState } from "react";
-import loginHandler from '../handlers/loginHandler';
-import patientHandler from '../handlers/patientHandler';
-import doctorHandler from '../handlers/doctorHandler';
+import {loginHandler} from '../handlers/loginHandler';
+import {patientHandler} from '../handlers/patientHandler';
+import {doctorHandler} from '../handlers/doctorHandler';
 
 export default function RegisterForm() {
   const [userType, setUserType] = useState(null);
