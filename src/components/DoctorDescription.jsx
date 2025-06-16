@@ -1,17 +1,12 @@
 import React, { useState } from "react";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
+import { useNavigate } from "react-router-dom";
 
 const DoctorDescription = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
-  const [showLoginModal, setShowLoginModal] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
-  const [generatedOtp, setGeneratedOtp] = useState("");
-  const [otpInput, setOtpInput] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false); //just for checking purpose, replace with actual login state
+
+  const navigate = useNavigate();
 
   const handleSlotClick = (slot) => setSelectedSlot(slot);
 
@@ -20,34 +15,19 @@ const DoctorDescription = () => {
       alert("Please select a date and time slot before booking.");
       return;
     }
+
     if (!isLoggedIn) {
-      setShowLoginModal(true);
+      navigate("/login");
       return;
     }
-    alert(`Appointment booked for ${selectedDate} at ${selectedSlot}`);
-  };
 
-  const handleSendOtp = () => {
-    if (phoneNumber.trim().length === 10) {
-      const otp = Math.floor(100000 + Math.random() * 900000).toString();
-      setGeneratedOtp(otp);
-      setOtpSent(true);
-      alert(`OTP sent: ${otp}`); 
-    } else {
-      alert("Enter a valid 10-digit mobile number.");
-    }
-  };
-
-  const handleVerifyOtp = () => {
-    if (otpInput === generatedOtp) {
-      setIsLoggedIn(true);
-      setShowLoginModal(false);
-      setOtpInput("");
-      setOtpSent(false);
-      alert("Login successful! Proceeding to book appointment.");
-    } else {
-      alert("Invalid OTP. Please try again.");
-    }
+    navigate("/confirmation", {
+      state: {
+        date: selectedDate,
+        slot: selectedSlot,
+        doctor: "Dr Jangaa Mani"
+      }
+    });
   };
 
   return (
@@ -102,49 +82,6 @@ const DoctorDescription = () => {
           </div>
         </div>
       </div>
-
-      
-      <Modal show={showLoginModal} onHide={() => setShowLoginModal(false)} centered>
-        <Modal.Body className="text-center py-5">
-          <h5 className="fw-bold">Hello, Guest!</h5>
-          {!otpSent ? (
-            <>
-              <p>Quick login using Mobile Number.</p>
-              <Form.Control
-                type="tel"
-                placeholder="Enter 10-digit number"
-                maxLength={10}
-                className="mb-3"
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-              />
-              <Button variant="info" className="w-100 rounded-pill fw-bold" onClick={handleSendOtp}>
-                SEND OTP
-              </Button>
-            </>
-          ) : (
-            <>
-              <p>Enter the OTP sent to your number.</p>
-              <Form.Control
-                type="text"
-                placeholder="Enter OTP"
-                maxLength={6}
-                className="mb-3"
-                value={otpInput}
-                onChange={(e) => setOtpInput(e.target.value)}
-              />
-              <Button variant="success" className="w-100 rounded-pill fw-bold" onClick={handleVerifyOtp}>
-                VERIFY OTP
-              </Button>
-            </>
-          )}
-          <div className="mt-3">
-            <Button variant="link" onClick={() => setShowLoginModal(false)}>
-              Go Back
-            </Button>
-          </div>
-        </Modal.Body>
-      </Modal>
 
       <div className="mt-5">
         <h4 className="fw-bold">Overview</h4>
