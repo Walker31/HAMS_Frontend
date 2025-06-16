@@ -32,6 +32,7 @@ const DoctorDescription = () => {
 
   return (
     <div className="container my-5">
+      <h2 className="text-center mb-4">Doctor Description</h2>
       <div className="row">
         <div className="col-md-8">
           <div className="d-flex align-items-start gap-4">

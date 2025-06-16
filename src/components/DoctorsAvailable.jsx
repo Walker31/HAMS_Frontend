@@ -1,50 +1,46 @@
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const DoctorsAvailable = () => {
+  const [doctors, setDoctors] = useState([]);
   const navigate = useNavigate();
 
-  const handleBookNow = () => {
-    navigate("/doctor-description");
-  };
+  useEffect(() => {
+    axios.get("http://localhost:3000/Doctors")
+      .then(res => {
+        console.log(res.data);
+        setDoctors(res.data); // ✅ Missing earlier
+      })
+      .catch(err => console.error(err));
+  }, []);
 
   return (
-    <div className="container mt-5">
-      <div className="card p-4 shadow-sm rounded d-flex flex-row flex-wrap align-items-center">
-        
-        <div className="me-4 mb-3 mb-md-0 text-center">
-          <img
-            src="/src/assets/doctorpic2.jpg"
-            alt="Doctor"
-            className="rounded-circle"
-            style={{ width: "120px", height: "120px", objectFit: "cover" }}
-          />
-        </div>
-
-        
-        <div className="flex-grow-1">
-          <h5 className="fw-bold text-warning mb-1">Dr Jangaa Mani</h5>
-          <p className="text-muted mb-1">
-            <span className="text-info">Corporate Criminal</span> &nbsp;|&nbsp; 0 years exp
-          </p>
-          <p className="mb-1">
-            <i className="bi bi-geo-alt-fill"></i> Janga Hospitals, Avadi, Chennai
-          </p>
-          <p className="mb-1">
-            <i className="bi bi-translate"></i> English, Telugu, Hindi, Tamil, Malayalam, Kannada
-          </p>
-          <p className="mb-0">
-            <i className="bi bi-mortarboard-fill"></i> B.tech-EEE, MBBS, MD-Backendology, MS-Githubology
-          </p>
-        </div>
-
-       
-        <div className="text-end ms-auto">
-          <p className="text-warning fw-semibold mb-0">MON-SAT</p>
-          <p className="text-info">(09:00 AM-04:00 PM)</p>
-          <button className="btn btn-primary " onClick={handleBookNow}>
-            BOOK APPOINTMENT
-          </button>
-        </div>
+    <div className="container my-5">
+      <h2 className="text-center mb-4">Doctors Available</h2>
+      <div className="row">
+        {doctors.map((doc, idx) => (
+          <div className="col-md-4 mb-4" key={idx}>
+            <div className="card p-3 shadow-sm h-100">
+              <img
+                src={doc.photo || "/default-doctor.jpg"}
+                className="card-img-top rounded"
+                alt={doc.name}
+                style={{ height: "200px", objectFit: "cover" }}
+              />
+              <div className="card-body">
+                <h5 className="card-title">{doc.name}</h5>
+                <p className="card-text"><strong>Specialization:</strong> {doc.specialization || "General"}</p>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => navigate(`/doctor/${doc._id}`, { state: { doctor: doc } })}
+                >
+                  Book Appointment
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
