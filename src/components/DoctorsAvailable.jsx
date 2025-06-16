@@ -9,6 +9,7 @@ const DoctorsAvailable = () => {
 
   return (
     <div className="container mt-5">
+      <h2 className="text-center mb-4">Doctors Available</h2>
       <div className="card p-4 shadow-sm rounded d-flex flex-row flex-wrap align-items-center">
         
         <div className="me-4 mb-3 mb-md-0 text-center">
