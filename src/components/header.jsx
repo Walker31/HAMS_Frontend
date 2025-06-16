@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
+import img from '../assets/headerpic2.jpg'
 
 const HeaderSection = () => {
   const [showPopup, setShowPopup] = useState(false);
@@ -16,7 +17,7 @@ const HeaderSection = () => {
   };
 
   const sectionStyle = {
-    backgroundImage: "url('/src/assets/headerpic2.jpg')",
+    backgroundImage: `url(${img})`,
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
