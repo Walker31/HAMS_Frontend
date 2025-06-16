@@ -33,7 +33,7 @@ const DoctorsAvailable = () => {
             <i className="bi bi-translate"></i> English, Telugu, Hindi, Tamil, Malayalam, Kannada
           </p>
           <p className="mb-0">
-            <i className="bi bi-mortarboard-fill"></i> B.tech-EEE, IPS, B.sc- Fashion Technology
+            <i className="bi bi-mortarboard-fill"></i> B.tech-EEE, MBBS, MD-Backendology, MS-Githubology
           </p>
         </div>
 

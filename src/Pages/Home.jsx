@@ -1,15 +1,16 @@
 import Header from "../components/header";
 import TopDoc from "../components/topDoc";
 import Programs from "../components/programs";
-import Shopping from "../components/shopping";
+import ShoppingCart from "../components/shoppingCart";
 
 const Home = () => {
   return (
     <>
       <Header />
       <TopDoc />
-      <Shopping />
+      <ShoppingCart />
       <Programs />
+      
     </>
   );
 };
