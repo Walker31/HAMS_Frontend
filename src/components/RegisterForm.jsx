@@ -1,7 +1,8 @@
+// RegisterForm.jsx
 import { useState } from "react";
-import {loginHandler} from '../handlers/loginHandler';
-import {patientHandler} from '../handlers/patientHandler';
-import {doctorHandler} from '../handlers/doctorHandler';
+import loginHandler from '../handlers/loginHandler';
+import patientHandler from '../handlers/patientHandler';
+import doctorHandler from '../handlers/doctorHandler';
 
 export default function RegisterForm() {
   const [userType, setUserType] = useState(null);
@@ -10,6 +11,36 @@ export default function RegisterForm() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await loginHandler(formData);
+      alert("Login successful!");
+      // Optionally redirect or reset form
+      // setFormData({});
+    } catch (err) {
+      console.error("Login failed:", err);
+      alert("Login failed. Please check your credentials.");
+    }
+  };
+
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (userType === "Customer") {
+        await patientHandler(formData);
+      } else if (userType === "Doctor") {
+        await doctorHandler(formData);
+      }
+      alert("Registration successful!");
+      // setFormData({});
+      // setUserType(null);
+    } catch (err) {
+      console.error("Registration failed:", err);
+      alert("Registration failed. Please try again.");
+    }
   };
 
   return (
@@ -50,7 +81,7 @@ export default function RegisterForm() {
             className="space-y-4 gap-3"
             onSubmit={(e) => {
               e.preventDefault();
-              loginHandler(formData);
+              handleUserLogin(e, formData);
             }}
           >
             <input
@@ -75,6 +106,17 @@ export default function RegisterForm() {
               Login
             </button>
           </form>
+
+          <button
+            onClick={() => {
+              setIsLogin(false);
+              setUserType(null);
+              setFormData({});
+            }}
+            className="text-sm text-gray-600 underline hover:text-black"
+          >
+            Back
+          </button>
         </div>
       )}
 
@@ -87,10 +129,25 @@ export default function RegisterForm() {
             className="space-y-4"
             onSubmit={(e) => {
               e.preventDefault();
+
               if (userType === "Customer") {
-                patientHandler(formData);
+                handlePatientRegistration(formData);
               } else if (userType === "Doctor") {
-                doctorHandler(formData);
+                // Group latitude and longitude under location
+                const formattedData = {
+                  ...formData,
+                  location: {
+                    latitude: formData.latitude,
+                    longitude: formData.longitude,
+                  },
+                };
+
+                // Remove the separate latitude and longitude keys
+                delete formattedData.latitude;
+                delete formattedData.longitude;
+
+                // Call doctorHandler directly
+                doctorHandler(formattedData);
               }
             }}
           >
@@ -245,6 +302,7 @@ export default function RegisterForm() {
             onClick={() => {
               setUserType(null);
               setIsLogin(false);
+              setFormData({});
             }}
             className="text-sm text-gray-600 underline hover:text-black mt-2"
           >

@@ -1,10 +1,7 @@
 import Header from "../components/header";
 import TopDoc from "../components/topDoc";
 import Programs from "../components/programs";
-import NavbarAlt from "../components/navbarAlternate";
-import Navbar from '../components/navbar';
-import Navbar2 from "../components/navbar2";
-import Shopping from "../components/shopping";
+import ShoppingCart from "../components/shoppingCart";
 
 const Home = () => {
   return (
@@ -13,7 +10,6 @@ const Home = () => {
       <TopDoc />
       <ShoppingCart />
       <Programs />
-      
       
     </>
   );
