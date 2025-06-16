@@ -2,6 +2,8 @@ import { useState } from "react";
 import LocationModal from "./locationBox";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import { useNavigate } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from '@mui/icons-material/Close';
 import RegisterForm from "../Pages/Login/registerForm";
 
 const navigation = [
@@ -18,7 +20,7 @@ function classNames(...classes) {
 const Navbar = ({ location, setLocation }) => {
   const [selected, setSelected] = useState("Health");
   const [open, setOpen] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
+  const [showRegister, setShowRegister] = useState(true);
   const navigate = useNavigate();
 
   return (
@@ -87,14 +89,19 @@ const Navbar = ({ location, setLocation }) => {
 
       {showRegister && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-2xl max-h-[90vh] shadow-lg relative overflow-y-auto">
-            <button
+          <div className="bg-white rounded-xl w-max max-h-[90vh] flex flex-col shadow-lg relative overflow-y-auto">
+            <div className="flex flex-row justify-end pr-2 pt-2">
+              <IconButton
+              aria-label="Close"
               onClick={() => setShowRegister(false)}
-              className="absolute top-2 right-4 text-gray-500 hover:text-black text-2xl"
             >
-              &times;
-            </button>
-            <RegisterForm />
+              <CloseIcon ></CloseIcon>
+            </IconButton>
+            </div>
+            <div className="px-4 pb-4">
+              <RegisterForm />
+            </div>
+            
           </div>
         </div>
       )}

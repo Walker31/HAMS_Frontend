@@ -58,7 +58,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="w-full flex flex-col items-center space-y-3">
+    <div className="w-full flex flex-col items-center space-y-2">
       {!userType && !isLogin && (
         <ModeSelector setUserType={setUserType} setIsLogin={setIsLogin} />
       )}

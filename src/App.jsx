@@ -10,7 +10,7 @@ import Home from "./Pages/Home";
 import Navbar from "./components/navbar";
 import DoctorsAvailable from "./components/DoctorsAvailable";
 import DoctorDescription from "./components/DoctorDescription";
-import RegisterForm from "./components/RegisterForm";
+import RegisterForm from "./Pages/Login/registerForm";
 import Confirmation from "./components/Confirmation";
 import { getCityFromCoords } from "./utils/locationUtils";
 
