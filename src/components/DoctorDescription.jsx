@@ -66,7 +66,7 @@ const DoctorDescription = () => {
               <p className="text-primary mb-1">0 Years Experience</p>
               <p className="mb-1"><strong>Specialization:</strong> Corporate Criminal</p>
               <p className="mb-1"><strong>Languages:</strong> English, Telugu, Hindi, Tamil, Malayalam, Kannada</p>
-              <p className="mb-1"><strong>Qualifications:</strong> B.tech-EEE, MBBS</p>
+              <p className="mb-1"><strong>Qualifications:</strong> B.tech-EEE, MBBS, MD-Backendology, MS-Githubology</p>
               <p className="mb-1"><strong>Hospital:</strong> Janga Hospitals, Avadi, Chennai</p>
               <p className="mb-1"><strong>Timings:</strong> MON-SAT (09:00 AM - 04:00 PM)</p>
             </div>

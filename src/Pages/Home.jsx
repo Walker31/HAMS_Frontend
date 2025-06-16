@@ -8,8 +8,9 @@ const Home = () => {
     <>
       <Header />
       <TopDoc />
-      <Programs />
       <ShoppingCart />
+      <Programs />
+      
     </>
   );
 };
