@@ -1,4 +1,3 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 
 const DoctorsAvailable = () => {
@@ -17,7 +16,7 @@ const DoctorsAvailable = () => {
             src="/src/assets/doctorpic2.jpg"
             alt="Doctor"
             className="rounded-circle"
-            style={{ width: "100px", height: "160px", objectFit: "cover" }}
+            style={{ width: "120px", height: "120px", objectFit: "cover" }}
           />
         </div>
 

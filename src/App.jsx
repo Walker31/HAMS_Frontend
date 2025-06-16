@@ -1,15 +1,11 @@
+import Home from "./Pages/Home";
+import Navbar from "./components/navbar";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Outlet,
 } from "react-router-dom";
-
-import Navbar from "./components/navbar";
-import Home from "./Pages/Home";
-import DoctorsAvailable from "./components/DoctorsAvailable";
-import DoctorDescription from "./components/DoctorDescription";
-
 const Layout = () => {
   return (
     <>
@@ -18,16 +14,14 @@ const Layout = () => {
     </>
   );
 };
-
 const App = () => {
   return (
     <Router>
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/doctors-available" element={<DoctorsAvailable />} />
-          <Route path="/doctor-description" element={<DoctorDescription />} />
-          {/* Add more routes here if needed */}
+          {/* Add more routes here, for example: */}
+          {/* <Route path="/about" element={<About />} /> */}
         </Route>
       </Routes>
     </Router>
