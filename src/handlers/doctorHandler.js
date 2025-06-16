@@ -11,3 +11,5 @@ export default async function doctorHandler(formData) {
     alert('Doctor registration failed.');
   }
 };
+
+export default handleDoctorRegistration;
