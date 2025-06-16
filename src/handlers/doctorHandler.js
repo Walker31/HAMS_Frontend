@@ -10,6 +10,4 @@ export default async function doctorHandler(formData) {
     console.error('Doctor registration error:', error);
     alert('Doctor registration failed.');
   }
-};
-
-export default handleDoctorRegistration;
+}
