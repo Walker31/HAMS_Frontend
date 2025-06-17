@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Routes,
-  Route,
-} from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 
 import Home from "./Pages/Home";
 import Navbar from "./components/navbar";
@@ -13,6 +10,13 @@ import Confirmation from "./components/Confirmation";
 import { getCityFromCoords } from "./utils/locationUtils";
 import DoctorDashboard from "./Pages/Dashboard/Dashboard";
 import "bootstrap/dist/css/bootstrap.min.css";
+
+const Layout = ({ location, setLocation }) => (
+  <>
+    <Navbar location={location} setLocation={setLocation} />
+    <Outlet />
+  </>
+);
 
 const App = () => {
   const [location, setLocation] = useState("Select Location");
@@ -59,6 +63,14 @@ const App = () => {
       <Route path="/login" element={<RegisterForm />} />
       <Route path="/confirmation" element={<Confirmation />} />
       <Route path="/doctordashboard" element={<DoctorDashboard />} />
+      <Route element={<Layout location={location} setLocation={setLocation} />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/doctors-available" element={<DoctorsAvailable />} />
+        <Route path="/doctor-description" element={<DoctorDescription />} />
+        <Route path="/login" element={<RegisterForm />} />
+        <Route path="/confirmation" element={<Confirmation />} />
+        <Route path="/DoctorDescription" element={<DoctorDescription/>} />
+      </Route>
     </Routes>
   );
 };
