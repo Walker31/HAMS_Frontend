@@ -97,7 +97,7 @@ const HeaderSection = () => {
               {step === 1 && (
                 <>
                   <h5>Select Specialization</h5>
-                  <div className="overflow-auto" style={{ overflowY: 'auto', overflowX: 'hidden', maxHeight: '350px' }}>
+                  <div className="overflow-auto" style={{ maxHeight: '350px' }}>
                     <div className="row row-cols-3 g-3">
                       {specializations.map((spec) => (
                         <div key={spec.name} className="col text-center">
@@ -130,7 +130,7 @@ const HeaderSection = () => {
                           style={{ cursor: 'pointer' }}
                           onClick={() => {
                             setShowPopup(false);
-                            navigate('/doctors-available');
+                            navigate('/doctors-available', { state: { hname: { hosp } } });
                           }}
                         >
                           🏥

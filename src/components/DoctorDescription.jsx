@@ -1,12 +1,15 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const DoctorDescription = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false); //just for checking purpose, replace with actual login state
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { doctor, hname } = location.state || {};
 
   const handleSlotClick = (slot) => setSelectedSlot(slot);
 
@@ -25,7 +28,7 @@ const DoctorDescription = () => {
       state: {
         date: selectedDate,
         slot: selectedSlot,
-        doctor: "Dr Jangaa Mani"
+        doctor: doctor.name
       }
     });
   };
@@ -37,19 +40,19 @@ const DoctorDescription = () => {
         <div className="col-md-8">
           <div className="d-flex align-items-start gap-4">
             <img
-              src="/src/assets/doctorpic2.jpg"
+              src={doctor?.photo || "/default-doctor.jpg"}
               alt="Doctor"
               className="rounded-full"
               style={{ width: "200px", height: "200px", objectFit: "cover" }}
             />
             <div>
-              <h3 className="fw-bold">Dr Jangaa Mani</h3>
-              <p className="text-primary mb-1">0 Years Experience</p>
-              <p className="mb-1"><strong>Specialization:</strong> Corporate Criminal</p>
-              <p className="mb-1"><strong>Languages:</strong> English, Telugu, Hindi, Tamil, Malayalam, Kannada</p>
-              <p className="mb-1"><strong>Qualifications:</strong> B.tech-EEE, MBBS, MD-Backendology, MS-Githubology</p>
-              <p className="mb-1"><strong>Hospital:</strong> Janga Hospitals, Avadi, Chennai</p>
-              <p className="mb-1"><strong>Timings:</strong> MON-SAT (09:00 AM - 04:00 PM)</p>
+              <h3 className="fw-bold">{doctor?.name || "Doctor Name"}</h3>
+              <p className="text-primary mb-1">{doctor?.experience || "0"} Years Experience</p>
+              <p className="mb-1"><strong>Specialization:</strong> {doctor?.specialization || "General"}</p>
+              <p className="mb-1"><strong>Languages:</strong> {doctor?.languages?.join(", ") || "English"}</p>
+              <p className="mb-1"><strong>Qualifications:</strong> {doctor?.qualifications?.join(", ") || "MBBS"}</p>
+              <p className="mb-1">Hospital Name : {hname?.hosp || "Not Provided"}</p>
+              <p className="mb-1"><strong>Timings:</strong> {doctor?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}</p>
             </div>
           </div>
         </div>
@@ -86,7 +89,7 @@ const DoctorDescription = () => {
 
       <div className="mt-5">
         <h4 className="fw-bold">Overview</h4>
-        <p>Solla onnum illa...</p>
+        <p>{doctor?.overview || "No overview available."}</p>
       </div>
     </div>
   );

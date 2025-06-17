@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
 const DoctorsAvailable = () => {
   const [doctors, setDoctors] = useState([]);
   const navigate = useNavigate();
+
+  const location = useLocation();
+  const { hname } = location.state || {}; // hname = { hosp: "some hospital name" }
 
   useEffect(() => {
     const latitude = localStorage.getItem("latitude");
@@ -35,7 +38,7 @@ const DoctorsAvailable = () => {
                 <p className="card-text"><strong>Specialization:</strong> {doc.specialization || "General"}</p>
                 <button
                   className="btn btn-primary"
-                  onClick={() => navigate(`/doctor/${doc._id}`, { state: { doctor: doc } })}
+                  onClick={() => navigate(`/DoctorDescription`, { state: { doctor: doc, hname } })}
                 >
                   Book Appointment
                 </button>
