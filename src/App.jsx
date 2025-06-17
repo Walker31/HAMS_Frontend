@@ -6,7 +6,7 @@ import Navbar from "./components/navbar";
 import DoctorsAvailable from "./components/DoctorsAvailable";
 import DoctorDescription from "./components/DoctorDescription";
 import RegisterForm from "./Pages/Login/registerForm";
-import Confirmation from "./components/Confirmation";
+import Confirmation from "./components/DoctorDescription";
 import { getCityFromCoords } from "./utils/locationUtils";
 
 const Layout = ({ location, setLocation }) => (

@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from 'axios';
 
 const DoctorDescription = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isOn, setIsOn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true); 
+  const [isOn, setIsOn] = useState(false); 
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -14,7 +15,7 @@ const DoctorDescription = () => {
 
   const handleSlotClick = (slot) => setSelectedSlot(slot);
 
-  const handleBookNow = () => {
+  const handleBookNow = async () => {
     if (!selectedDate || !selectedSlot) {
       alert("Please select a date and time slot before booking.");
       return;
@@ -25,13 +26,37 @@ const DoctorDescription = () => {
       return;
     }
 
-    navigate("/confirmation", {
-      state: {
+    try {
+
+      const patientId = "HAMS_ADMIN";
+      const clinicId = hname?.hosp || "Unknown Clinic";
+      const doctorId = doctor?._id || "dummy-doctor-id"; 
+
+      const payload = {
         date: selectedDate,
-        slot: selectedSlot,
-        doctor: doctor.name,
-      },
-    });
+        patientId,
+        doctorId,
+        payStatus: isOn ? 'Paid' : 'Unpaid',
+        clinicId,
+        slotNumber: selectedSlot
+      };
+
+      const response = await axios.post("http://localhost:3000/appointments/book", payload); 
+
+      if (response.status === 201) {
+        alert("Appointment booked successfully!");
+        navigate("/confirmation", {
+          state: {
+            date: selectedDate,
+            slot: selectedSlot,
+            doctor: doctor.name,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Booking error:", error.response?.data || error.message);
+      alert("Error booking appointment: " + (error.response?.data?.message || error.message));
+    }
   };
 
   return (
@@ -52,23 +77,19 @@ const DoctorDescription = () => {
                 {doctor?.experience || "0"} Years Experience
               </p>
               <p className="mb-1 text-white">
-                <strong>Specialization:</strong>{" "}
-                {doctor?.specialization || "General"}
+                <strong>Specialization:</strong> {doctor?.specialization || "General"}
               </p>
               <p className="mb-1 text-white">
-                <strong>Languages:</strong>{" "}
-                {doctor?.languages?.join(", ") || "English"}
+                <strong>Languages:</strong> {doctor?.languages?.join(", ") || "English"}
               </p>
               <p className="mb-1 text-white">
-                <strong>Qualifications:</strong>{" "}
-                {doctor?.qualifications?.join(", ") || "MBBS"}
+                <strong>Qualifications:</strong> {doctor?.qualifications?.join(", ") || "MBBS"}
               </p>
               <p className="mb-1 text-white">
-                Hospital Name : {hname?.hosp || "Not Provided"}
+                Hospital Name: {hname?.hosp || "Not Provided"}
               </p>
               <p className="mb-1 text-white">
-                <strong>Timings:</strong>{" "}
-                {doctor?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}
+                <strong>Timings:</strong> {doctor?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}
               </p>
             </div>
           </div>
@@ -86,42 +107,31 @@ const DoctorDescription = () => {
 
             <h6 className="fw-bold mb-2">Available Slots:</h6>
             <div className="d-flex flex-wrap gap-2 mb-2">
-              {[
-                "9:00 AM",
-                "10:00 AM",
-                "11:00 AM",
-                "12:00 PM",
-                "1:00 PM",
-                "2:00 PM",
-                "3:00 PM",
-              ].map((slot) => (
+              {["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM"].map((slot) => (
                 <button
                   key={slot}
-                  className={`btn btn-sm ${
-                    selectedSlot === slot
-                      ? "btn-warning"
-                      : "btn-outline-warning"
-                  }`}
+                  className={`btn btn-sm ${selectedSlot === slot ? "btn-warning" : "btn-outline-warning"}`}
                   onClick={() => handleSlotClick(slot)}
                 >
                   {slot}
                 </button>
               ))}
             </div>
-            <div className = "d-flex items-center mt-2.5 mb-2.5 ">
-              <p className = "m-0 pr-5">Payment done :</p>
-            <div
-              onClick={() => setIsOn(!isOn)}
-              className={`w-10 h-5 flex items-center bg-gray-300 rounded-full p-1 cursor-pointer ${
-                isOn ? "bg-green-400" : "bg-gray-300"
-              }`}
-            >
+
+            <div className="d-flex items-center mt-2.5 mb-2.5">
+              <p className="m-0 pr-5">Payment done :</p>
               <div
-                className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
-                  isOn ? "translate-x-6" : ""
+                onClick={() => setIsOn(!isOn)}
+                className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer ${
+                  isOn ? "bg-green-400" : "bg-gray-300"
                 }`}
-              ></div>
-            </div>
+              >
+                <div
+                  className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
+                    isOn ? "translate-x-6" : ""
+                  }`}
+                ></div>
+              </div>
             </div>
 
             <button
