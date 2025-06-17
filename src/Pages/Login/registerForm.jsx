@@ -36,6 +36,8 @@ export default function RegisterForm() {
           setUserType("Patient");
         } else if (role === "Doctor") {
           setUserType("Doctor");
+        } else if (role === "Hospital") {
+          setUserType("Hospital");
         }
       }
     } catch (err) {
@@ -62,15 +64,15 @@ export default function RegisterForm() {
         await doctorHandler(formattedData);
 
       } else if (userType === "Hospital") {
+        const lat = localStorage.getItem('latitude');
+        const lon = localStorage.getItem('longitude');
         const formattedData = {
           ...formData,
           location: {
-            latitude: formData.latitude,
-            longitude: formData.longitude,
+            latitude: lat,
+            longitude: lon,
           },
         };
-        delete formattedData.latitude;
-        delete formattedData.longitude;
         console.log('handle register');
         console.log(formattedData);
         await hospitalHandler(formattedData);

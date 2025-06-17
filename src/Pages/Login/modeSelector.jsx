@@ -5,9 +5,8 @@ import Typography from "@mui/material/Typography";
 import Checkbox from "@mui/material/Checkbox";
 import FormControlLabel from "@mui/material/FormControlLabel";
 
-
-export default function ModeSelector({ handleSubmit}) {
-  const [mode, setMode] = useState("Login"); 
+export default function ModeSelector({ handleSubmit }) {
+  const [mode, setMode] = useState("Login");
   const [signUpRole, setSignUpRole] = useState("");
 
   const [formData, setFormData] = useState({
@@ -24,11 +23,9 @@ export default function ModeSelector({ handleSubmit}) {
     }));
   };
 
-
   return (
     <div className="flex items-center justify-center bg-gradient-to-br">
       <div className="w-full max-w-[400px] min-w-[350px] bg-white p-10 rounded-3xl space-y-6">
-
         <Typography variant="h5" className="text-center font-bold mb-2">
           {mode === "Login" ? "Login" : "Sign Up"}
         </Typography>
@@ -61,7 +58,10 @@ export default function ModeSelector({ handleSubmit}) {
 
         {/* Login Form */}
         {mode === "Login" && (
-          <form className="space-y-4" onSubmit={(e) => handleSubmit(e, formData, mode, signUpRole)}>
+          <form
+            className="space-y-4"
+            onSubmit={(e) => handleSubmit(e, formData, mode, signUpRole)}
+          >
             <TextField
               label="Email"
               type="email"
@@ -129,11 +129,10 @@ export default function ModeSelector({ handleSubmit}) {
                 Doctor
               </button>
               <button
-                className="flex-1 py-2 rounded-md font-medium bg-red-500 text-white hover:bg-red-600 transition-all"
-              >
-                Hospital 
+               onClick={() => handleSubmit(null, null, mode, "Hospital")}
+               className="flex-1 py-2 rounded-md font-medium bg-red-500 text-white hover:bg-red-600 transition-all">
+                Hospital
               </button>
-              
             </div>
           </div>
         )}

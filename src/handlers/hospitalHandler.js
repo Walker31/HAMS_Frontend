@@ -6,12 +6,14 @@ export default async function hospitalHandler(formData) {
     phone: formData.phone,
     email: formData.email,
     password: formData.password,
+    RegId:formData.RegId,
     location: {
-      coordinates: [formData.longitude, formData.latitude], // [longitude, latitude]
+      coordinates: [formData.location.latitude, formData.location.longitude], // [longitude, latitude]
     },
   };
-
+  console.log(formatData);
   try {
+
     const response = await createHospital(formatData);
     console.log("Hospital registered successfully:", response);
     alert("Hospital registration successful!");
