@@ -1,37 +1,35 @@
 import { useRef } from "react";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-
-const shopping = () => {
-
+const Shopping = () => {
   const shopCart = [
-  {
-    title: "Vitamins",
-    image: require(""),
-  },
-  {
-    title: "Nutritional Drink",
-    image: "https://via.placeholder.com/150?text=Nutritional+Drink",
-  },
-  {
-    title: "Skin Care",
-    image: "https://via.placeholder.com/150?text=Skin+Care",
-  },
-  {
-    title: "Wellness",
-    image: "https://via.placeholder.com/150?text=Wellness",
-  },
-  {
-    title: "Sexual Wellness",
-    image: "https://via.placeholder.com/150?text=Sexual+Wellness",
-  },
-  {
-    title: "Homeopathy",
-    image: "https://via.placeholder.com/150?text=Homeopathy",
-  },
-];
+    {
+      title: "Vitamins",
+      // image: vitaminsImg, // Uncomment and use if you have a local image
+      image: "https://via.placeholder.com/150?text=Vitamins", // Use a placeholder for now
+    },
+    {
+      title: "Nutritional Drink",
+      image: "https://via.placeholder.com/150?text=Nutritional+Drink",
+    },
+    {
+      title: "Skin Care",
+      image: "https://via.placeholder.com/150?text=Skin+Care",
+    },
+    {
+      title: "Wellness",
+      image: "https://via.placeholder.com/150?text=Wellness",
+    },
+    {
+      title: "Sexual Wellness",
+      image: "https://via.placeholder.com/150?text=Sexual+Wellness",
+    },
+    {
+      title: "Homeopathy",
+      image: "https://via.placeholder.com/150?text=Homeopathy",
+    },
+  ];
 
-  
   const carouselRef = useRef(null);
 
   const handleNext = () => {
@@ -56,7 +54,7 @@ const shopping = () => {
       <div className="relative">
         <div
           ref={carouselRef}
-          className="flex space-x-4 overflow-x-auto pb-2 no-scrollbar"
+          className="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide"
         >
           {shopCart.map((item, idx) => (
             <div
@@ -76,6 +74,7 @@ const shopping = () => {
         <button
           onClick={handleNext}
           className="absolute right-0 top-1/2 -translate-y-1/2 text-[#10217D] font-bold bg-white rounded-full p-3 shadow"
+          aria-label="Scroll carousel right"
         >
           <ArrowForwardIosIcon />
         </button>
@@ -93,4 +92,4 @@ const shopping = () => {
   );
 };
 
-export default shopping;
+export default Shopping;
