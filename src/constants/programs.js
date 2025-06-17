@@ -1,5 +1,3 @@
-
-
 const healthCarePrograms = [
     {
         icon: 'vite.svg',

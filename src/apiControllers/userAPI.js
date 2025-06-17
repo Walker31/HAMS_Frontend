@@ -1,11 +1,10 @@
 // userAPI.js
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000';
-
 export const createDoctor = async (doctorData) => {
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   try {
-    const response = await axios.post(`${API_URL}/doctors/signup`, doctorData);
+    const response = await axios.post(`${base_url}/doctors/signup`, doctorData);
     return response.data;
   } catch (error) {
     console.error('Doctor registration failed:', error.response?.data || error.message);

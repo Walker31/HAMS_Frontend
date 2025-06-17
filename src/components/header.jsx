@@ -130,7 +130,7 @@ const HeaderSection = () => {
                           style={{ cursor: 'pointer' }}
                           onClick={() => {
                             setShowPopup(false);
-                            navigate('/doctors-available', { state: { hname: { hosp } } });
+                            navigate(`/${hosp.split(' ')[0]}/doctors-available`, { state: { hname: hosp } });
                           }}
                         >
                           🏥

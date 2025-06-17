@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import axios from 'axios';
 
 const DoctorDescription = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true); 
+  const [isOn, setIsOn] = useState(false); 
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -13,7 +15,7 @@ const DoctorDescription = () => {
 
   const handleSlotClick = (slot) => setSelectedSlot(slot);
 
-  const handleBookNow = () => {
+  const handleBookNow = async () => {
     if (!selectedDate || !selectedSlot) {
       alert("Please select a date and time slot before booking.");
       return;
@@ -24,19 +26,43 @@ const DoctorDescription = () => {
       return;
     }
 
-    navigate("/confirmation", {
-      state: {
+    try {
+
+      const patientId = "HAMS_ADMIN";
+      const clinicId = hname?.hosp || "Unknown Clinic";
+      const doctorId = doctor?._id || "dummy-doctor-id"; 
+
+      const payload = {
         date: selectedDate,
-        slot: selectedSlot,
-        doctor: doctor.name
+        patientId,
+        doctorId,
+        payStatus: isOn ? 'Paid' : 'Unpaid',
+        clinicId,
+        slotNumber: selectedSlot
+      };
+
+      const response = await axios.post("http://localhost:3000/appointments/book", payload); 
+
+      if (response.status === 201) {
+        alert("Appointment booked successfully!");
+        navigate("/doctordashboard", {
+          state: {
+            date: selectedDate,
+            slot: selectedSlot,
+            doctor: doctor.name,
+          },
+        });
       }
-    });
+    } catch (error) {
+      console.error("Booking error:", error.response?.data || error.message);
+      alert("Error booking appointment: " + (error.response?.data?.message || error.message));
+    }
   };
 
   return (
     <div className="container my-5">
       <h2 className="text-center mb-4">Doctor Description</h2>
-      <div className="row">
+      <div className="row p-5 bg-[#10217D] rounded-3xl">
         <div className="col-md-8">
           <div className="d-flex align-items-start gap-4">
             <img
@@ -46,13 +72,25 @@ const DoctorDescription = () => {
               style={{ width: "200px", height: "200px", objectFit: "cover" }}
             />
             <div>
-              <h3 className="fw-bold">{doctor?.name || "Doctor Name"}</h3>
-              <p className="text-primary mb-1">{doctor?.experience || "0"} Years Experience</p>
-              <p className="mb-1"><strong>Specialization:</strong> {doctor?.specialization || "General"}</p>
-              <p className="mb-1"><strong>Languages:</strong> {doctor?.languages?.join(", ") || "English"}</p>
-              <p className="mb-1"><strong>Qualifications:</strong> {doctor?.qualifications?.join(", ") || "MBBS"}</p>
-              <p className="mb-1">Hospital Name : {hname?.hosp || "Not Provided"}</p>
-              <p className="mb-1"><strong>Timings:</strong> {doctor?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}</p>
+              <h3 className="fw-bold text-white">{doctor?.name || "Doctor Name"}</h3>
+              <p className="text-primary mb-1 text-white">
+                {doctor?.experience || "0"} Years Experience
+              </p>
+              <p className="mb-1 text-white">
+                <strong>Specialization:</strong> {doctor?.specialization || "General"}
+              </p>
+              <p className="mb-1 text-white">
+                <strong>Languages:</strong> {doctor?.languages?.join(", ") || "English"}
+              </p>
+              <p className="mb-1 text-white">
+                <strong>Qualifications:</strong> {doctor?.qualifications?.join(", ") || "MBBS"}
+              </p>
+              <p className="mb-1 text-white">
+                Hospital Name: {hname?.hosp || "Not Provided"}
+              </p>
+              <p className="mb-1 text-white">
+                <strong>Timings:</strong> {doctor?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}
+              </p>
             </div>
           </div>
         </div>
@@ -80,7 +118,26 @@ const DoctorDescription = () => {
               ))}
             </div>
 
-            <button className="btn btn-outline-primary w-100" onClick={handleBookNow}>
+            <div className="d-flex items-center mt-2.5 mb-2.5">
+              <p className="m-0 pr-5">Payment done :</p>
+              <div
+                onClick={() => setIsOn(!isOn)}
+                className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer ${
+                  isOn ? "bg-green-400" : "bg-gray-300"
+                }`}
+              >
+                <div
+                  className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
+                    isOn ? "translate-x-6" : ""
+                  }`}
+                ></div>
+              </div>
+            </div>
+
+            <button
+              className="btn btn-outline-primary w-100"
+              onClick={handleBookNow}
+            >
               BOOK APPOINTMENT
             </button>
           </div>
