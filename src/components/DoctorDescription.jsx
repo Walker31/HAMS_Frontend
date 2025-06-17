@@ -45,7 +45,7 @@ const DoctorDescription = () => {
 
       if (response.status === 201) {
         alert("Appointment booked successfully!");
-        navigate("/confirmation", {
+        navigate("/doctordashboard", {
           state: {
             date: selectedDate,
             slot: selectedSlot,
