@@ -32,3 +32,24 @@ export const createPatient = async (patientData) => {
     throw error;
   }
 };
+
+export const createHospital = async (hospitalData) => {
+  try {
+    console.log(hospitalData);
+    const response = await axios.post(`${API_URL}/hospitals/signup`, hospitalData);
+    return response.data;
+  } catch (error) {
+    console.error('Hospital registration failed:', error.response?.data || error.message);
+    throw error;
+  }
+};
+
+export const loginHospital = async (hospitalData) => {
+  try {
+    const response = await axios.post(`${API_URL}/hospitals/login`, hospitalData);
+    return response.data;
+  } catch (error) {
+    console.error('Login failed:', error.response?.data || error.message);
+    throw error;
+  }
+};

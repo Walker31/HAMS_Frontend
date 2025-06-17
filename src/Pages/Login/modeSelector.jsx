@@ -29,6 +29,15 @@ export default function ModeSelector({ setUserType, setIsLogin }) {
         >
           Doctor
         </Button>
+        <Button
+          onClick={() => setUserType("Hospital")}
+          variant="contained"
+          size="large"
+          className="!bg-green-600 !text-white rounded-lg shadow-md hover:!bg-green-700 transition-all duration-200"
+          fullWidth
+        >
+          Hospital
+        </Button>
       </div>
       <Button
         variant="text"

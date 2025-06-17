@@ -2,10 +2,12 @@ import { useState } from "react";
 import LoginForm from "./loginForm.jsx";
 import DoctorRegisterForm from "./doctorRegistration.jsx";
 import PatientRegisterForm from "./patientRegistration.jsx";
+import HospitalRegisterForm from "./hospitalRegistration.jsx";
 import ModeSelector from "./modeSelector.jsx";
 import loginHandler from "../../handlers/loginHandler.js";
 import patientHandler from "../../handlers/patientHandler";
 import doctorHandler from "../../handlers/doctorHandler";
+import hospitalHandler from "../../handlers/hospitalHandler.js"
 
 export default function RegisterForm() {
   const [userType, setUserType] = useState(null);
@@ -49,6 +51,20 @@ export default function RegisterForm() {
         delete formattedData.latitude;
         delete formattedData.longitude;
         await doctorHandler(formattedData);
+
+      } else if (userType === "Hospital") {
+        const formattedData = {
+          ...formData,
+          location: {
+            latitude: formData.latitude,
+            longitude: formData.longitude,
+          },
+        };
+        delete formattedData.latitude;
+        delete formattedData.longitude;
+        console.log('handle register');
+        console.log(formattedData);
+        await hospitalHandler(formattedData);
       }
       alert("Registration successful!");
     } catch (err) {
@@ -80,6 +96,14 @@ export default function RegisterForm() {
       )}
       {userType === "Customer" && !isLogin && (
         <PatientRegisterForm
+          formData={formData}
+          handleChange={handleChange}
+          handleRegisterSubmit={handleRegisterSubmit}
+          handleBack={handleBack}
+        />
+      )}
+      {userType === "Hospital" && !isLogin && (
+        <HospitalRegisterForm
           formData={formData}
           handleChange={handleChange}
           handleRegisterSubmit={handleRegisterSubmit}
