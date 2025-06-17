@@ -56,22 +56,15 @@ const App = () => {
 
 
   return (
-    <Router future={{
-  v7_startTransition: true,
-  v7_relativeSplatPath: true
-}}>
-      <Routes>
-        <Route
-          element={<Layout location={location} setLocation={setLocation} />}
-        >
-          <Route path="/" element={<Home />} />
-          <Route path="/doctors-available" element={<DoctorsAvailable />} />
-          <Route path="/doctor-description" element={<DoctorDescription />} />
-          <Route path="/login" element={<RegisterForm />} />
-          <Route path="/confirmation" element={<Confirmation />} />
-        </Route>
-      </Routes>
-    </Router>
+    <Routes>
+      <Route element={<Layout location={location} setLocation={setLocation} />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/doctors-available" element={<DoctorsAvailable />} />
+        <Route path="/doctor-description" element={<DoctorDescription />} />
+        <Route path="/login" element={<RegisterForm />} />
+        <Route path="/confirmation" element={<Confirmation />} />
+      </Route>
+    </Routes>
   );
 };
 
