@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import sampleFeedback from "../constants/feedback";
 
-
-
 const Feedback = () => {
   const feedbacks = sampleFeedback;
   const [current, setCurrent] = useState(0);
@@ -28,26 +26,25 @@ const Feedback = () => {
             <img
               src={photo}
               alt={name}
-              className="photo object-cover m-2 w-full h-full rounded-lg"
+              className="object-cover m-2 w-full h-full rounded-lg"
             />
           </div>
 
-          <div className="s:flex-1 p-8 rounded-lg  mt-20 mr-30  ml-30 flex items-center justify-center" >
+          <div className="s:flex-1 p-8 rounded-lg mt-20 mr-30 ml-30 flex items-center justify-center" >
             <p className="text-xl text-gray-700 leading-relaxed ">
                "{review} " 
             </p>
           </div>
         </div>
 
-        
         <div className="flex items-center justify-between px-6 pb-6 ">
           <div>
             <p className="ml-150 font-semibold text-gray-900 text-lg">{name}</p>
             <p className="ml-150 text-sm text-gray-500">HAMSA Customer</p>
           </div>
-          <div className="flex space-x-4 text-gray-600">
+          <div className="flex flex-row gap-8 text-gray-600">
             <button onClick={prevSlide} aria-label="Previous slide" className="hover:text-teal-600 transition-colors">
-              <FaArrowLeft size={20} />
+              <FaArrowLeft  size={20} />
             </button>
             <button onClick={nextSlide} aria-label="Next slide" className="hover:text-teal-600 transition-colors">
               <FaArrowRight size={20} />
