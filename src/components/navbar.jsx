@@ -88,9 +88,9 @@ const Navbar = ({ location, setLocation }) => {
       />
 
       {showRegister && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="bg-white rounded-xl w-max max-h-[90vh] flex flex-col shadow-lg relative overflow-y-auto">
-            <div className="flex flex-row justify-end pr-2 pt-2">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl w-max max-h-[90vh] flex flex-col shadow-lg overflow-hidden relative overflow-y-auto">
+            <div className="flex justify-end p-3">
               <IconButton
               aria-label="Close"
               onClick={() => setShowRegister(false)}
@@ -98,7 +98,7 @@ const Navbar = ({ location, setLocation }) => {
               <CloseIcon ></CloseIcon>
             </IconButton>
             </div>
-            <div className="px-4 pb-4">
+            <div className="flex-1 overflow-y-auto px-6 pb-6 scrollbar-thin">
               <RegisterForm />
             </div>
             

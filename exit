@@ -1,0 +1,165 @@
+[33mcommit 4ebab58ff6a5e0122f4481b918acd151031cfc90[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Merge: b4868af 3c548c7
+Author: Walker <walker310407@gmail.com>
+Date:   Wed Jun 18 04:32:19 2025 +0530
+
+    Merge branch 'main' of https://github.com/Walker31/HAMS_Frontend
+
+[33mcommit 3c548c789a8aa90154b131bf9bcc67fe8832978c[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: SHRUDEEP01 <shrudeepsenthil3000@gmail.com>
+Date:   Tue Jun 17 23:01:20 2025 +0530
+
+    modified hspital signup
+
+[33mcommit af9633aac8bd01a3f7d33358cab387d248bd577a[m
+Merge: 9a5e42b d84d8ab
+Author: SHRUDEEP01 <shrudeepsenthil3000@gmail.com>
+Date:   Tue Jun 17 22:26:05 2025 +0530
+
+    vvd
+
+[33mcommit 9a5e42b4203f7b51ea935113407a2a2a54601e5d[m
+Author: SHRUDEEP01 <shrudeepsenthil3000@gmail.com>
+Date:   Tue Jun 17 22:23:31 2025 +0530
+
+    added hospital login/signup
+
+[33mcommit d84d8ab43b202f19e3922671f1a7e9441384246c[m
+Author: Lishanth-ai <lishanthsoundararajan@gmail.com>
+Date:   Tue Jun 17 21:51:45 2025 +0530
+
+     apoointment histkry
+
+[33mcommit 3da4f6032f5bbc5c5c7db91762f3fa93d3163175[m
+Merge: 334a3c3 775f0b2
+Author: Lishanth-ai <lishanthsoundararajan@gmail.com>
+Date:   Tue Jun 17 20:16:21 2025 +0530
+
+     commit
+
+[33mcommit 334a3c33edc7e20a56fd065a9b40b177b888b386[m
+Author: Lishanth-ai <lishanthsoundararajan@gmail.com>
+Date:   Tue Jun 17 20:13:41 2025 +0530
+
+    Appointment bookling connection done
+
+[33mcommit b4868af26fa1e72dc7d1e8a661ede5fa1661415e[m
+Merge: df84f32 775f0b2
+Author: Walker <walker310407@gmail.com>
+Date:   Tue Jun 17 19:33:11 2025 +0530
+
+    Merge branch 'main' of https://github.com/Walker31/HAMS_Frontend
+
+[33mcommit 775f0b2f31e44a3257b6e23efdd6c95b079dbd9f[m
+Merge: 555a329 d6fa39a
+Author: Mohammed Sajid <mohammedsajid839@gmail.com>
+Date:   Tue Jun 17 19:30:54 2025 +0530
+
+    Merge branch 'main' of https://github.com/Walker31/HAMS_Frontend
+
+[33mcommit 555a3299f6141ac536e682c62151a0d4750e2fe9[m
+Merge: 17019d9 644ca0f
+Author: Mohammed Sajid <mohammedsajid839@gmail.com>
+Date:   Tue Jun 17 19:30:44 2025 +0530
+
+    updated doctordashboard
+
+[33mcommit d6fa39a4face051ceaccb1d484258f4dffaed017[m
+Author: jayashree267 <jayashree267geo@gmail.com>
+Date:   Tue Jun 17 19:30:05 2025 +0530
+
+    my updated pages
+
+[33mcommit df84f32839d0bbc88d4e58fac631893882110077[m
+Author: Walker <walker310407@gmail.com>
+Date:   Tue Jun 17 18:28:39 2025 +0530
+
+    Stop tracking .env file
+
+[33mcommit 6fe728e8ae2e781b0eef342fc9e68746ecb6a580[m
+Merge: 2598620 f950dcf
+Author: Lishanth-ai <lishanthsoundararajan@gmail.com>
+Date:   Tue Jun 17 18:21:33 2025 +0530
+
+    Merge branch 'main' of https://github.com/Walker31/HAMS_Frontend
+
+[33mcommit 25986206c4d11cc8692cfc94ba44edd65896bb89[m
+Author: Lishanth-ai <lishanthsoundararajan@gmail.com>
+Date:   Tue Jun 17 18:21:26 2025 +0530
+
+    Payment toggle and Route naming
+
+[33mcommit f950dcff922980f004e19402f6343517f307aa8e[m
+Author: Walker <walker310407@gmail.com>
+Date:   Tue Jun 17 17:34:50 2025 +0530
+
+    added env file
+
+[33mcommit 17019d9ce78d069ae1ac49da3ec117b743b55a36[m
+Author: Mohammed Sajid <mohammedsajid839@gmail.com>
+Date:   Tue Jun 17 17:08:13 2025 +0530
+
+    updated
+
+[33mcommit 644ca0f02d34e52011b4b715f1fbce38b033b42e[m
+Author: Walker <walker310407@gmail.com>
+Date:   Tue Jun 17 17:01:13 2025 +0530
+
+    csaa
+
+[33mcommit c35c1afe34f8a3430bd7e3c3241fa389dccea913[m
+Merge: a40e6e6 cdca045
+Author: Lishanth-ai <lishanthsoundararajan@gmail.com>
+Date:   Tue Jun 17 16:11:25 2025 +0530
+
+    Merge branch 'main' of https://github.com/Walker31/HAMS_Frontend
+
+[33mcommit a40e6e62cb4fa9d04b4d84d5702a987d093a589d[m
+Author: Lishanth-ai <lishanthsoundararajan@gmail.com>
+Date:   Tue Jun 17 16:11:20 2025 +0530
+
+    changed available and description
+
+[33mcommit cdca04595ab841f7d7f3cd03076d46a03ff54b7a[m
+Author: Walker <walker310407@gmail.com>
+Date:   Tue Jun 17 16:09:46 2025 +0530
+
+    added footer
+
+[33mcommit 4a085156c0418321d21ddcc13e8e1fedf4e51902[m[33m ([m[1;31morigin/production[m[33m)[m
+Author: Aditya <walker310407@gmail.com>
+Date:   Tue Jun 17 12:19:08 2025 +0530
+
+    added top doctor
+
+[33mcommit 1689fc187abe130a8df1d72c028d725681844bdb[m
+Merge: 4576725 914c5b8
+Author: Lishanth-ai <lishanthsoundararajan@gmail.com>
+Date:   Tue Jun 17 11:29:52 2025 +0530
+
+    Merge branch 'main' of https://github.com/Walker31/HAMS_Frontend
+
+[33mcommit 4576725885adb420d68626ff47cea70c08edf73e[m
+Author: Lishanth-ai <lishanthsoundararajan@gmail.com>
+Date:   Tue Jun 17 11:29:48 2025 +0530
+
+    hello
+
+[33mcommit 914c5b8b845d045b7d82831399a0dab3ed6f120f[m
+Author: Aditya <walker310407@gmail.com>
+Date:   Tue Jun 17 11:29:36 2025 +0530
+
+    csd
+
+[33mcommit 57a11b8e829cf6cf17b47020bba727454be4897a[m
+Merge: 4d2f0d5 ad0c645
+Author: Aditya <walker310407@gmail.com>
+Date:   Tue Jun 17 11:26:54 2025 +0530
+
+    Merge branch 'main' of https://github.com/Walker31/HAMS_Frontend
+
+[33mcommit 4d2f0d5e1492cca2b471f42e16a01c7b27fbca2d[m
+Author: Aditya <walker310407@gmail.com>
+Date:   Tue Jun 17 11:26:47 2025 +0530
+
+    fixed

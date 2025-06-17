@@ -1,6 +1,11 @@
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import IconButton from '@mui/material/IconButton';
+
 export default function HospitalRegisterForm({ formData, handleChange, handleRegisterSubmit, handleBack }) {
   return (
     <div className="w-full max-w-xl space-y-6">
+      <IconButton onClick={handleBack}><ArrowBackIcon/></IconButton>
+      
       <h2 className="text-2xl font-bold text-center">Hospital Registration</h2>
       <form className="space-y-4" onSubmit={handleRegisterSubmit}>
         <input
@@ -35,9 +40,6 @@ export default function HospitalRegisterForm({ formData, handleChange, handleReg
           Register
         </button>
       </form>
-      <button onClick={handleBack} className="text-sm text-gray-600 underline hover:text-black mt-2">
-        Back
-      </button>
     </div>
   );
 }

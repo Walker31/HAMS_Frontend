@@ -1,42 +1,38 @@
-export default function CommonFields({ handleChange }) {
+import TextField from "@mui/material/TextField";
+
+export default function CommonFields({ formData = {}, handleChange }) {
   return (
     <>
-      <input
-        type="text"
+      <TextField
+        label="Full Name"
         name="fullName"
-        placeholder="Full Name"
+        value={formData.fullName || ""}
         onChange={handleChange}
-        className="w-full p-3 border rounded-md"
+        fullWidth
         required
+        margin="normal"
       />
-      <input
-        type="email"
+      <TextField
+        label="Email"
         name="email"
-        placeholder="Email"
+        type="email"
+        value={formData.email || ""}
         onChange={handleChange}
-        className="w-full p-3 border rounded-md"
+        fullWidth
         required
+        margin="normal"
       />
-      <input
-        type="tel"
+      <TextField
+        label="Phone Number"
         name="phone"
-        placeholder="Phone Number"
-        pattern="[0-9]{10}"
+        type="tel"
+        value={formData.phone || ""}
         onChange={handleChange}
-        className="w-full p-3 border rounded-md"
+        inputProps={{ pattern: "[0-9]{10}" }}
+        fullWidth
         required
+        margin="normal"
       />
-      <select
-        name="gender"
-        onChange={handleChange}
-        className="w-full p-3 border rounded-md"
-        required
-      >
-        <option value="">Select Gender</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-        <option value="Other">Other</option>
-      </select>
     </>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -62,7 +62,8 @@ export default function ModeSelector({ handleSubmit }) {
             className="space-y-4"
             onSubmit={(e) => handleSubmit(e, formData, mode, signUpRole)}
           >
-            <TextField
+            <div className="flex flex-col gap-4">
+              <TextField
               label="Email"
               type="email"
               name="email"
@@ -80,12 +81,15 @@ export default function ModeSelector({ handleSubmit }) {
               fullWidth
               required
             />
+            </div>
+            
 
             <div className="flex justify-between items-center">
               <FormControlLabel
                 control={
                   <Checkbox
                     name="remember"
+                    className="text-sm"
                     checked={formData.remember}
                     onChange={handleChange}
                     color="primary"
@@ -93,7 +97,7 @@ export default function ModeSelector({ handleSubmit }) {
                 }
                 label="Remember me"
               />
-              <Button variant="text" className="text-blue-600 normal-case">
+              <Button variant="text" size="small" className="text-blue-600 normal-case">
                 Forgot Password?
               </Button>
             </div>
@@ -111,31 +115,41 @@ export default function ModeSelector({ handleSubmit }) {
 
         {/* Sign Up Mode — Only role selection */}
         {mode === "SignUp" && (
-          <div className="space-y-4">
-            <Typography variant="subtitle1" className="text-center font-medium">
-              Register As
-            </Typography>
-            <div className="flex flex-col bg-gray-100 rounded-md p-1">
-              <button
-                onClick={() => handleSubmit(null, null, mode, "Patient")}
-                className="flex-1 py-2 rounded-md font-medium bg-blue-500 text-white hover:bg-blue-600 transition-all"
-              >
-                Patient
-              </button>
-              <button
-                onClick={() => handleSubmit(null, null, mode, "Doctor")}
-                className="flex-1 py-2 rounded-md font-medium bg-green-500 text-white hover:bg-green-600 transition-all"
-              >
-                Doctor
-              </button>
-              <button
-               onClick={() => handleSubmit(null, null, mode, "Hospital")}
-               className="flex-1 py-2 rounded-md font-medium bg-red-500 text-white hover:bg-red-600 transition-all">
-                Hospital
-              </button>
-            </div>
+        <div className="space-y-6">
+          {/* Title */}
+          <Typography variant="subtitle1" className="text-center font-semibold text-lg text-gray-700">
+            Register As
+          </Typography>
+
+          {/* Button Group */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {/* Patient */}
+            <button
+              onClick={() => handleSubmit(null, null, mode, "Patient")}
+              className="w-full py-3 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition duration-300 shadow-sm"
+            >
+              Patient
+            </button>
+
+            {/* Doctor */}
+            <button
+              onClick={() => handleSubmit(null, null, mode, "Doctor")}
+              className="w-full py-3 rounded-lg font-semibold bg-green-600 text-white hover:bg-green-700 transition duration-300 shadow-sm"
+            >
+              Doctor
+            </button>
+
+            {/* Hospital */}
+            <button
+              onClick={() => handleSubmit(null, null, mode, "Hospital")}
+              className="w-full py-3 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700 transition duration-300 shadow-sm"
+            >
+              Hospital
+            </button>
           </div>
-        )}
+        </div>
+      )}
+
 
         {/* Bottom Link */}
         {mode === "Login" && (
