@@ -1,12 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios'
 
 const HeaderSection = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
+   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
 
   const handleBookClick = () => setShowPopup(true);
   const handleClose = () => {
@@ -45,15 +48,16 @@ const HeaderSection = () => {
     { name: 'Dermatologist', icon: '🧴' }
   ];
 
-  const hospitals = [
-    'HAMS Hospital',
-    'Janga Hospital',
-    'Durai Hospital',
-    'Jayyy Hospital',
-    'Shrudeepan Hospital',
-    'Mahimaa Hospital',
-    'Chairperson Hospital',
-  ];
+  const [hospitals, setHospitals] = useState([]);
+
+  useEffect(() => {
+    const lat = 12.9058;
+      const lon = 80.2270;
+
+    axios.get(`${base_url}/hospitals/getAll/${lat}/${lon}`) // adjust to your actual API route
+      .then(response => setHospitals(response.data))
+      .catch(error => console.error('Error fetching data:', error));
+  }, []);
 
   return (
     <div style={sectionStyle} className="d-flex justify-content-center align-items-center flex-column text-center m-0 p-0">
@@ -124,17 +128,17 @@ const HeaderSection = () => {
                   <h5 className="mb-3">Select Hospital</h5>
                   <div className="row row-cols-2 g-3">
                     {hospitals.map((hosp) => (
-                      <div key={hosp} className="col text-center">
+                      <div key={hosp.RegId} className="col text-center">
                         <div
                           className="border rounded py-3 bg-light"
                           style={{ cursor: 'pointer' }}
                           onClick={() => {
                             setShowPopup(false);
-                            navigate(`/${hosp.split(' ')[0]}/doctors-available`, { state: { hname: hosp } });
+                            navigate(`/${hosp.hospitalName.split(' ')[0]}/doctors-available`, { state: { hname: hosp.hospitalName } });
                           }}
                         >
                           🏥
-                          <div style={{ fontSize: '14px', marginTop: '5px' }}>{hosp}</div>
+                          <div style={{ fontSize: '14px', marginTop: '5px' }}>{hosp.hospitalName}</div>
                         </div>
                       </div>
                     ))}
