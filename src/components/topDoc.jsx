@@ -1,13 +1,19 @@
-import { useRef } from "react";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import { useEffect, useRef, useState } from "react";
 import ScrollButton from "./scrollButton";
-import sampleDoctors from "../constants/doctors";
-import IconButton from "@mui/material/IconButton";
+import axios from "axios";
 
 const TopDoc = () => {
-  const doctors = sampleDoctors;
   const carouselRef = useRef(null);
+  const [doctors, setDoctors] = useState([]);
+
+  useEffect(() => {
+    axios.get(`http://localhost:3000/doctors/top`)
+      .then((res) => {
+        // If your API returns { doctors: [...] }
+        setDoctors(res.data['doctors']);
+      })
+      .catch((err) => console.error(err));
+  }, []);
 
   const handleScroll = (offset) => {
     if (carouselRef.current) {
@@ -37,7 +43,7 @@ const TopDoc = () => {
 
       <div className="relative">
         {/* Left Scroll */}
-        <ScrollButton direction="left" onClick={() => handleScroll(-600)} className="left-0"/>
+        <ScrollButton direction="left" onClick={() => handleScroll(-600)} className="left-0" />
 
         {/* Doctor List */}
         <div
@@ -58,7 +64,10 @@ const TopDoc = () => {
               <div className="space-y-1">
                 <div className="font-semibold text-gray-800">{d.name}</div>
                 <div className="text-xs text-gray-500">
-                  {d.specialization}, {d.location}
+                  {d.specialization},{" "}
+                  {d.location && d.location.coordinates
+                    ? `${d.location.coordinates[1]}, ${d.location.coordinates[0]}`
+                    : "Unknown Location"}
                 </div>
               </div>
               <button
@@ -72,7 +81,7 @@ const TopDoc = () => {
         </div>
 
         {/* Right Scroll */}
-        <ScrollButton direction="right" onClick={() => handleScroll(600)} className="right-0"/>
+        <ScrollButton direction="right" onClick={() => handleScroll(600)} className="right-0" />
       </div>
     </div>
   );
