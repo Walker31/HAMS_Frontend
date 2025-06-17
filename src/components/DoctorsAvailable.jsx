@@ -39,7 +39,7 @@ const DoctorsAvailable = () => {
                 <p className="card-text"><strong>Specialization:</strong> {doc.specialization || "General"}</p>
                 <button
                   className="btn btn-primary"
-                  onClick={() => navigate(`/DoctorDescription`, { state: { doctor: doc, hname } })}
+                  onClick={() => navigate(`/${hname.split(' ')[0]}/doctors-available/DoctorDescription`, { state: { doctor: doc, hname } })}
                 >
                   Book Appointment
                 </button>

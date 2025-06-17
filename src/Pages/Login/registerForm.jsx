@@ -1,5 +1,4 @@
 import { useState } from "react";
-import LoginForm from "./loginForm.jsx";
 import DoctorRegisterForm from "./doctorRegistration.jsx";
 import PatientRegisterForm from "./patientRegistration.jsx";
 import ModeSelector from "./modeSelector.jsx";
@@ -22,21 +21,31 @@ export default function RegisterForm() {
     setFormData({});
   };
 
-  const handleLoginSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e, data, mode, role) => {
+    e?.preventDefault();
+
     try {
-      await loginHandler(formData);
-      alert("Login successful!");
+      if (mode === "Login") {
+        const loginData = data || formData;
+        await loginHandler(loginData);
+        alert("Login successful!");
+      } else if (mode === "SignUp") {
+        if (role === "Patient") {
+          setUserType("Patient");
+        } else if (role === "Doctor") {
+          setUserType("Doctor");
+        }
+      }
     } catch (err) {
-      console.error("Login failed:", err);
-      alert("Login failed. Please check your credentials.");
+      console.error("Error:", err);
+      alert("Operation failed. Please check inputs.");
     }
   };
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     try {
-      if (userType === "Customer") {
+      if (userType === "Patient") {
         await patientHandler(formData);
       } else if (userType === "Doctor") {
         const formattedData = {
@@ -60,17 +69,9 @@ export default function RegisterForm() {
   return (
     <div className="w-full flex flex-col items-center space-y-2">
       {!userType && !isLogin && (
-        <ModeSelector setUserType={setUserType} setIsLogin={setIsLogin} />
+        <ModeSelector handleSubmit={handleSubmit} />
       )}
-      {isLogin && (
-        <LoginForm
-          formData={formData}
-          handleChange={handleChange}
-          handleLoginSubmit={handleLoginSubmit}
-          handleBack={handleBack}
-        />
-      )}
-      {userType === "Doctor" && !isLogin && (
+      {userType === "Doctor" && (
         <DoctorRegisterForm
           formData={formData}
           handleChange={handleChange}
@@ -78,7 +79,7 @@ export default function RegisterForm() {
           handleBack={handleBack}
         />
       )}
-      {userType === "Customer" && !isLogin && (
+      {userType === "Patient" && (
         <PatientRegisterForm
           formData={formData}
           handleChange={handleChange}
