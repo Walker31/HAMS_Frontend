@@ -5,6 +5,7 @@ import axios from "axios";
 const DoctorsAvailable = () => {
   const [doctors, setDoctors] = useState([]);
   const navigate = useNavigate();
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
   const location = useLocation();
   const { hname } = location.state || {}; // hname = { hosp: "some hospital name" }
@@ -12,7 +13,7 @@ const DoctorsAvailable = () => {
   useEffect(() => {
     const latitude = localStorage.getItem("latitude");
     const longitude = localStorage.getItem("longitude");
-    axios.get(`http://localhost:3000/doctors/nearby/${latitude}/${longitude}`)
+    axios.get(`${base_url}/doctors/nearby/${latitude}/${longitude}`)
       .then((res) => {
         console.log(res.data);
         setDoctors(res.data);

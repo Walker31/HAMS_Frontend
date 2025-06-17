@@ -7,7 +7,8 @@ const TopDoc = () => {
   const [doctors, setDoctors] = useState([]);
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/doctors/top`)
+    const base_url = import.meta.env.VITE_BASE_URL|| "http://localhost:3000";
+    axios.get(`${base_url}/doctors/top`)
       .then((res) => {
         // If your API returns { doctors: [...] }
         setDoctors(res.data['doctors']);
