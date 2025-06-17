@@ -11,7 +11,7 @@ import background from "../assets/background.jpg";
 import ScrollButton from "./scrollButton";
 
 
-const shopping = () => {
+const Shopping = () => {
 
   const shopCart = [
   {
@@ -98,4 +98,4 @@ const shopping = () => {
   );
 };
 
-export default shopping;
+export default Shopping;
