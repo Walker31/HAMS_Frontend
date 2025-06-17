@@ -66,10 +66,10 @@ const App = () => {
       <Route element={<Layout location={location} setLocation={setLocation} />}>
         <Route path="/" element={<Home />} />
         <Route path="/doctors-available" element={<DoctorsAvailable />} />
-        <Route path="/doctor-description" element={<DoctorDescription />} />
+        <Route path="/:hospital/doctors-available/DoctorDescription" element={<DoctorDescription />} />
         <Route path="/login" element={<RegisterForm />} />
         <Route path="/confirmation" element={<Confirmation />} />
-        <Route path="/DoctorDescription" element={<DoctorDescription/>} />
+        <Route path="/:hospital/doctors-available" element={<DoctorsAvailable />} />
       </Route>
     </Routes>
   );
