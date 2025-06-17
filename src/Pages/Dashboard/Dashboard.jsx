@@ -64,17 +64,51 @@ const DoctorDashboard = () => {
   ]);
 
   const [previousAppointments, setPreviousAppointments] = useState([]);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [rejectIndex, setRejectIndex] = useState(null);
 
   const handleStatusChange = (index, status) => {
+    if (status === "Done") {
+      const confirmDone = window.confirm("Are you sure you are done with this appointment?");
+      if (!confirmDone) return;
+    }
+
+    if (status === "Rejected") {
+      setRejectIndex(index);
+      setShowRejectModal(true);
+      return;
+    }
+
+    moveToPrevious(index, status);
+  };
+
+  const moveToPrevious = (index, status, reasonOverride = null) => {
     const appt = todayAppointments[index];
     const updatedToday = [...todayAppointments];
     updatedToday.splice(index, 1);
     setTodayAppointments(updatedToday);
 
-    setPreviousAppointments([
-      ...previousAppointments,
-      { ...appt, status }
+    setPreviousAppointments(prev => [
+      ...prev,
+      {
+        ...appt,
+        reason: appt.reason,
+        reasonForReject: reasonOverride || rejectionReason,
+        status
+      }
     ]);
+  };
+
+  const handleRejectConfirm = () => {
+    if (!rejectionReason.trim()) {
+      alert("Please enter a rejection reason.");
+      return;
+    }
+    moveToPrevious(rejectIndex, "Rejected", rejectionReason);
+    setShowRejectModal(false);
+    setRejectionReason("");
+    setRejectIndex(null);
   };
 
   const toggleSidebar = () => setCollapsed(!collapsed);
@@ -91,7 +125,7 @@ const DoctorDashboard = () => {
           <Card className="text-center">
             <Card.Body>
               <Card.Title>Total Patients</Card.Title>
-              <h4>120</h4>
+              <h4>{previousAppointments.filter(appt => appt.status === "Done").length}</h4>
             </Card.Body>
           </Card>
         </Col>
@@ -107,7 +141,7 @@ const DoctorDashboard = () => {
 
       <Row className="mb-3">
         <Col md={6}>
-          <Card className="mb-3" style={{width:'100%'}}>
+          <Card className="mb-3" style={{ width: '100%' }}>
             <Card.Header>Today's Appointments</Card.Header>
             <Card.Body>
               {todayAppointments.length === 0 ? (
@@ -138,21 +172,27 @@ const DoctorDashboard = () => {
               )}
             </Card.Body>
           </Card>
-          </Col>
+        </Col>
+
         <Col md={6}>
           <Card className="mb-3" style={{ width: '100%' }}>
-            <Card.Header >Previous Appointments </Card.Header>
+            <Card.Header>Previous Appointments</Card.Header>
             <Card.Body>
               {previousAppointments.length === 0 ? (
                 <p>No previous appointments.</p>
               ) : (
                 previousAppointments.map((appt, idx) => (
-                  <Card className="mb-2"  key={idx}>
-                    <Card.Body className="d-flex justify-content-between align-items-center" >
+                  <Card className="mb-2" key={idx}>
+                    <Card.Body className="d-flex justify-content-between align-items-center">
                       <div>
                         <strong>{appt.name}</strong><br />
                         Time: {appt.time}<br />
                         Reason: {appt.reason}<br />
+                         {appt.status === "Rejected" && (
+                            <>
+                        Reason for reject: {appt.reasonForReject}<br/>
+                        </>
+                         )}
                         <span className="badge bg-secondary">Status: {appt.status}</span>
                       </div>
                     </Card.Body>
@@ -214,6 +254,29 @@ const DoctorDashboard = () => {
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowOverview(false)}>Close</Button>
           <Button variant="primary" onClick={handleSaveDescription}>Save</Button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal show={showRejectModal} onHide={() => setShowRejectModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Enter Rejection Reason</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                placeholder="Enter reason for rejection..."
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowRejectModal(false)}>Cancel</Button>
+          <Button variant="danger" onClick={handleRejectConfirm}>Reject Appointment</Button>
         </Modal.Footer>
       </Modal>
     </Container>
