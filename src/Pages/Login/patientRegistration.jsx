@@ -1,3 +1,4 @@
+import CommonFields from "./commonFields";
 export default function PatientRegisterForm({ formData, handleChange, handleRegisterSubmit, handleBack }) {
   return (
     <div className="w-full max-w-xl space-y-6">
