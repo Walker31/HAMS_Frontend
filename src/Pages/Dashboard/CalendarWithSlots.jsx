@@ -50,12 +50,12 @@ const CalendarWithSlots = () => {
   return (
     <div className="container mt-3">
       <div className="row">
-        {/* Left: Calendar */}
+   
         <div className="col-md-6 mb-3">
           <Calendar onChange={handleDateChange} value={selectedDate} />
         </div>
 
-        {/* Right: Interval and slots */}
+       
         <div className="col-md-6">
           <Form.Select className="mb-3" onChange={handleIntervalChange} value={interval} style={{ width: '60%' }}>
             <option value={15}>15 Minutes</option>
@@ -86,7 +86,6 @@ const CalendarWithSlots = () => {
         </div>
       </div>
 
-      {/* Bottom: Saved slots */}
       {Object.keys(savedSlots).length > 0 && (
         <div className="mt-4">
           <h6>Saved Slots:</h6>

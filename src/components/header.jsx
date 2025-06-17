@@ -24,7 +24,7 @@ const HeaderSection = () => {
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     height: '550px',
-    width: '100vw',
+    width: '99vw',
   };
 
   const specializations = [
