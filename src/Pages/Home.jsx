@@ -22,6 +22,7 @@ const Home = () => {
         <section>
           <Feedback />
         </section>
+        
       </main>
       <Footer />
     </>
