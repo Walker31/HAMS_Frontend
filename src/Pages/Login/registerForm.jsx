@@ -1,10 +1,12 @@
 import { useState } from "react";
 import DoctorRegisterForm from "./doctorRegistration.jsx";
 import PatientRegisterForm from "./patientRegistration.jsx";
+import HospitalRegisterForm from "./hospitalRegistration.jsx";
 import ModeSelector from "./modeSelector.jsx";
 import loginHandler from "../../handlers/loginHandler.js";
 import patientHandler from "../../handlers/patientHandler";
 import doctorHandler from "../../handlers/doctorHandler";
+import hospitalHandler from "../../handlers/hospitalHandler.js"
 
 export default function RegisterForm() {
   const [userType, setUserType] = useState(null);
@@ -34,6 +36,8 @@ export default function RegisterForm() {
           setUserType("Patient");
         } else if (role === "Doctor") {
           setUserType("Doctor");
+        } else if (role === "Hospital") {
+          setUserType("Hospital");
         }
       }
     } catch (err) {
@@ -58,6 +62,20 @@ export default function RegisterForm() {
         delete formattedData.latitude;
         delete formattedData.longitude;
         await doctorHandler(formattedData);
+
+      } else if (userType === "Hospital") {
+        const lat = localStorage.getItem('latitude');
+        const lon = localStorage.getItem('longitude');
+        const formattedData = {
+          ...formData,
+          location: {
+            latitude: lat,
+            longitude: lon,
+          },
+        };
+        console.log('handle register');
+        console.log(formattedData);
+        await hospitalHandler(formattedData);
       }
       alert("Registration successful!");
     } catch (err) {
@@ -67,7 +85,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="w-full flex flex-col items-center space-y-2">
+    <div className="w-full max-w-[500px] h-full max-h-[750px] flex flex-col overflow-y-auto	rounded-lg items-center space-y-2 scrollbar-hide">
       {!userType && !isLogin && (
         <ModeSelector handleSubmit={handleSubmit} />
       )}
@@ -81,6 +99,14 @@ export default function RegisterForm() {
       )}
       {userType === "Patient" && (
         <PatientRegisterForm
+          formData={formData}
+          handleChange={handleChange}
+          handleRegisterSubmit={handleRegisterSubmit}
+          handleBack={handleBack}
+        />
+      )}
+      {userType === "Hospital" && !isLogin && (
+        <HospitalRegisterForm
           formData={formData}
           handleChange={handleChange}
           handleRegisterSubmit={handleRegisterSubmit}
