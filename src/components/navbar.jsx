@@ -20,7 +20,7 @@ function classNames(...classes) {
 const Navbar = ({ location, setLocation }) => {
   const [selected, setSelected] = useState("Health");
   const [open, setOpen] = useState(false);
-  const [showRegister, setShowRegister] = useState(true);
+  const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
 
   return (

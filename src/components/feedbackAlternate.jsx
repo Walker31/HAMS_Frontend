@@ -2,7 +2,7 @@ import { useState } from "react";
 import sampleFeedbacks from "../constants/feedback";
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
-const Feedback=() =>{
+const FeedbackAlternate=() =>{
     const feedbacks = sampleFeedbacks;
     const [current,setCurrent] = useState(0);
     const length = feedbacks.length;
@@ -19,28 +19,27 @@ const Feedback=() =>{
         Our  <span className="text-teal-600"> patients'</span> feedback about us
       </h3>
       <div className="bg-white">
-        <div className="bg-[#e8eaf6] flex flex-col md:flex-row h-60 md:h-80">
-          <div className="w-full md:w-1/3 mt-6 md:mt-10 ml-0 md:ml-10 flex justify-center">
+        <div className="bg-[#e8eaf6] flex flex-row h-80">
+          <div className="flex flex-1/3 mt-10 ml-10 z-50">
           <div className="rounded-2xl ">
             <div className="border-teal-600 pt-2 pl-2 border-t-2 border-l-2 rounded-2xl">
               <img
-                src={photo}
-                alt={name}
-                className="object-cover m-1 w-full max-w-[320px] h-60 sm:h-72 md:h-80 rounded-2xl"
-              />
-
+              src={photo}
+              alt={name}
+              className="object-cover m-1 w-80 h-60 sm:h-72 md:h-80 rounded-2xl"
+            />
             </div>
             
           </div>
             
           </div>
-          <div className="w-full md:w-2/3 p-6 flex items-center justify-center text-center">
+          <div className=" flex-2/3 s:flex-1 p-8 rounded-lg m-auto flex items-center justify-center" >
             <p className="text-xl text-gray-700 leading-relaxed ">
                "{review} " 
             </p>
           </div>
         </div>
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 m-3 p-4">
+        <div className="flex flex-1/2 m-3 p-4">
           <div className="flex w-full justify-between items-center">
             {/* Name & Tag */}
             <div></div>
@@ -73,4 +72,4 @@ const Feedback=() =>{
     </>
 }
 
-export default Feedback;
+export default FeedbackAlternate;
