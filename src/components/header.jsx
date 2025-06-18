@@ -76,17 +76,10 @@ const HeaderSection = () => {
   const [hospitals, setHospitals] = useState([]);
 
   useEffect(() => {
-<<<<<<< HEAD
-    const lat = 12.9058;
-    const lon = 80.2270;
-
-    axios.get(`${base_url}/hospitals/getAll/${lat}/${lon}`)
-=======
     const lat = 12.9058; //For now we set dis
       const lon = 80.2270;
 
     axios.get(`${base_url}/hospitals/getAll/${lat}/${lon}`) 
->>>>>>> 55d0d5c46c9b4b1c602456f69e3b0444d6214901
       .then(response => setHospitals(response.data))
       .catch(error => console.error('Error fetching hospitals:', error));
   }, []);
