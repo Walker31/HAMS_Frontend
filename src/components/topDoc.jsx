@@ -5,30 +5,43 @@ import axios from "axios";
 const TopDoc = () => {
   const carouselRef = useRef(null);
   const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/doctors/top`)
-      .then((res) => {
-        // If your API returns { doctors: [...] }
-        setDoctors(res.data['doctors']);
-      })
-      .catch((err) => console.error(err));
+    if (!navigator.geolocation) {
+      console.error("Geolocation not supported");
+      setLoading(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const { latitude, longitude } = coords;
+        axios
+          .get(`http://localhost:3000/doctors/top/${latitude}/${longitude}`)
+          .then((res) => {
+            setDoctors(res.data.doctors);
+          })
+          .catch((err) => console.error(err))
+          .finally(() => setLoading(false));
+      },
+      (err) => {
+        console.error("Geolocation error:", err);
+        setLoading(false);
+      }
+    );
   }, []);
 
-  const handleScroll = (offset) => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: offset, behavior: "smooth" });
-    }
-  };
-
-  if (!doctors || doctors.length === 0) {
+  if (loading) {
+    return <div className="text-center py-10">Loading…</div>;
+  }
+  if (!doctors.length) {
     return (
       <div className="text-center py-10 text-gray-600">
         No doctors available at the moment.
       </div>
     );
   }
-
   return (
     <div className="container max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
@@ -42,10 +55,10 @@ const TopDoc = () => {
       </div>
 
       <div className="relative">
-        {/* Left Scroll */}
+    
         <ScrollButton direction="left" onClick={() => handleScroll(-600)} className="left-0" />
 
-        {/* Doctor List */}
+       
         <div
           ref={carouselRef}
           className="flex space-x-6 overflow-x-auto pb-2 no-scrollbar scroll-smooth"
