@@ -9,6 +9,9 @@ import RegisterForm from "./Pages/Login/registerForm";
 import Confirmation from "./components/DoctorDescription";
 import DoctorDashboard from "./Pages/Dashboard/Dashboard";
 import { getCityFromCoords } from "./utils/locationUtils";
+import AboutUs from "./components/Aboutus";
+import FAQs from "./components/FAQs";
+import Services from "./components/Services";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -60,8 +63,11 @@ const App = () => {
         <Route path="/:hospital/doctors-available/DoctorDescription" element={<DoctorDescription />} />
         <Route path="/login" element={<RegisterForm />} />
         <Route path="/confirmation" element={<Confirmation />} />
-        <Route path="/doctordashboard" element={<DoctorDashboard />} />
-      </Route>
+        <Route path="/aboutUs" element={<AboutUs />} />
+        <Route path="/faqs" element={<FAQs />} />
+        <Route path="/services" element={<Services />} />
+        </Route>
+      <Route path="/doctordashboard" element={<DoctorDashboard />} />
     </Routes>
   );
 };

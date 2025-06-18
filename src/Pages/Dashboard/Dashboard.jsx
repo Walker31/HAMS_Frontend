@@ -1,57 +1,68 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Container, Row, Col, Card, Button, Modal, Form } from 'react-bootstrap';
 import CalendarWithSlots from './CalendarWithSlots';
 import 'react-calendar/dist/Calendar.css';
-
-const Sidebar = ({ collapsed, onOverviewClick, onAppointmentClick, onDashboardClick }) => (
-  <div
-    className={`p-3 sidebar position-fixed top-0 start-0 ${collapsed ? 'collapsed' : ''}`}
-    style={{
-      height: '100vh',
-      width: collapsed ? '0' : '250px',
-      overflow: 'hidden',
-      transition: 'all 0.3s ease-in-out',
-      zIndex: 1000,
-    }}
-  >
-    {!collapsed && (
-      <div>
-        <div className="d-flex flex-column align-items-center text-center">
-          <img
-            src="/src/assets/doctorpic1.jpg"
-            className="rounded-circle mb-2"
-            style={{ width: '160px', height: '160px', objectFit: 'cover' }}
-            alt="Doctor"
-          />
-          <h5>Dr. Jangaa Mani</h5>
-        </div>
-        <hr />
-        <ul className="nav flex-column">
-          <li className="nav-item">
-            <button className="nav-link btn btn-link text-start" onClick={onDashboardClick}>Dashboard</button>
-          </li>
-          <li className="nav-item">
-            <button className="nav-link btn btn-link text-start" onClick={onAppointmentClick}>Appointments</button>
-          </li>
-          <li className="nav-item">
-            <button className="nav-link btn btn-link text-start" onClick={onOverviewClick}>Overview</button>
-          </li>
-          <li className="nav-item"><a className="nav-link text-danger" href="#">Logout</a></li>
-        </ul>
-      </div>
-    )}
-  </div>
-);
-
-const Header = ({ toggleSidebar }) => (
-  <div className="bg-primary text-white p-3 d-flex align-items-center" style={{ position: "sticky", top: 0, zIndex: 1001 }}>
-    <Button variant="light" onClick={toggleSidebar} className="me-3">☰</Button>
-    <h3 className="mb-0">Doctor Dashboard</h3>
-  </div>
-);
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
 
 const DoctorDashboard = () => {
+  const navigate = useNavigate();
+  const location = useLocation(); 
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
+  const locationState = location.state || {};
+  const doctor = locationState.doctor || {};  
+  const hname = locationState.hname || "";
+
+  const [doctorState, setDoctorState] = useState(doctor);
+
+  useEffect(() => {
+    const latitude = localStorage.getItem("latitude");
+    const longitude = localStorage.getItem("longitude");
+    axios
+      .get(`${base_url}/doctors/nearby/${latitude}/${longitude}`)
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  const Sidebar = ({ collapsed, onOverviewClick, onAppointmentClick, onDashboardClick }) => (
+    <div
+      className={`p-0 sidebar position-fixed top-0 start-0 text-white bg-dark ${collapsed ? 'collapsed' : ''}`}
+      style={{ height: '100vh', width: collapsed ? '0' : '250px', overflow: 'hidden', transition: 'all 0.3s ease-in-out', zIndex: 1000 }}
+    >
+      {!collapsed && (
+        <div>
+          <div className="d-flex flex-column align-items-center text-center">
+            <img
+              src={doctorState?.photo || "Doctor photo"}
+              className="rounded-circle mb-3"
+              style={{ width: '120px', height: '120px', objectFit: 'cover' }}
+              alt="Doctor"
+            />
+            <h5>{doctorState?.name || "Doctor Name"}</h5>
+          </div>
+          <ul className="nav flex-column mt-4">
+            <li className="nav-item"><a className="nav-link text-white" href="/" onClick={onDashboardClick}>Home</a></li>
+            <li className="nav-item"><a className="nav-link text-white" href="#" onClick={onDashboardClick}>Dashboard</a></li>
+            <li className="nav-item"><a className="nav-link text-white" href="#" onClick={onAppointmentClick}>Appointments</a></li>
+            <li className="nav-item"><a className="nav-link text-white" href="#" onClick={onOverviewClick}>Overview</a></li>
+            <li className="nav-item"><a className="nav-link text-warning" href="#">Logout</a></li>
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+
+  const Header = ({ toggleSidebar }) => (
+    <div className="bg-primary text-white p-3 d-flex align-items-center" style={{ position: "sticky", top: 0, zIndex: 1001 }}>
+      <Button variant="outline-light" onClick={toggleSidebar} className="me-3">☰</Button>
+      <h4 className="mb-0">Doctor Dashboard</h4>
+    </div>
+  );
+
   const [collapsed, setCollapsed] = useState(false);
   const [showOverview, setShowOverview] = useState(false);
   const [description, setDescription] = useState("");
@@ -93,7 +104,6 @@ const DoctorDashboard = () => {
       ...prev,
       {
         ...appt,
-        reason: appt.reason,
         reasonForReject: reasonOverride || rejectionReason,
         status
       }
@@ -119,10 +129,10 @@ const DoctorDashboard = () => {
   };
 
   const renderDashboardContent = () => (
-    <div className="p-3">
-      <Row className="mb-3">
+    <div className="p-4">
+      <Row className="mb-4">
         <Col md={6} lg={3}>
-          <Card className="text-center">
+          <Card className="text-center shadow-sm">
             <Card.Body>
               <Card.Title>Total Patients</Card.Title>
               <h4>{previousAppointments.filter(appt => appt.status === "Done").length}</h4>
@@ -130,7 +140,7 @@ const DoctorDashboard = () => {
           </Card>
         </Col>
         <Col md={6} lg={3}>
-          <Card className="text-center">
+          <Card className="text-center shadow-sm">
             <Card.Body>
               <Card.Title>Today's Appointments</Card.Title>
               <h4>{todayAppointments.length}</h4>
@@ -139,68 +149,46 @@ const DoctorDashboard = () => {
         </Col>
       </Row>
 
-      <Row className="mb-3">
+      <Row>
         <Col md={6}>
-          <Card className="mb-3" style={{ width: '100%' }}>
-            <Card.Header>Today's Appointments</Card.Header>
-            <Card.Body>
-              {todayAppointments.length === 0 ? (
-                <p>No appointments for today.</p>
-              ) : (
-                todayAppointments.map((appt, idx) => (
-                  <Card className="mb-2" key={idx}>
-                    <Card.Body className="d-flex justify-content-between align-items-center">
-                      <div>
-                        <strong>{appt.name}</strong><br />
-                        Time: {appt.time}<br />
-                        Reason: {appt.reason}
-                      </div>
-                      <div>
-                        <Button variant="success" size="sm" className="me-2" onClick={() => handleStatusChange(idx, "Done")}>
-                          Done
-                        </Button>
-                        <Button variant="danger" size="sm" className="me-2" onClick={() => handleStatusChange(idx, "Rejected")}>
-                          Reject
-                        </Button>
-                        <Button variant="warning" size="sm" onClick={() => handleStatusChange(idx, "Rescheduled")}>
-                          Reschedule
-                        </Button>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                ))
-              )}
-            </Card.Body>
-          </Card>
-        </Col>
-
-        <Col md={6}>
-          <Card className="mb-3" style={{ width: '100%' }}>
-            <Card.Header>Previous Appointments</Card.Header>
-            <Card.Body>
-              {previousAppointments.length === 0 ? (
-                <p>No previous appointments.</p>
-              ) : (
-                previousAppointments.map((appt, idx) => (
-                  <Card className="mb-2" key={idx}>
-                    <Card.Body className="d-flex justify-content-between align-items-center">
-                      <div>
-                        <strong>{appt.name}</strong><br />
-                        Time: {appt.time}<br />
-                        Reason: {appt.reason}<br />
-                         {appt.status === "Rejected" && (
-                            <>
-                        Reason for reject: {appt.reasonForReject}<br/>
-                        </>
-                         )}
-                        <span className="badge bg-secondary">Status: {appt.status}</span>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                ))
-              )}
-            </Card.Body>
-          </Card>
+          <h5 className="text-primary">Today's Appointments</h5>
+          {todayAppointments.length === 0 ? <p>No appointments for today.</p> : (
+            todayAppointments.map((appt, idx) => (
+              <Card key={idx} className="mb-3 shadow-sm">
+                <Card.Body className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <strong>{appt.name}</strong><br />
+                    <span>{appt.time}</span><br />
+                    <small>{appt.reason}</small>
+                  </div>
+                  <div>
+                    <Button variant="success" size="sm" className="me-2" onClick={() => handleStatusChange(idx, "Done")}>Done</Button>
+                    <Button variant="danger" size="sm" className="me-2" onClick={() => handleStatusChange(idx, "Rejected")}>Reject</Button>
+                    <Button variant="warning" size="sm" onClick={() => handleStatusChange(idx, "Rescheduled")}>Reschedule</Button>
+                  </div>
+                </Card.Body>
+              </Card>               
+            ))              
+          )}                
+        </Col>              
+                    
+        <Col md={6}>                
+          <h5 className="text-primary">Previous Appointments</h5>
+          {previousAppointments.length === 0 ? <p>No previous appointments.</p> : (
+            previousAppointments.map((appt, idx) => (
+              <Card key={idx} className="mb-3  border-start border-4 border-primary shadow-sm">
+                <Card.Body>
+                  <div>
+                    <strong>{appt.name}</strong><br />
+                    <span>{appt.time}</span><br />
+                    <small>{appt.reason}</small><br />
+                    {appt.status === "Rejected" && <p className="text-danger">Rejection: {appt.reasonForReject}</p>}
+                    <span className={`badge bg-${appt.status === 'Done' ? 'success' : appt.status === 'Rejected' ? 'danger' : 'warning'}`}>{appt.status}</span>
+                  </div>
+                </Card.Body>
+              </Card>
+            ))
+          )}
         </Col>
       </Row>
     </div>
@@ -215,20 +203,8 @@ const DoctorDashboard = () => {
 
   return (
     <Container fluid className="p-0" style={{ overflowX: 'hidden' }}>
-      <Sidebar
-        collapsed={collapsed}
-        onOverviewClick={handleOverviewClick}
-        onAppointmentClick={() => setView("appointments")}
-        onDashboardClick={() => setView("dashboard")}
-      />
-
-      <div
-        style={{
-          marginLeft: collapsed ? '0' : '250px',
-          transition: 'margin-left 0.3s ease-in-out',
-          width: '100%',
-        }}
-      >
+      <Sidebar collapsed={collapsed} onOverviewClick={handleOverviewClick} onAppointmentClick={() => setView("appointments")} onDashboardClick={() => setView("dashboard")} />
+      <div style={{ marginLeft: collapsed ? '0' : '250px', transition: 'margin-left 0.3s ease-in-out', width: '100%' }}>
         <Header toggleSidebar={toggleSidebar} />
         {view === "dashboard" ? renderDashboardContent() : renderAppointmentCalendar()}
       </div>
@@ -241,13 +217,7 @@ const DoctorDashboard = () => {
           <Form>
             <Form.Group>
               <Form.Label>Doctor Description</Form.Label>
-              <Form.Control
-                as="textarea"
-                rows={4}
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Write your description here..."
-              />
+              <Form.Control as="textarea" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Write your description here..." />
             </Form.Group>
           </Form>
         </Modal.Body>
@@ -264,13 +234,7 @@ const DoctorDashboard = () => {
         <Modal.Body>
           <Form>
             <Form.Group>
-              <Form.Control
-                as="textarea"
-                rows={3}
-                placeholder="Enter reason for rejection..."
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-              />
+              <Form.Control as="textarea" rows={3} placeholder="Enter reason for rejection..." value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} />
             </Form.Group>
           </Form>
         </Modal.Body>

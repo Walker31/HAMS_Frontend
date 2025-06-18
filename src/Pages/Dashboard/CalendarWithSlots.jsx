@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { Form, Button, Badge } from 'react-bootstrap';
+import { Form, Button, Badge, Card } from 'react-bootstrap';
 import { generateTimeSlots } from './Slotgenerator';
 
 const CalendarWithSlots = () => {
@@ -48,59 +48,87 @@ const CalendarWithSlots = () => {
   };
 
   return (
-    <div className="container mt-3">
-      <div className="row">
-   
-        <div className="col-md-6 mb-3">
-          <Calendar onChange={handleDateChange} value={selectedDate} />
-        </div>
-
-       
-        <div className="col-md-6">
-          <Form.Select className="mb-3" onChange={handleIntervalChange} value={interval} style={{ width: '60%' }}>
-            <option value={15}>15 Minutes</option>
-            <option value={30}>30 Minutes</option>
-            <option value={60}>1 Hour</option>
-          </Form.Select>
-
-          {selectedDate && (
-            <div>
-              <h6>Available Slots for {selectedDate.toDateString()}:</h6>
-              <div className="d-flex flex-wrap gap-2">
-                {slots.map((slot) => (
-                  <Badge
-                    key={slot}
-                    bg={selectedSlots.includes(slot) ? 'success' : 'secondary'}
-                    onClick={() => toggleSlot(slot)}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    {slot}
-                  </Badge>
-                ))}
-              </div>
-              <Button className="mt-3" variant="primary" onClick={handleSaveSlots}>
-                Save Slots
-              </Button>
+    <div className="container mt-4">
+      <Card className="shadow-lg border-0">
+        <Card.Header className="bg-primary text-white">
+          <h5 className="mb-0">Appointment Slot Scheduler</h5>
+        </Card.Header>
+        <Card.Body>
+          <div className="row">
+            
+            <div className="col-md-6 mb-3">
+              <Card className="border-0 shadow-sm">
+                <Card.Body>
+                  <Calendar
+                    onChange={handleDateChange}
+                    value={selectedDate}
+                    className="w-100"
+                  />
+                </Card.Body>
+              </Card>
             </div>
-          )}
-        </div>
-      </div>
 
-      {Object.keys(savedSlots).length > 0 && (
-        <div className="mt-4">
-          <h6>Saved Slots:</h6>
-          {Object.entries(savedSlots).map(([date, slots]) => (
-            <div key={date}>
-              <strong>{date}</strong>:{" "}
-              {slots.map((s, i) => (
-                <Badge bg="info" className="me-2 mb-2" key={i}>
-                  {s}
-                </Badge>
+           
+            <div className="col-md-6">
+              <Form.Group className="mb-3" style={{ maxWidth: '250px' }}>
+                <Form.Label>Select Slot Interval</Form.Label>
+                <Form.Select onChange={handleIntervalChange} value={interval}>
+                  <option value={15}>15 Minutes</option>
+                  <option value={30}>30 Minutes</option>
+                  <option value={60}>1 Hour</option>
+                </Form.Select>
+              </Form.Group>
+
+              {selectedDate && (
+                <>
+                  <h6 className="mb-2 text-primary">
+                    Available Slots for {selectedDate.toDateString()}:
+                  </h6>
+                  <div className="d-flex flex-wrap gap-2 mb-3">
+                    {slots.map((slot) => (
+                      <Badge
+                        key={slot}
+                        bg={selectedSlots.includes(slot) ? 'primary' : 'secondary'}
+                        onClick={() => toggleSlot(slot)}
+                        style={{ cursor: 'pointer', padding: '10px 15px', fontSize: '0.9rem' }}
+                      >
+                        {slot}
+                      </Badge>
+                    ))}
+                  </div>
+                  <Button variant="primary" onClick={handleSaveSlots}>
+                    Save Slots
+                  </Button>
+                </>
+              )}
+            </div>
+          </div>
+
+          
+          {Object.keys(savedSlots).length > 0 && (
+            <div className="mt-4">
+              <h6 className="text-primary">Saved Slots:</h6>
+              {Object.entries(savedSlots).map(([date, slots]) => (
+                <Card key={date} className="mb-2 border-0 shadow-sm">
+                  <Card.Body>
+                    <strong>{date}</strong>:{" "}
+                    {slots.map((s, i) => (
+                      <Badge
+                        bg="info"
+                        text="dark"
+                        className="me-2 mb-2 p-2"
+                        key={i}
+                      >
+                        {s}
+                      </Badge>
+                    ))}
+                  </Card.Body>
+                </Card>
               ))}
             </div>
-          ))}
-        </div>
-      )}
+          )}
+        </Card.Body>
+      </Card>
     </div>
   );
 };

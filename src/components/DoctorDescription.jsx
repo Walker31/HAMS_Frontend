@@ -47,9 +47,11 @@ const DoctorDescription = () => {
         alert("Appointment booked successfully!");
         navigate("/doctordashboard", {
           state: {
+            doctor: doctor,
+            hname: {hosp: hname?.hosp},
             date: selectedDate,
             slot: selectedSlot,
-            doctor: doctor.name,
+            
           },
         });
       }
