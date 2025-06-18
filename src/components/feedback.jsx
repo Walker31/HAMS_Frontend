@@ -15,14 +15,15 @@ const Feedback = () => {
   const prevSlide = () => setCurrent(prev => (prev === 0 ? length - 1 : prev - 1));
 
   return (
-    <section className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto">
       <h3 className=" text-2xl font-bold text-blue-900 p-4">
         Our  <span className="text-teal-600"> patients'</span> feedback about us
       </h3>
+      <div className='mb-3'>
 
-      <div className="mb-48 flex flex-col bg-[#e8eaf6] rounded-lg h-80" >
+      <div className="mb-4 flex flex-col bg-[#e8eaf6] rounded-lg h-[45vh]" >
         <div className="flex flex-col md:flex-row items-start">
-          <div className="m-5 md:w-80 h-80 border-3 border-teal-400 rounded-lg  flex-shrink-0">
+          <div className="m-[5vw] md:w-80 h-80 border-3 border-teal-400 rounded-lg  flex-shrink-0">
             <img
               src={photo}
               alt={name}
@@ -30,14 +31,14 @@ const Feedback = () => {
             />
           </div>
 
-          <div className="s:flex-1 p-8 rounded-lg mt-20 mr-30 ml-30 flex items-center justify-center" >
+          <div className="s:flex-1 p-8 rounded-lg m-auto flex items-center justify-center" >
             <p className="text-xl text-gray-700 leading-relaxed ">
                "{review} " 
             </p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between px-6 pb-6 ">
+        <div className="flex items-center justify-between ">
           <div>
             <p className="ml-150 font-semibold text-gray-900 text-lg">{name}</p>
             <p className="ml-150 text-sm text-gray-500">HAMSA Customer</p>
@@ -51,8 +52,8 @@ const Feedback = () => {
             </button>
           </div>
         </div>
-      </div>
-    </section>
+      </div></div>
+    </div>
   );
 };
 
