@@ -9,6 +9,7 @@ import RegisterForm from "./Pages/Login/registerForm";
 import Confirmation from "./components/DoctorDescription";
 import { getCityFromCoords } from "./utils/locationUtils";
 import DoctorDashboard from "./Pages/Dashboard/Dashboard";
+import PatientDashboard from "./Pages/PatientDashboard/patientDash";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const Layout = ({ location, setLocation }) => (
@@ -63,6 +64,7 @@ const App = () => {
       <Route path="/login" element={<RegisterForm />} />
       <Route path="/confirmation" element={<Confirmation />} />
       <Route path="/doctordashboard" element={<DoctorDashboard />} />
+      <Route path="/PatientDashboard" element={<PatientDashboard />} />
       <Route element={<Layout location={location} setLocation={setLocation} />}>
         <Route path="/" element={<Home />} />
         <Route path="/doctors-available" element={<DoctorsAvailable />} />
