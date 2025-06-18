@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from "react";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Container, Row, Col, Card, Button, Modal, Form } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button } from 'react-bootstrap';
 import CalendarWithSlots from './CalendarWithSlots';
 import 'react-calendar/dist/Calendar.css';
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import {
+  OverviewModal,
+  RejectModal,
+  PrescriptionModal,
+  ViewPrescriptionModal
+} from "./DoctorModals";
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
@@ -28,34 +34,6 @@ const DoctorDashboard = () => {
       .catch((err) => console.error(err));
   }, []);
 
-  const Sidebar = ({ collapsed, onOverviewClick, onAppointmentClick, onDashboardClick }) => (
-    <div
-      className={`p-0 sidebar position-fixed top-0 start-0 text-white bg-dark ${collapsed ? 'collapsed' : ''}`}
-      style={{ height: '100vh', width: collapsed ? '0' : '250px', overflow: 'hidden', transition: 'all 0.3s ease-in-out', zIndex: 1000 }}
-    >
-      {!collapsed && (
-        <div>
-          <div className="d-flex flex-column align-items-center text-center">
-            <img
-              src={doctorState?.photo || "Doctor photo"}
-              className="rounded-circle mb-3"
-              style={{ width: '120px', height: '120px', objectFit: 'cover' }}
-              alt="Doctor"
-            />
-            <h5>{doctorState?.name || "Doctor Name"}</h5>
-          </div>
-          <ul className="nav flex-column mt-4">
-            <li className="nav-item"><a className="nav-link text-white" href="/" onClick={onDashboardClick}>Home</a></li>
-            <li className="nav-item"><a className="nav-link text-white" href="#" onClick={onDashboardClick}>Dashboard</a></li>
-            <li className="nav-item"><a className="nav-link text-white" href="#" onClick={onAppointmentClick}>Appointments</a></li>
-            <li className="nav-item"><a className="nav-link text-white" href="#" onClick={onOverviewClick}>Overview</a></li>
-            <li className="nav-item"><a className="nav-link text-warning" href="#">Logout</a></li>
-          </ul>
-        </div>
-      )}
-    </div>
-  );
-
   const Header = ({ toggleSidebar }) => (
     <div className="bg-primary text-white p-3 d-flex align-items-center" style={{ position: "sticky", top: 0, zIndex: 1001 }}>
       <Button variant="outline-light" onClick={toggleSidebar} className="me-3">☰</Button>
@@ -72,6 +50,8 @@ const DoctorDashboard = () => {
     { name: "Lishanth", time: "10:00 AM", reason: "Heart missing" },
     { name: "Aditya", time: "10:30 AM", reason: "Brain missing" },
     { name: "Jayashree", time: "11:00 AM", reason: "Earring missing" },
+    { name: "Sanjana", time: "11:30 AM", reason: "Leg missing" },
+    { name: "Siddharth", time: "12:00 PM", reason: "Hand missing" },
   ]);
 
   const [previousAppointments, setPreviousAppointments] = useState([]);
@@ -128,6 +108,34 @@ const DoctorDashboard = () => {
     setShowOverview(false);
   };
 
+  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
+  const [currentPrescription, setCurrentPrescription] = useState("");
+  const [prescriptionIndex, setPrescriptionIndex] = useState(null);
+
+  const handleSavePrescription = () => {
+    const appt = todayAppointments[prescriptionIndex];
+    const updatedToday = [...todayAppointments];
+    updatedToday.splice(prescriptionIndex, 1);
+    setTodayAppointments(updatedToday);
+
+    setPreviousAppointments(prev => [
+      ...prev,
+      {
+        ...appt,
+        prescription: currentPrescription,
+        status: "Done"
+      }
+    ]);
+
+    setShowPrescriptionModal(false);
+    setCurrentPrescription("");
+    setPrescriptionIndex(null);
+  };
+
+  const [showViewPrescription, setShowViewPrescription] = useState(false);
+  const [viewedPrescription, setViewedPrescription] = useState("");
+  const [viewedPatientName, setViewedPatientName] = useState("");
+
   const renderDashboardContent = () => (
     <div className="p-4">
       <Row className="mb-4">
@@ -165,25 +173,44 @@ const DoctorDashboard = () => {
                     <Button variant="success" size="sm" className="me-2" onClick={() => handleStatusChange(idx, "Done")}>Done</Button>
                     <Button variant="danger" size="sm" className="me-2" onClick={() => handleStatusChange(idx, "Rejected")}>Reject</Button>
                     <Button variant="warning" size="sm" onClick={() => handleStatusChange(idx, "Rescheduled")}>Reschedule</Button>
+                    <Button variant="info" size="sm" className="ms-2" onClick={() => {
+                      setPrescriptionIndex(idx);
+                      setShowPrescriptionModal(true);
+                    }}>Prescription</Button>
                   </div>
                 </Card.Body>
               </Card>               
             ))              
           )}                
         </Col>              
-                    
+
         <Col md={6}>                
           <h5 className="text-primary">Previous Appointments</h5>
           {previousAppointments.length === 0 ? <p>No previous appointments.</p> : (
             previousAppointments.map((appt, idx) => (
-              <Card key={idx} className="mb-3  border-start border-4 border-primary shadow-sm">
+              <Card key={idx} className="mb-3 border-start border-4 border-primary shadow-sm">
                 <Card.Body>
                   <div>
                     <strong>{appt.name}</strong><br />
                     <span>{appt.time}</span><br />
                     <small>{appt.reason}</small><br />
                     {appt.status === "Rejected" && <p className="text-danger">Rejection: {appt.reasonForReject}</p>}
-                    <span className={`badge bg-${appt.status === 'Done' ? 'success' : appt.status === 'Rejected' ? 'danger' : 'warning'}`}>{appt.status}</span>
+                    {appt.prescription && (
+                      <Button 
+                        variant="outline-info"
+                        size="sm"
+                        onClick={() => {
+                          setViewedPrescription(appt.prescription);
+                          setViewedPatientName(appt.name);
+                          setShowViewPrescription(true);
+                        }}
+                      >
+                        View Prescription
+                      </Button>
+                    )}
+                    <span className={`badge bg-${appt.status === 'Done' ? 'success' : appt.status === 'Rejected' ? 'danger' : 'warning'} ms-2`}>
+                      {appt.status}
+                    </span>
                   </div>
                 </Card.Body>
               </Card>
@@ -196,53 +223,81 @@ const DoctorDashboard = () => {
 
   const renderAppointmentCalendar = () => (
     <div className="p-4">
-      <h4>Select Available Slots</h4>
       <CalendarWithSlots />
     </div>
   );
 
   return (
     <Container fluid className="p-0" style={{ overflowX: 'hidden' }}>
-      <Sidebar collapsed={collapsed} onOverviewClick={handleOverviewClick} onAppointmentClick={() => setView("appointments")} onDashboardClick={() => setView("dashboard")} />
-      <div style={{ marginLeft: collapsed ? '0' : '250px', transition: 'margin-left 0.3s ease-in-out', width: '100%' }}>
-        <Header toggleSidebar={toggleSidebar} />
-        {view === "dashboard" ? renderDashboardContent() : renderAppointmentCalendar()}
+      <Header toggleSidebar={toggleSidebar} />
+
+      <div className="d-flex" style={{ minHeight: '100vh' }}>
+        {/* Sidebar */}
+        <div
+          className={`p-0 bg-dark text-white ${collapsed ? 'collapsed' : ''}`}
+          style={{
+            width: collapsed ? '0' : '250px',
+            overflow: 'hidden',
+            transition: 'all 0.3s ease-in-out'
+          }}
+        >
+          {!collapsed && (
+            <div>
+              <div className="d-flex flex-column align-items-center text-center p-3">
+                <img
+                  src={doctorState?.photo || "Doctor photo"}
+                  className="rounded-circle mb-3"
+                  style={{ width: '120px', height: '120px', objectFit: 'cover' }}
+                  alt="Doctor"
+                />
+                <h5>{doctorState?.name || "Doctor Name"}</h5>
+              </div>
+              <ul className="nav flex-column">
+                <li className="nav-item"><a className="nav-link text-white" href="/">Home</a></li>
+                <li className="nav-item"><a className="nav-link text-white" href="/doctordashboard" onClick={() => setView("dashboard")}>Dashboard</a></li>
+                <li className="nav-item"><a className="nav-link text-white" href="#" onClick={() => setView("appointments")}>Appointments</a></li>
+                <li className="nav-item"><a className="nav-link text-white" href="#" onClick={handleOverviewClick}>Overview</a></li>
+                <li className="nav-item"><a className="nav-link text-warning" href="#">Logout</a></li>
+              </ul>
+            </div>
+          )}
+        </div>
+
+ 
+        <div style={{ flex: 1 }}>
+          {view === "dashboard" ? renderDashboardContent() : renderAppointmentCalendar()}
+        </div>
       </div>
 
-      <Modal show={showOverview} onHide={() => setShowOverview(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Write Overview</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group>
-              <Form.Label>Doctor Description</Form.Label>
-              <Form.Control as="textarea" rows={4} value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Write your description here..." />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowOverview(false)}>Close</Button>
-          <Button variant="primary" onClick={handleSaveDescription}>Save</Button>
-        </Modal.Footer>
-      </Modal>
-
-      <Modal show={showRejectModal} onHide={() => setShowRejectModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Enter Rejection Reason</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <Form.Group>
-              <Form.Control as="textarea" rows={3} placeholder="Enter reason for rejection..." value={rejectionReason} onChange={(e) => setRejectionReason(e.target.value)} />
-            </Form.Group>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowRejectModal(false)}>Cancel</Button>
-          <Button variant="danger" onClick={handleRejectConfirm}>Reject Appointment</Button>
-        </Modal.Footer>
-      </Modal>
+    
+      <OverviewModal
+        show={showOverview}
+        onClose={() => setShowOverview(false)}
+        description={description}
+        setDescription={setDescription}
+        onSave={handleSaveDescription}
+      />
+      <RejectModal
+        show={showRejectModal}
+        onClose={() => setShowRejectModal(false)}
+        rejectionReason={rejectionReason}
+        setRejectionReason={setRejectionReason}
+        onConfirm={handleRejectConfirm}
+      />
+      <PrescriptionModal
+        show={showPrescriptionModal}
+        onClose={() => setShowPrescriptionModal(false)}
+        name={todayAppointments[prescriptionIndex]?.name}
+        prescription={currentPrescription}
+        setPrescription={setCurrentPrescription}
+        onSave={handleSavePrescription}
+      />
+      <ViewPrescriptionModal
+        show={showViewPrescription}
+        onClose={() => setShowViewPrescription(false)}
+        name={viewedPatientName}
+        prescription={viewedPrescription}
+      />
     </Container>
   );
 };

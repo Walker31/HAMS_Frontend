@@ -76,8 +76,8 @@ const HeaderSection = () => {
   const [hospitals, setHospitals] = useState([]);
 
   useEffect(() => {
-    const lat = 12.9058; //For now we set dis
-      const lon = 80.2270;
+    const lat = 12.9058; //For now we set this
+    const lon = 80.2270;
 
     axios.get(`${base_url}/hospitals/getAll/${lat}/${lon}`) 
       .then(response => setHospitals(response.data))
@@ -129,7 +129,7 @@ const HeaderSection = () => {
                       {specializations.map((spec) => (
                         <div key={spec.name} className="col text-center">
                           <div
-                            className={`border rounded py-3 bg-light ${selectedSpecialization === spec.name ? 'border-primary bg-primary text-white' : ''}`}
+                            className={`border rounded py-3 bg-light ${selectedSpecialization === spec.name ? 'border-primary bg-primary text-black' : ''}`}
                             style={{ cursor: 'pointer' }}
                             onClick={() => {
                               setSelectedSpecialization(spec.name);
