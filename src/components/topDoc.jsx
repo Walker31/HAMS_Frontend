@@ -8,10 +8,18 @@ const TopDoc = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      console.error("Geolocation not supported");
-      setLoading(false);
-      return;
+    const base_url = import.meta.env.VITE_BASE_URL|| "http://localhost:3000";
+    axios.get(`${base_url}/doctors/top`)
+      .then((res) => {
+        // If your API returns { doctors: [...] }
+        setDoctors(res.data['doctors']);
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  const handleScroll = (offset) => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollBy({ left: offset, behavior: "smooth" });
     }
 
     navigator.geolocation.getCurrentPosition(
@@ -30,7 +38,6 @@ const TopDoc = () => {
         setLoading(false);
       }
     );
-  }, []);
 
   if (loading) {
     return <div className="text-center py-10">Loading…</div>;
@@ -98,6 +105,7 @@ const TopDoc = () => {
       </div>
     </div>
   );
+};
 };
 
 export default TopDoc;

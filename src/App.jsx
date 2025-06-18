@@ -1,21 +1,21 @@
 import { useState, useEffect } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Outlet,
-} from "react-router-dom";
+import { Routes, Route, Outlet } from "react-router-dom";
 
 import Home from "./Pages/Home";
 import Navbar from "./components/navbar";
 import DoctorsAvailable from "./components/DoctorsAvailable";
 import DoctorDescription from "./components/DoctorDescription";
 import RegisterForm from "./Pages/Login/registerForm";
-import Confirmation from "./components/Confirmation";
+import Confirmation from "./components/DoctorDescription";
+import DoctorDashboard from "./Pages/Dashboard/Dashboard";
 import { getCityFromCoords } from "./utils/locationUtils";
+import AboutUs from "./components/Aboutus";
+import FAQs from "./components/FAQs";
+import Services from "./components/Services";
 
+import "bootstrap/dist/css/bootstrap.min.css";
 
-// Layout component that receives location
+// Layout with shared Navbar
 const Layout = ({ location, setLocation }) => (
   <>
     <Navbar location={location} setLocation={setLocation} />
@@ -25,45 +25,49 @@ const Layout = ({ location, setLocation }) => (
 
 const App = () => {
   const [location, setLocation] = useState("Select Location");
-  
-  // ⛳ Auto-detect location on app load
+
   useEffect(() => {
     const savedLocation = localStorage.getItem("userLocation");
-      if (savedLocation) {
-        setLocation(savedLocation);
-      } else if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const city = await getCityFromCoords(
-              position.coords.latitude,
-              position.coords.longitude
-            );
-            setLocation(city);
-            localStorage.setItem("userLocation", city);
-            console.log(position.coords);
-            localStorage.setItem("latitude",position.coords.latitude);
-            localStorage.setItem("longitude",position.coords.longitude);
-          },
-          (error) => {
-            console.error("Geolocation error:", error);
-            setLocation("Unavailable");
-          }
-        );
-      } else {
-        setLocation("Not supported");
-      }
+    if (savedLocation) {
+      setLocation(savedLocation);
+    } else if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const city = await getCityFromCoords(
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          setLocation(city);
+          localStorage.setItem("userLocation", city);
+          localStorage.setItem("latitude", position.coords.latitude);
+          localStorage.setItem("longitude", position.coords.longitude);
+        },
+        (error) => {
+          console.error("Geolocation error:", error);
+          setLocation("Unavailable");
+        }
+      );
+    } else {
+      setLocation("Not supported");
+    }
   }, []);
-
 
   return (
     <Routes>
+      {/* Layout with Navbar shared across routes */}
       <Route element={<Layout location={location} setLocation={setLocation} />}>
         <Route path="/" element={<Home />} />
         <Route path="/doctors-available" element={<DoctorsAvailable />} />
+        <Route path="/:hospital/doctors-available" element={<DoctorsAvailable />} />
         <Route path="/doctor-description" element={<DoctorDescription />} />
+        <Route path="/:hospital/doctors-available/DoctorDescription" element={<DoctorDescription />} />
         <Route path="/login" element={<RegisterForm />} />
         <Route path="/confirmation" element={<Confirmation />} />
-      </Route>
+        <Route path="/aboutUs" element={<AboutUs />} />
+        <Route path="/faqs" element={<FAQs />} />
+        <Route path="/services" element={<Services />} />
+        </Route>
+      <Route path="/doctordashboard" element={<DoctorDashboard />} />
     </Routes>
   );
 };
