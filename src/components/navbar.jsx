@@ -7,10 +7,10 @@ import CloseIcon from '@mui/icons-material/Close';
 import RegisterForm from "../Pages/Login/registerForm";
 
 const navigation = [
-  { name: "Health", href: "#", current: false },
-  { name: "Medicines & Health Services", href: "#", current: false },
-  { name: "Services", href: "#", current: false },
-  { name: "About Us", href: "#", current: false },
+  { name: "Health", href: "/", current: false },
+  { name: "Medical Services", href: "/services", current: false },
+  { name: "About Us", href: "/aboutUs", current: false },
+  { name: "FAQs", href: "/faqs", current: false },
 ];
 
 function classNames(...classes) {
@@ -37,7 +37,9 @@ const Navbar = ({ location, setLocation }) => {
           {navigation.map((item) => (
             <div
               key={item.name}
-              onClick={() => setSelected(item.name)}
+              onClick={() => {setSelected(item.name);
+                navigate(item.href);
+              }}
               className={classNames(
                 selected === item.name
                   ? "border-b-2 border-[#527C88] text-[#527C88]"
