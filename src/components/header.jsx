@@ -1,18 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const HeaderSection = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
+  const [reason, setReason] = useState('');
   const [step, setStep] = useState(1);
   const navigate = useNavigate();
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
   const handleBookClick = () => setShowPopup(true);
+
   const handleClose = () => {
     setShowPopup(false);
     setStep(1);
     setSelectedSpecialization('');
+    setReason('');
   };
 
   const sectionStyle = {
@@ -21,7 +26,7 @@ const HeaderSection = () => {
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
     height: '550px',
-    width: '100vw',
+    width: '99vw',
   };
 
   const specializations = [
@@ -45,15 +50,39 @@ const HeaderSection = () => {
     { name: 'Dermatologist', icon: '🧴' }
   ];
 
-  const hospitals = [
-    'HAMS Hospital',
-    'Janga Hospital',
-    'Durai Hospital',
-    'Jayyy Hospital',
-    'Shrudeepan Hospital',
-    'Mahimaa Hospital',
-    'Chairperson Hospital',
-  ];
+  const reasonMap = {
+    'General Physician': ['Fever', 'Cold and Cough', 'General Checkup'],
+    'Neurologist': ['Headache', 'Seizures', 'Memory Loss'],
+    'Psychiatrist': ['Depression', 'Anxiety', 'Sleep Disorders'],
+    'Neurosurgeon': ['Brain Surgery Consult', 'Spinal Issues'],
+    'Cardiologist': ['Chest Pain', 'High BP', 'Heart Palpitations'],
+    'Orthopedic Surgeon': ['Fracture', 'Joint Pain', 'Back Pain'],
+    'Rheumatologist': ['Arthritis', 'Joint Inflammation'],
+    'Obstetrician & Gynecologist': ['Pregnancy Checkup', 'Menstrual Issues'],
+    'Pediatrician': ['Child Vaccination', 'Fever in Child'],
+    'Fertility Specialist': ['IVF Consultation', 'Infertility'],
+    'Ophthalmologist': ['Vision Checkup', 'Eye Pain'],
+    'ENT Specialist': ['Ear Pain', 'Hearing Loss'],
+    'Dentist': ['Toothache', 'Cavity', 'Braces'],
+    'Gastroenterologist': ['Acidity', 'Stomach Pain'],
+    'Pulmonologist': ['Cough', 'Asthma', 'Breathlessness'],
+    'Urologist': ['Kidney Stone', 'UTI'],
+    'Oncologist': ['Cancer Screening', 'Chemotherapy'],
+    'Dermatologist': ['Skin Rash', 'Acne', 'Hair Loss']
+  };
+
+  const currentReasons = reasonMap[selectedSpecialization] || [];
+
+  const [hospitals, setHospitals] = useState([]);
+
+  useEffect(() => {
+    const lat = 12.9058; //For now we set this
+    const lon = 80.2270;
+
+    axios.get(`${base_url}/hospitals/getAll/${lat}/${lon}`) 
+      .then(response => setHospitals(response.data))
+      .catch(error => console.error('Error fetching hospitals:', error));
+  }, []);
 
   return (
     <div style={sectionStyle} className="d-flex justify-content-center align-items-center flex-column text-center m-0 p-0">
@@ -71,28 +100,26 @@ const HeaderSection = () => {
           <div className="bg-white p-4 rounded position-relative d-flex" style={{ width: '800px', minHeight: '500px' }}>
             <button className="btn-close position-absolute top-0 end-0 m-2" onClick={handleClose}></button>
 
+            {/* Step navigation */}
             <div className="d-flex flex-column justify-content-start pe-4 border-end" style={{ width: '200px' }}>
               <h4 className="mb-4">Hi</h4>
               <p>Follow the steps below:</p>
               <hr />
-              <div
-                className={`d-flex align-items-center mb-3 ${step === 1 ? 'fw-bold text-primary' : 'text-muted'}`}
-                style={{ cursor: 'pointer' }}
-                onClick={() => setStep(1)}
-              >
+              <div className={`d-flex align-items-center mb-3 ${step === 1 ? 'fw-bold text-primary' : 'text-muted'}`} style={{ cursor: 'pointer' }} onClick={() => setStep(1)}>
                 <div className="border rounded-circle d-flex justify-content-center align-items-center" style={{ width: '30px', height: '30px' }}>1</div>
                 <span className="ms-2">Specialization</span>
               </div>
-              <div
-                className={`d-flex align-items-center ${step === 2 ? 'fw-bold text-primary' : 'text-muted'}`}
-                style={{ cursor: 'pointer' }}
-                onClick={() => setStep(2)}
-              >
+              <div className={`d-flex align-items-center ${step === 2 ? 'fw-bold text-primary' : 'text-muted'}`} style={{ cursor: 'pointer' }} onClick={() => setStep(2)}>
                 <div className="border rounded-circle d-flex justify-content-center align-items-center" style={{ width: '30px', height: '30px' }}>2</div>
+                <span className="ms-4">Reason</span>
+              </div>
+              <div className={`d-flex align-items-center ${step === 3 ? 'fw-bold text-primary' : 'text-muted'}`} style={{ cursor: 'pointer' }} onClick={() => setStep(3)}>
+                <div className="border rounded-circle d-flex justify-content-center align-items-center" style={{ width: '30px', height: '30px' }}>3</div>
                 <span className="ms-2">Select Hospital</span>
               </div>
             </div>
 
+            {/* Step content */}
             <div className="ps-4 w-100">
               {step === 1 && (
                 <>
@@ -102,10 +129,11 @@ const HeaderSection = () => {
                       {specializations.map((spec) => (
                         <div key={spec.name} className="col text-center">
                           <div
-                            className={`border rounded py-3 bg-light ${selectedSpecialization === spec.name ? 'border-primary bg-primary text-white' : ''}`}
+                            className={`border rounded py-3 bg-light ${selectedSpecialization === spec.name ? 'border-primary bg-primary text-black' : ''}`}
                             style={{ cursor: 'pointer' }}
                             onClick={() => {
                               setSelectedSpecialization(spec.name);
+                              setReason('');
                               setStep(2);
                             }}
                           >
@@ -121,20 +149,47 @@ const HeaderSection = () => {
 
               {step === 2 && (
                 <>
+                  <h5>Why do you want to see a {selectedSpecialization}?</h5>
+                  <select
+                    className="form-select mt-3 mb-4"
+                    value={reason}
+                    onChange={(e) => setReason(e.target.value)}
+                  >
+                    <option value="">-- Select Reason --</option>
+                    {currentReasons.map((r, idx) => (
+                      <option key={idx} value={r}>{r}</option>
+                    ))}
+                  </select>
+                  {reason && (
+                    <button className="btn btn-primary" onClick={() => setStep(3)}>
+                      Next: Select Hospital
+                    </button>
+                  )}
+                </>
+              )}
+
+              {step === 3 && (
+                <>
                   <h5 className="mb-3">Select Hospital</h5>
                   <div className="row row-cols-2 g-3">
                     {hospitals.map((hosp) => (
-                      <div key={hosp} className="col text-center">
+                      <div key={hosp.RegId} className="col text-center">
                         <div
                           className="border rounded py-3 bg-light"
                           style={{ cursor: 'pointer' }}
                           onClick={() => {
                             setShowPopup(false);
-                            navigate(`/${hosp.split(' ')[0]}/doctors-available`, { state: { hname: hosp } });
+                            navigate(`/${hosp.hospitalName.split(' ')[0]}/doctors-available`, {
+                              state: {
+                                hname: hosp.hospitalName,
+                                specialization: selectedSpecialization,
+                                reason: reason
+                              }
+                            });
                           }}
                         >
                           🏥
-                          <div style={{ fontSize: '14px', marginTop: '5px' }}>{hosp}</div>
+                          <div style={{ fontSize: '14px', marginTop: '5px' }}>{hosp.hospitalName}</div>
                         </div>
                       </div>
                     ))}

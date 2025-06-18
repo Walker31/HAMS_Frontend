@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 
 import Home from "./Pages/Home";
@@ -7,11 +7,15 @@ import DoctorsAvailable from "./components/DoctorsAvailable";
 import DoctorDescription from "./components/DoctorDescription";
 import RegisterForm from "./Pages/Login/registerForm";
 import Confirmation from "./components/DoctorDescription";
-import { getCityFromCoords } from "./utils/locationUtils";
 import DoctorDashboard from "./Pages/Dashboard/Dashboard";
-import PatientDashboard from "./Pages/PatientDashboard/patientDash";
+import { getCityFromCoords } from "./utils/locationUtils";
+import AboutUs from "./components/Aboutus";
+import FAQs from "./components/FAQs";
+import Services from "./components/Services";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 
+// Layout with shared Navbar
 const Layout = ({ location, setLocation }) => (
   <>
     <Navbar location={location} setLocation={setLocation} />
@@ -50,29 +54,20 @@ const App = () => {
 
   return (
     <Routes>
-      <Route
-        path="/"
-        element={
-          <>
-            <Navbar location={location} setLocation={setLocation} />
-            <Home />
-          </>
-        }
-      />
-      <Route path="/doctors-available" element={<DoctorsAvailable />} />
-      <Route path="/doctor-description" element={<DoctorDescription />} />
-      <Route path="/login" element={<RegisterForm />} />
-      <Route path="/confirmation" element={<Confirmation />} />
-      <Route path="/doctordashboard" element={<DoctorDashboard />} />
-      <Route path="/PatientDashboard" element={<PatientDashboard />} />
+      {/* Layout with Navbar shared across routes */}
       <Route element={<Layout location={location} setLocation={setLocation} />}>
         <Route path="/" element={<Home />} />
         <Route path="/doctors-available" element={<DoctorsAvailable />} />
+        <Route path="/:hospital/doctors-available" element={<DoctorsAvailable />} />
+        <Route path="/doctor-description" element={<DoctorDescription />} />
         <Route path="/:hospital/doctors-available/DoctorDescription" element={<DoctorDescription />} />
         <Route path="/login" element={<RegisterForm />} />
         <Route path="/confirmation" element={<Confirmation />} />
-        <Route path="/:hospital/doctors-available" element={<DoctorsAvailable />} />
-      </Route>
+        <Route path="/aboutUs" element={<AboutUs />} />
+        <Route path="/faqs" element={<FAQs />} />
+        <Route path="/services" element={<Services />} />
+        </Route>
+      <Route path="/doctordashboard" element={<DoctorDashboard />} />
     </Routes>
   );
 };

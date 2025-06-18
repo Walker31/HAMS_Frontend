@@ -85,7 +85,7 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="w-full flex flex-col items-center space-y-2">
+    <div className="w-full max-w-[500px] h-full max-h-[750px] flex flex-col overflow-y-auto	rounded-lg items-center space-y-2 scrollbar-hide">
       {!userType && !isLogin && (
         <ModeSelector handleSubmit={handleSubmit} />
       )}
