@@ -30,9 +30,7 @@ const Programs = () => {
         <div className="text-2xl font-bold text-cyan-700">
           Healthcare <span className="text-indigo-900">Programs</span>
         </div>
-        <a href="#" className="text-sm text-blue-600 hover:underline">
-          View All
-        </a>
+        
       </div>
 
       <div className="relative">
