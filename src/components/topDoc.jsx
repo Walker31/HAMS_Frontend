@@ -64,11 +64,11 @@ const TopDoc = () => {
   }
 
   return (
-    <div className="container max-w-7xl mx-auto px-4 py-8">
+    <div className="container max-w-7xl mx-auto py-4 ">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-2xl font-bold text-indigo-900">
+        <div className="text-2xl font-bold text-indigo-900">
           Top Rated <span className="doc-highlight text-cyan-700">Doctors</span> Near You
-        </h3>
+        </div>
         <a href="#" className="text-sm text-blue-600 hover:underline">
           View All
         </a>
@@ -78,26 +78,28 @@ const TopDoc = () => {
         <ScrollButton direction="left" onClick={() => handleScroll(-600)} className="left-0" />
         <div
           ref={carouselRef}
-          className="flex space-x-6 overflow-x-auto pb-2 no-scrollbar scroll-smooth"
+          className="flex space-x-6 bg-white overflow-x-auto pb-4 no-scrollbar scroll-smooth"
         >
           {doctors.map((d, idx) => (
             <div
               key={idx}
-              className="flex-shrink-0 w-64 bg-white rounded-xl shadow-md p-4 text-center hover:scale-105 transition-transform"
+              className="flex-shrink-0 w-48 bg-white rounded-xl border border-gray-200 pt-3 text-center hover:scale-105 transition-transform shadow-sm"
             >
-              <img
-                src={d.photo}
-                alt="doc-photo"
-                loading="lazy"
-                className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-              />
-              <div className="space-y-1">
-                <div className="font-semibold text-gray-800">{d.name}</div>
-                <div className="text-xs text-gray-500">{d.specialization}</div>
+               <div className="w-full h-36 overflow-hidden rounded-lg mb-4">
+                <img
+                  src={d.photo}
+                  alt={`${d.name} photo`}
+                  loading="lazy"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className=" mb-2 ">
+                <div className="font-semibold text-gray-800 text-base">{d.name}</div>
+                <div className="text-sm text-gray-500">{d.specialization}</div>
               </div>
               <button
                 onClick={() => alert(`Consulting ${d.name}`)}
-                className="mt-4 w-full border border-[#10217D] text-[#10217D] text-sm font-medium py-2 rounded hover:bg-indigo-50"
+                className=" px-4 mb-3 border border-[#10217D] text-[#10217D] text-sm font-medium py-2.5 rounded-md hover:bg-indigo-50"
               >
                 Consult Now
               </button>
