@@ -1,58 +1,45 @@
 // userAPI.js
-import axios from 'axios';
+import axios from "axios";
+const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
-export const createDoctor = async (doctorData) => {
-  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-  try {
-    const response = await axios.post(`${base_url}/doctors/signup`, doctorData);
-    return response.data;
-  } catch (error) {
-    console.error('Doctor registration failed:', error.response?.data || error.message);
-    throw error;
-  }
+// These now ONLY send requests, and leave state to AuthContext
+export const createDoctor = async (doctorData, login) => {
+  const res = await axios.post(`${base_url}/doctors/signup`, doctorData, {
+    withCredentials: true,
+  });
+  login(res.data, 'doctor');
+  return res.data;
 };
 
-export const loginUser = async (loginData) => {
-  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-  try {
-    const response = await axios.post(`${base_url}/doctors/login`, loginData);
-    return response.data;
-  } catch (error) {
-    console.error('Login failed:', error.response?.data || error.message);
-    throw error;
-  }
+export const loginUser = async (loginData, role = "patient", login) => {
+  const route = role === "doctor" ? "doctors/login" : "patients/login";
+  const res = await axios.post(`${base_url}/${route}`, loginData, {
+    withCredentials: true,
+  });
+  login(res.data, role);
+  return res.data;
 };
 
-export const createPatient = async (patientData) => {
-  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-  try {
-    const response = await axios.post(`${base_url}/patients/signup`, patientData);
-    return response.data;
-  } catch (error) {
-    console.error('Login failed:', error.response?.data || error.message);
-    throw error;
-  }
+export const createPatient = async (patientData, login) => {
+  const res = await axios.post(`${base_url}/patients/signup`, patientData, {
+    withCredentials: true,
+  });
+  login(res.data, 'patient');
+  return res.data;
 };
 
-export const createHospital = async (hospitalData) => {
-  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-  try {
-    console.log(hospitalData);
-    const response = await axios.post(`${base_url}/hospitals/signup`, hospitalData);
-    return response.data;
-  } catch (error) {
-    console.error('Hospital registration failed:', error.response?.data || error.message);
-    throw error;
-  }
+export const createHospital = async (hospitalData, login) => {
+  const res = await axios.post(`${base_url}/hospitals/signup`, hospitalData, {
+    withCredentials: true,
+  });
+  login(res.data, 'hospital');
+  return res.data;
 };
 
-export const loginHospital = async (hospitalData) => {
-  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-  try {
-    const response = await axios.post(`${base_url}/hospitals/login`, hospitalData);
-    return response.data;
-  } catch (error) {
-    console.error('Login failed:', error.response?.data || error.message);
-    throw error;
-  }
+export const loginHospital = async (hospitalData, login) => {
+  const res = await axios.post(`${base_url}/hospitals/login`, hospitalData, {
+    withCredentials: true,
+  });
+  login(res.data, 'hospital');
+  return res.data;
 };

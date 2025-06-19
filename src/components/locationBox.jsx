@@ -6,7 +6,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import cityIcons from "../constants/cityIcons"; 
 import { getCityFromCoords } from "../utils/locationUtils";
 
-
 export default function LocationModal({ open, onClose, setLocation }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredCities, setFilteredCities] = useState([]);
@@ -23,6 +22,14 @@ export default function LocationModal({ open, onClose, setLocation }) {
     );
   }, [searchTerm]);
 
+  const handleCitySelect = (city) => {
+    setLocation(city);
+    localStorage.setItem("userLocation", city);
+    localStorage.setItem("latitude", cityIcons[city].lat);
+    localStorage.setItem("longitude", cityIcons[city].lng);
+    onClose();
+  };
+
   const detectLocation = () => {
     if ("geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(
@@ -32,6 +39,16 @@ export default function LocationModal({ open, onClose, setLocation }) {
             pos.coords.longitude
           );
           setLocation(city);
+          localStorage.setItem("userLocation", city);
+          // If the detected city is in cityIcons, store its coordinates
+          if (cityIcons[city]) {
+            localStorage.setItem("latitude", cityIcons[city].lat);
+            localStorage.setItem("longitude", cityIcons[city].lng);
+          } else {
+            // Otherwise, store the detected coordinates
+            localStorage.setItem("latitude", pos.coords.latitude);
+            localStorage.setItem("longitude", pos.coords.longitude);
+          }
           onClose();
         },
         () => {
@@ -48,15 +65,12 @@ export default function LocationModal({ open, onClose, setLocation }) {
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
       <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-3xl max-h-[90vh] overflow-y-auto">
-        
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Select Your City</h2>
           <IconButton onClick={onClose}>
             <CloseIcon className="text-gray-500 hover:text-black" />
           </IconButton>
         </div>
-
-        
         <div className="flex items-center border border-gray-300 rounded-md px-3 py-2 mb-4">
           <SearchIcon className="text-gray-400 mr-2" />
           <input
@@ -67,8 +81,6 @@ export default function LocationModal({ open, onClose, setLocation }) {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-
-        
         <button
           onClick={detectLocation}
           className="flex items-center gap-2 text-blue-500 hover:text-blue-600 font-medium mb-4"
@@ -76,8 +88,6 @@ export default function LocationModal({ open, onClose, setLocation }) {
           <LocationOnIcon />
           Detect my location
         </button>
-
-        
         <div className="text-sm font-medium text-gray-700 mb-2">
           Popular Cities
         </div>
@@ -85,19 +95,14 @@ export default function LocationModal({ open, onClose, setLocation }) {
           {filteredCities.map((city) => (
             <div
               key={city}
-              onClick={() => {
-                setLocation(city);
-                onClose();
-              }}
+              onClick={() => handleCitySelect(city)}
               className="flex flex-col items-center justify-center p-3 hover:bg-gray-100 rounded cursor-pointer"
             >
-              <div className="text-2xl text-blue-700">{cityIcons[city]}</div>
+              <div className="text-2xl text-blue-700">{cityIcons[city].icon}</div>
               <div className="mt-1 text-sm font-semibold text-black-800">{city}</div>
             </div>
           ))}
         </div>
-
-      
         {searchTerm === "" && (
           <div className="mt-4 text-center">
             <button

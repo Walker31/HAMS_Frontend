@@ -5,15 +5,44 @@ import axios from "axios";
 const TopDoc = () => {
   const carouselRef = useRef(null);
   const [doctors, setDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
+ 
+  const fetchTopDoctors = (lat, lon) => {
+    axios
+      .get(`${base_url}/doctors/top/${lat}/${lon}`)
+      .then((res) => {
+        setDoctors(res.data.doctors);
+      })
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    const base_url = import.meta.env.VITE_BASE_URL|| "http://localhost:3000";
-    axios.get(`${base_url}/doctors/top`)
-      .then((res) => {
-        // If your API returns { doctors: [...] }
-        setDoctors(res.data['doctors']);
-      })
-      .catch((err) => console.error(err));
+    const storedLat = localStorage.getItem("latitude");
+    const storedLon = localStorage.getItem("longitude");
+
+    if (storedLat && storedLon) {
+     
+      fetchTopDoctors(storedLat, storedLon);
+    } else {
+      
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => {
+          const { latitude, longitude } = coords;
+          localStorage.setItem("latitude", latitude);
+          localStorage.setItem("longitude", longitude);
+          fetchTopDoctors(latitude, longitude);
+        },
+        (err) => {
+          console.error("Geolocation error:", err);
+          
+          setLoading(false);
+        }
+      );
+    }
   }, []);
 
   const handleScroll = (offset) => {
@@ -22,7 +51,11 @@ const TopDoc = () => {
     }
   };
 
-  if (!doctors || doctors.length === 0) {
+  if (loading) {
+    return <div className="text-center py-10">Loading…</div>;
+  }
+
+  if (!doctors.length) {
     return (
       <div className="text-center py-10 text-gray-600">
         No doctors available at the moment.
@@ -31,57 +64,46 @@ const TopDoc = () => {
   }
 
   return (
-    <div className="container max-w-7xl mx-auto px-4 py-8">
+    <div className="container max-w-7xl mx-auto py-4 ">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-2xl font-bold text-indigo-900">
-          Top Rated <span className="doc-highlight text-cyan-700">Doctors</span>{" "}
-          Near You
-        </h3>
-        <a href="#" className="text-sm text-blue-600 hover:underline">
-          View All
-        </a>
+        <div className="text-2xl font-bold text-indigo-900">
+          Top Rated <span className="doc-highlight text-cyan-700">Doctors</span> Near You
+        </div>
+        
       </div>
 
       <div className="relative">
-        {/* Left Scroll */}
         <ScrollButton direction="left" onClick={() => handleScroll(-600)} className="left-0" />
-
-        {/* Doctor List */}
         <div
           ref={carouselRef}
-          className="flex space-x-6 overflow-x-auto pb-2 no-scrollbar scroll-smooth"
+          className="flex space-x-6 bg-white overflow-x-auto pb-4 scrollbar-hide scroll-smooth"
         >
           {doctors.map((d, idx) => (
             <div
               key={idx}
-              className="flex-shrink-0 w-64 bg-white rounded-xl shadow-md p-4 text-center hover:scale-105 transition-transform"
+              className="flex-shrink-0 w-48 bg-white rounded-xl border border-gray-200 pt-3 text-center hover:scale-105 transition-transform shadow-sm"
             >
-              <img
-                src={d.photo}
-                alt="doc-photo"
-                loading="lazy"
-                className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-              />
-              <div className="space-y-1">
-                <div className="font-semibold text-gray-800">{d.name}</div>
-                <div className="text-xs text-gray-500">
-                  {d.specialization},{" "}
-                  {d.location && d.location.coordinates
-                    ? `${d.location.coordinates[1]}, ${d.location.coordinates[0]}`
-                    : "Unknown Location"}
-                </div>
+               <div className="w-full h-36 overflow-hidden rounded-lg mb-4">
+                <img
+                  src={d.photo}
+                  alt={`${d.name} photo`}
+                  loading="lazy"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className=" mb-2 ">
+                <div className="font-semibold text-gray-800 text-base">{d.name}</div>
+                <div className="text-sm text-gray-500">{d.specialization}</div>
               </div>
               <button
                 onClick={() => alert(`Consulting ${d.name}`)}
-                className="mt-4 w-full border border-[#10217D] text-[#10217D] text-sm font-medium py-2 rounded hover:bg-indigo-50"
+                className=" px-4 mb-3 border border-[#10217D] text-[#10217D] text-sm font-medium py-2.5 rounded-md hover:bg-indigo-50"
               >
                 Consult Now
               </button>
             </div>
           ))}
         </div>
-
-        {/* Right Scroll */}
         <ScrollButton direction="right" onClick={() => handleScroll(600)} className="right-0" />
       </div>
     </div>
