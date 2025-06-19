@@ -12,10 +12,9 @@ import { getCityFromCoords } from "./utils/locationUtils";
 import AboutUs from "./components/Aboutus";
 import FAQs from "./components/FAQs";
 import Services from "./components/Services";
-
+import PatientDashboard from "./Pages/PatientDashboard/patientDash";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-// Layout with shared Navbar
 const Layout = ({ location, setLocation }) => (
   <>
     <Navbar location={location} setLocation={setLocation} />
@@ -25,6 +24,7 @@ const Layout = ({ location, setLocation }) => (
 
 const App = () => {
   const [location, setLocation] = useState("Select Location");
+  localStorage.setItem('loggedIn',false);
 
   useEffect(() => {
     const savedLocation = localStorage.getItem("userLocation");
@@ -54,7 +54,6 @@ const App = () => {
 
   return (
     <Routes>
-      {/* Layout with Navbar shared across routes */}
       <Route element={<Layout location={location} setLocation={setLocation} />}>
         <Route path="/" element={<Home />} />
         <Route path="/doctors-available" element={<DoctorsAvailable />} />
@@ -66,8 +65,9 @@ const App = () => {
         <Route path="/aboutUs" element={<AboutUs />} />
         <Route path="/faqs" element={<FAQs />} />
         <Route path="/services" element={<Services />} />
-        </Route>
+      </Route>
       <Route path="/doctordashboard" element={<DoctorDashboard />} />
+      <Route path="/patientdashboard" element={<PatientDashboard />} />
     </Routes>
   );
 };
