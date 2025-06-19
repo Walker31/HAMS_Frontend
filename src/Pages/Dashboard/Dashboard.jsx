@@ -21,98 +21,8 @@ const DoctorDashboard = () => {
   const doctor = locationState.doctor || {};
 
   const [doctorState, setDoctorState] = useState(doctor);
-
-  useEffect(() => {
-    const latitude = localStorage.getItem("latitude");
-    const longitude = localStorage.getItem("longitude");
-    axios
-      .get(`${base_url}/doctors/nearby/${latitude}/${longitude}`)
-      .then((res) => console.log(res.data))
-      .catch((err) => console.error(err));
-  }, []);
-
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
-
-  useEffect(() => {
-    if (!doctorState._id) {
-      console.warn("Doctor ID is missing! Not fetching.");
-      return;
-    }
-
-    const fetchTodayAppointments = async () => {
-      try {
-        const today = new Date();
-        const formattedDate = today.toLocaleDateString("en-CA"); // gives local date in YYYY-MM-DD format
-        console.log("Formatted Date (Local):", formattedDate);
-
-        //console.log("Fetching with Doctor ID:", doctorState._id);
-        console.log("Doctor ID being sent:", doctorState._id);
-        console.log(
-          "Final GET URL:",
-          `${base_url}/appointments/pending/${formattedDate}?doctorId=${doctorState._id}`
-        );
-
-        const res = await axios.get(
-          `${base_url}/appointments/pending/${formattedDate}?doctorId=${doctorState._id}`
-        );
-        console.log("Fetched appointments:", res.data);
-        setTodayAppointments(res.data); // 🔍 Setting the state correctly
-      } catch (error) {
-        console.error("Error fetching today's appointments:", error);
-      }
-    };
-
-    fetchTodayAppointments();
-  }, [doctorState]);
-  // 👇 Place this OUTSIDE of useEffect
-  const fetchTodayAppointments = async () => {
-    try {
-      const today = new Date();
-      const formattedDate = today.toLocaleDateString("en-CA");
-      const res = await axios.get(
-        `${base_url}/appointments/pending/${formattedDate}?doctorId=${doctorState._id}`
-      );
-      setTodayAppointments(res.data);
-    } catch (error) {
-      console.error("Error fetching today's appointments:", error);
-    }
-  };
-
-  // 👇 Use here in useEffect
-  useEffect(() => {
-    if (!doctorState._id) return;
-    fetchTodayAppointments();
-    fetchPreviousAppointments();
-  }, [doctorState]);
-
-  useEffect(() => {
-    if (!doctorState._id) return;
-    fetchTodayAppointments();
-    fetchPreviousAppointments(); // 👍 brings backend data after refresh
-  }, [doctorState]);
-
-  const fetchPreviousAppointments = async () => {
-    try {
-      const res = await axios.get(
-        `${base_url}/appointments/previous?doctorId=${doctorState._id}`
-      );
-      setPreviousAppointments(res.data);
-    } catch (error) {
-      console.error("Error fetching previous appointments:", error);
-    }
-  };
-
-  const updateAppointmentStatus = async (apptId, newStatus, reason = "") => {
-    try {
-      await axios.put(`${base_url}/appointments/update-status/${apptId}`, {
-        appStatus: newStatus,
-        reasonForReject: reason,
-      });
-    } catch (error) {
-      console.error("Error updating appointment status:", error);
-    }
-  };
 
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
@@ -126,9 +36,26 @@ const DoctorDashboard = () => {
   const [viewedPatientName, setViewedPatientName] = useState("");
   const [viewedPrescription, setViewedPrescription] = useState("");
 
+  const [collapsed, setCollapsed] = useState(false);
+  const [showOverview, setShowOverview] = useState(false);
+  const [description, setDescription] = useState("");
+  const [view, setView] = useState("dashboard");
+
+  const toggleSidebar = () => setCollapsed(!collapsed);
+  const handleOverviewClick = () => setShowOverview(true);
+  const handleSaveDescription = () => {
+    alert("Saved");
+    setShowOverview(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/", { replace: true });
+    alert("Logged out successfully");
+  };
+
   const handleStatusChange = (index, status) => {
     const appt = todayAppointments[index];
-
     if (status === "Done") {
       setPrescriptionIndex(index);
       setShowPrescriptionModal(true);
@@ -181,80 +108,171 @@ const DoctorDashboard = () => {
     setShowPrescriptionModal(false);
   };
 
-  const Sidebar = ({
-    collapsed,
-    onOverviewClick,
-    onAppointmentClick,
-    onDashboardClick,
-  }) => (
-    <div
-      className={`p-0 sidebar position-fixed top-0 start-0 text-white bg-dark ${
-        collapsed ? "collapsed" : ""
-      }`}
-      style={{
-        height: "100vh",
-        width: collapsed ? "0" : "250px",
-        overflow: "hidden",
-        transition: "all 0.3s ease-in-out",
-        zIndex: 1000,
-      }}
-    >
-      {!collapsed && (
-        <div>
-          <div className="d-flex flex-column align-items-center text-center">
-            <img
-              src={doctorState?.photo || "Doctor photo"}
-              className="rounded-circle mb-3"
-              style={{ width: "120px", height: "120px", objectFit: "cover" }}
-              alt="Doctor"
-            />
-            <h5>{doctorState?.name || "Doctor Name"}</h5>
-          </div>
-          <ul className="nav flex-column mt-4">
-            <li className="nav-item">
-              <a
-                className="nav-link text-white"
-                href="/"
-                onClick={onDashboardClick}
+  const updateAppointmentStatus = async (apptId, newStatus, reason = "") => {
+    try {
+      await axios.put(`${base_url}/appointments/update-status/${apptId}`, {
+        appStatus: newStatus,
+        reasonForReject: reason,
+      });
+    } catch (error) {
+      console.error("Error updating appointment status:", error);
+    }
+  };
+
+  const fetchTodayAppointments = async () => {
+    try {
+      const today = new Date();
+      const formattedDate = today.toLocaleDateString("en-CA");
+      const res = await axios.get(
+        `${base_url}/appointments/pending/${formattedDate}?doctorId=${doctorState._id}`
+      );
+      setTodayAppointments(res.data);
+    } catch (error) {
+      console.error("Error fetching today's appointments:", error);
+    }
+  };
+
+  const fetchPreviousAppointments = async () => {
+    try {
+      const res = await axios.get(
+        `${base_url}/appointments/previous?doctorId=${doctorState._id}`
+      );
+      setPreviousAppointments(res.data);
+    } catch (error) {
+      console.error("Error fetching previous appointments:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (!doctorState._id) return;
+    fetchTodayAppointments();
+    fetchPreviousAppointments();
+  }, [doctorState]);
+
+  const renderDashboardContent = () => (
+    <div className="p-4">
+      <Row className="mb-4">
+        <Col md={6} lg={3}>
+          <Card className="text-center shadow-sm">
+            <Card.Body>
+              <Card.Title>Total Patients</Card.Title>
+              <h4>
+                {
+                  previousAppointments.filter(
+                    (appt) => appt.status === "Completed"
+                  ).length
+                }
+              </h4>
+            </Card.Body>
+          </Card>
+        </Col>
+        <Col md={6} lg={3}>
+          <Card className="text-center shadow-sm">
+            <Card.Body>
+              <Card.Title>Today's Appointments</Card.Title>
+              <h4>{todayAppointments.length}</h4>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      <Row>
+        <Col md={6}>
+          <h5 className="text-primary">Today's Appointments</h5>
+          {todayAppointments.length === 0 ? (
+            <p>No appointments for today.</p>
+          ) : (
+            todayAppointments.map((appt, idx) => (
+              <Card key={idx} className="mb-3 shadow-sm">
+                <Card.Body className="d-flex justify-content-between align-items-center">
+                  <div>
+                    <span>Patient name: {appt.patientId}</span>
+                    <br />
+                    <span>Slot: {appt.slotNumber}</span>
+                    <br />
+                    <span>Status: {appt.appStatus}</span>
+                    <br />
+                  </div>
+                  <div>
+                    <Button
+                      variant="success"
+                      size="sm"
+                      className="me-2"
+                      onClick={() => handleStatusChange(idx, "Done")}
+                    >
+                      Done
+                    </Button>
+                    <Button
+                      variant="danger"
+                      size="sm"
+                      className="me-2"
+                      onClick={() => handleStatusChange(idx, "Rejected")}
+                    >
+                      Reject
+                    </Button>
+                    <Button
+                      variant="warning"
+                      size="sm"
+                      onClick={() => handleStatusChange(idx, "Rescheduled")}
+                    >
+                      Reschedule
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            ))
+          )}
+        </Col>
+
+        <Col md={6}>
+          <h5 className="text-primary">Previous Appointments</h5>
+          {previousAppointments.length === 0 ? (
+            <p>No previous appointments.</p>
+          ) : (
+            previousAppointments.map((appt, idx) => (
+              <Card
+                key={idx}
+                className="mb-3 border-start border-4 border-primary shadow-sm"
               >
-                Home
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className="nav-link text-white"
-                href="#"
-                onClick={onDashboardClick}
-              >
-                Dashboard
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className="nav-link text-white"
-                href="#"
-                onClick={onAppointmentClick}
-              >
-                Appointments
-              </a>
-            </li>
-            <li className="nav-item">
-              <a
-                className="nav-link text-white"
-                href="#"
-                onClick={onOverviewClick}
-              >
-                Overview
-              </a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link text-warning" href="#">
-                Logout
-              </a>
-            </li>
-          </ul>
-        </div>
-      )}
+                <Card.Body>
+                  <div>
+                    <span>Patient name: {appt.patientId}</span>
+                    <br />
+                    <span>Slot: {appt.slotNumber}</span>
+                    <br />
+                    <span>Status: {appt.appStatus}</span>
+                    <br />
+                    <span>Date: {appt.date}</span>
+                    <br />
+                    {appt.appStatus === "Rejected" && (
+                      <p className="text-danger">
+                        Rejection: {appt.reasonForReject}
+                      </p>
+                    )}
+                    <span
+                      className={`badge bg-${
+                        appt.appStatus === "Completed"
+                          ? "success"
+                          : appt.appStatus === "Rejected"
+                          ? "danger"
+                          : "warning"
+                      }`}
+                    >
+                      {appt.appStatus}
+                    </span>
+                  </div>
+                </Card.Body>
+              </Card>
+            ))
+          )}
+        </Col>
+      </Row>
+    </div>
+  );
+
+  const renderAppointmentCalendar = () => (
+    <div className="p-4">
+      <CalendarWithSlots />
     </div>
   );
 
@@ -270,160 +288,9 @@ const DoctorDashboard = () => {
     </div>
   );
 
-  const [collapsed, setCollapsed] = useState(false);
-  const [showOverview, setShowOverview] = useState(false);
-  const [description, setDescription] = useState("");
-  const [view, setView] = useState("dashboard");
-
-  const toggleSidebar = () => setCollapsed(!collapsed);
-  const handleOverviewClick = () => setShowOverview(true);
-  const handleSaveDescription = () => {
-    alert("Saved");
-    setShowOverview(false);
-  };
-
-  const renderDashboardContent = () => {
-    const todayAppointmentsFiltered = todayAppointments;
-
-    return (
-      <div className="p-4">
-        <Row className="mb-4">
-          <Col md={6} lg={3}>
-            <Card className="text-center shadow-sm">
-              <Card.Body>
-                <Card.Title>Total Patients</Card.Title>
-                <h4>
-                  {
-                    previousAppointments.filter(
-                      (appt) => appt.status === "Completed"
-                    ).length
-                  }
-                </h4>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col md={6} lg={3}>
-            <Card className="text-center shadow-sm">
-              <Card.Body>
-                <Card.Title>Today's Appointments</Card.Title>
-                <h4>{todayAppointmentsFiltered.length}</h4>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-
-        <Row>
-          <Col md={6}>
-            <h5 className="text-primary">Today's Appointments</h5>
-            {todayAppointmentsFiltered.length === 0 ? (
-              <p>No appointments for today.</p>
-            ) : (
-              todayAppointmentsFiltered.map((appt, idx) => (
-                <Card key={idx} className="mb-3 shadow-sm">
-                  <Card.Body className="d-flex justify-content-between align-items-center">
-                    <div>
-                      <span>Patient name: {appt.patientId}</span>
-                      <br />
-                      <span>Slot: {appt.slotNumber}</span>
-                      <br />
-                      <span>Status: {appt.appStatus}</span>
-                      <br />
-                    </div>
-                    <div>
-                      <Button
-                        variant="success"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => handleStatusChange(idx, "Done")}
-                      >
-                        Done
-                      </Button>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => handleStatusChange(idx, "Rejected")}
-                      >
-                        Reject
-                      </Button>
-                      <Button
-                        variant="warning"
-                        size="sm"
-                        onClick={() => handleStatusChange(idx, "Rescheduled")}
-                      >
-                        Reschedule
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              ))
-            )}
-          </Col>
-
-          <Col md={6}>
-            <h5 className="text-primary">Previous Appointments</h5>
-            {previousAppointments.length === 0 ? (
-              <p>No previous appointments.</p>
-            ) : (
-              previousAppointments.map((appt, idx) => (
-                <Card
-                  key={idx}
-                  className="mb-3 border-start border-4 border-primary shadow-sm"
-                >
-                  <Card.Body>
-                    <div>
-                      <span>Patient name: {appt.patientId}</span>
-                      <br />
-                      <span>Slot: {appt.slotNumber}</span>
-                      <br />
-                      <span>Status: {appt.appStatus}</span>
-                      <br />
-                      <span>Date: {appt.date}</span>
-                      <br />
-
-                      {appt.status === "Rejected" && (
-                        <p className="text-danger">
-                          Rejection: {appt.reasonForReject}
-                        </p>
-                      )}
-                      <span
-                        className={`badge bg-${
-                          appt.appStatus === "Completed"
-                            ? "success"
-                            : appt.appStatus === "Rejected"
-                            ? "danger"
-                            : "warning"
-                        }`}
-                      >
-                        {appt.appStatus}
-                      </span>
-
-                      {appt.appStatus === "Rejected" && (
-                        <p className="text-danger">
-                          Rejection: {appt.reasonForReject}
-                        </p>
-                      )}
-                    </div>
-                  </Card.Body>
-                </Card>
-              ))
-            )}
-          </Col>
-        </Row>
-      </div>
-    );
-  };
-
-  const renderAppointmentCalendar = () => (
-    <div className="p-4">
-      <CalendarWithSlots />
-    </div>
-  );
-
   return (
     <Container fluid className="p-0" style={{ overflowX: "hidden" }}>
       <Header toggleSidebar={toggleSidebar} />
-
       <div className="d-flex" style={{ minHeight: "100vh" }}>
         <div
           className={`p-0 bg-dark text-white ${collapsed ? "collapsed" : ""}`}
@@ -457,7 +324,7 @@ const DoctorDashboard = () => {
                 <li className="nav-item">
                   <a
                     className="nav-link text-white"
-                    href="/doctordashboard"
+                    href="#"
                     onClick={() => setView("dashboard")}
                   >
                     Dashboard
@@ -482,7 +349,11 @@ const DoctorDashboard = () => {
                   </a>
                 </li>
                 <li className="nav-item">
-                  <a className="nav-link text-warning" href="#">
+                  <a
+                    className="nav-link text-warning"
+                    href="#"
+                    onClick={handleLogout}
+                  >
                     Logout
                   </a>
                 </li>
