@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import { FaFilePrescription,FaCalendarAlt, FaSignOutAlt, FaBars } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { FaFilePrescription, FaCalendarAlt, FaSignOutAlt, FaBars } from "react-icons/fa";
+import axios from "axios";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const Sidebar = ({ collapsed, toggleSidebar, onDashboardClick }) => (
+const Sidebar = ({ collapsed, toggleSidebar, handleLogout }) => (
   <div className={`h-screen ${collapsed ? "w-20" : "w-64"} bg-white shadow-lg flex flex-col py-6 transition-all duration-300`}>
     <button onClick={toggleSidebar} className="mb-6 self-center">
       <FaBars size={24} />
     </button>
 
     <div className="flex flex-col items-center space-y-6 mt-6">
-      <button onClick={onDashboardClick} className="flex items-center gap-4 mb-4">
+      <button className="flex items-center gap-4 mb-4">
         <FaCalendarAlt size={28} className="text-cyan-500" />
         {!collapsed && <span className="text-cyan-500 font-semibold">History</span>}
       </button>
@@ -17,7 +19,7 @@ const Sidebar = ({ collapsed, toggleSidebar, onDashboardClick }) => (
         {!collapsed && <span className="text-cyan-500 font-semibold">Prescriptions</span>}
       </button>
       <div className="mt-auto">
-        <button className="flex items-center gap-4 mb-4">
+        <button className="flex items-center gap-4 mb-4" onClick={handleLogout}>
           <FaSignOutAlt size={28} className="text-gray-500" />
           {!collapsed && <span className="text-gray-500 font-semibold">Logout</span>}
         </button>
@@ -28,26 +30,24 @@ const Sidebar = ({ collapsed, toggleSidebar, onDashboardClick }) => (
 
 const DashboardHeader = () => (
   <div className="flex justify-between items-center p-6 bg-FCECDD-50 shadow-sm">
-    <h2 className="text-2xl font-bold">Your Appointment is Confirmed!</h2>
-    <p className="text-sm text-gray-500">You have no appointments for today</p>
+    <h2 className="text-2xl font-bold">Your Appointments</h2>
   </div>
 );
 
-const UpcomingAppointments = () => {
-  const appointments = [
-    { name: "Knee Pain", doctor: "Dr. Janga Mani", date: "18 June 2025", time: "11:00 AM - 11:30 AM" },
-    { name: "Chestache", doctor: "Dr. Janga Mani", date: "18 June 2025", time: "11:00 AM - 11:30 AM" }
-  ];
+const UpcomingAppointments = ({ appointments }) => {
+  if (appointments.length === 0) return <p>No Appointments Found</p>;
 
   return (
     <div className="mt-8 bg-white rounded-2xl p-6 shadow">
-      <h3 className="text-orange-400 font-bold mb-4">History</h3>
-      {appointments.map((appt, idx) => (
-        <div key={idx} className="flex justify-between items-center border-b py-3 last:border-b-0">
+      <h3 className="text-orange-400 font-bold mb-4">Upcoming Appointments</h3>
+      {appointments.map((appt) => (
+        <div key={appt.appointmentId} className="flex justify-between items-center border-b py-3 last:border-b-0">
           <div>
-            <h4 className="font-semibold">{appt.name}</h4>
-            <p className="text-sm text-gray-500">{appt.doctor}</p>
-            <p className="text-sm text-gray-500">{appt.date} | {appt.time}</p>
+            <h4 className="font-semibold">{appt.reason}</h4>
+            <p className="text-sm text-gray-500">Doctor ID: {appt.doctorId}</p>
+            <p className="text-sm text-gray-500">{appt.date} | {appt.slotNumber}</p>
+            <p className="text-sm text-gray-500">Clinic: {appt.clinicId}</p>
+            <p className="text-sm text-gray-500">Payment: {appt.payStatus}</p>
           </div>
           <button className="bg-cyan-500 text-white px-4 py-2 rounded-xl hover:bg-cyan-600">Cancel</button>
         </div>
@@ -56,48 +56,37 @@ const UpcomingAppointments = () => {
   );
 };
 
-const PastAppointments = () => {
-  const appointments = [
-    { name: "Knee Pain", doctor: "Dr. Janga Mani", date: "18 June 2025", time: "11:00 AM - 11:30 AM" },
-    { name: "Chestache", doctor: "Dr. Janga Mani", date: "18 June 2025", time: "11:00 AM - 11:30 AM" }
-  ];
-
-  return (
-    <div className="mt-8 bg-white rounded-2xl p-6 shadow">
-      <h3 className="font-bold mb-4">History</h3>
-      {appointments.map((appt, idx) => (
-        <div key={idx} className="flex justify-between items-center border-b py-3 last:border-b-0">
-          <div>
-            <h4 className="font-semibold">{appt.name}</h4>
-            <p className="text-sm text-gray-500">{appt.doctor}</p>
-            <p className="text-sm text-gray-500">{appt.date} | {appt.time}</p>
-          </div>
-          <button className="flex items-center gap-2">
-            <FaFilePrescription size={24} className="text-cyan-500" />
-            <span className="text-cyan-500 font-semibold">View Prescription</span>
-          </button>
-        </div>
-      ))}
-    </div>
-  );
-};
-
-
 const PatientDashboard = () => {
   const [collapsed, setCollapsed] = useState(true);
+  const [appointments, setAppointments] = useState([]);
+  const navigate = useNavigate();
+  const patientId = "HAMS_ADMIN"; // hardcoded patient id for now
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/", { replace: true });
+    alert("Logged out successfully");
+  };
+
+  useEffect(() => {
+    axios.get(`http://localhost:3000/appointments/patient/${patientId}`)
+      .then((res) => {
+        setAppointments(res.data);
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
   return (
     <div className="flex h-screen">
-      <Sidebar collapsed={collapsed} toggleSidebar={toggleSidebar} />
+      <Sidebar collapsed={collapsed} toggleSidebar={toggleSidebar} handleLogout={handleLogout} />
       <div className="flex-1 flex flex-col">
         <DashboardHeader />
         <div className="p-6 bg-FCECDD-50 flex-1 overflow-y-auto">
-          <UpcomingAppointments />
-          <PastAppointments />
+          <UpcomingAppointments appointments={appointments} />
         </div>
       </div>
     </div>

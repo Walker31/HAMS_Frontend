@@ -11,55 +11,39 @@ const DoctorDescription = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { doctor, hname } = location.state || {};
+  const { doctor, hname, reason } = location.state || {};
 
   const handleSlotClick = (slot) => setSelectedSlot(slot);
 
   const handleBookNow = async () => {
-    if (!selectedDate || !selectedSlot) {
-      alert("Please select a date and time slot before booking.");
-      return;
-    }
+  if (!selectedDate || !selectedSlot) {
+    alert("Please select a date and time slot before booking.");
+    return;
+  }
 
-    if (!isLoggedIn) {
-      navigate("/login");
-      return;
-    }
-
-    try {
-
-      const patientId = "HAMS_ADMIN";
-      const clinicId = hname?.hosp || "Unknown Clinic";
-      const doctorId = doctor?._id || "dummy-doctor-id"; 
-
-      const payload = {
-        date: selectedDate,
-        patientId,
-        doctorId,
-        payStatus: isOn ? 'Paid' : 'Unpaid',
-        clinicId,
-        slotNumber: selectedSlot
-      };
-
-      const response = await axios.post("http://localhost:3000/appointments/book", payload); 
-
-      if (response.status === 201) {
-        alert("Appointment booked successfully!");
-        navigate("/doctordashboard", {
-          state: {
-            doctor: doctor,
-            hname: {hosp: hname?.hosp},
-            date: selectedDate,
-            slot: selectedSlot,
-            
-          },
-        });
-      }
-    } catch (error) {
-      console.error("Booking error:", error.response?.data || error.message);
-      alert("Error booking appointment: " + (error.response?.data?.message || error.message));
-    }
+  const payload = {
+    date: selectedDate,
+    patientId: "HAMS_ADMIN",
+    doctorId: doctor?._id || "dummy-doctor-id",
+    clinicId: hname?.hosp || "Unknown Clinic",
+    slotNumber: selectedSlot,
+    reason: reason || "General Checkup",
+    payStatus: isOn ? 'Paid' : 'Unpaid'
   };
+
+
+  try {
+    const response = await axios.post("http://localhost:3000/appointments/book", payload);
+    if (response.status === 201) {
+      alert("Appointment booked successfully!");
+      navigate("/PatientDashboard");
+    }
+  } catch (error) {
+    console.error("Booking error:", error);
+    alert("Error booking appointment");
+  }
+};
+
 
   return (
     <div className="container my-5">

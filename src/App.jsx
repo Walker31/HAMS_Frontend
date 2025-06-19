@@ -12,6 +12,7 @@ import { getCityFromCoords } from "./utils/locationUtils";
 import AboutUs from "./components/Aboutus";
 import FAQs from "./components/FAQs";
 import Services from "./components/Services";
+import PatientDashboard from "./Pages/PatientDashboard/patientDash";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -68,6 +69,7 @@ const App = () => {
         <Route path="/services" element={<Services />} />
         </Route>
       <Route path="/doctordashboard" element={<DoctorDashboard />} />
+      <Route path="/PatientDashboard" element={<PatientDashboard />} />
     </Routes>
   );
 };
