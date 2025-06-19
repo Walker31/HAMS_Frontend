@@ -69,9 +69,7 @@ const TopDoc = () => {
         <div className="text-2xl font-bold text-indigo-900">
           Top Rated <span className="doc-highlight text-cyan-700">Doctors</span> Near You
         </div>
-        <a href="#" className="text-sm text-blue-600 hover:underline">
-          View All
-        </a>
+        
       </div>
 
       <div className="relative">

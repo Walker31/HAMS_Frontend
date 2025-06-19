@@ -1,33 +1,33 @@
 const sampleFeedbacks = [
   {
-    name: 'Aditya Janga',
-    review: 'I am so grateful to HAMSA for helping me during the tough times and sandkjabdjkzb cjn sdkjlfnlhsbdfilkjsdn ckjs dnck',
+    name: 'Aditya',
+    review: 'I found my life partner in this app',
     photo: 'aditya.png',
   },
   {
-    name: 'Riya Sen',
-    review: 'This platform saved me so much time. I booked an appointment in just a few clicks!',
-    photo: 'https://randomuser.me/api/portraits/women/44.jpg',
+    name: 'Shrudeep',
+    review: 'Fast appointment scheduling and clear follow-up reminders kept me informed every step of the way.',
+    photo: 'shru.jpg',
   },
   {
-    name: 'Arjun Verma',
-    review: 'Very clean UI and easy process. The doctor was very professional too.',
-    photo: 'https://randomuser.me/api/portraits/men/36.jpg',
+    name: 'Jayashree',
+    review: 'This app was built under my supervision in one of my companies',
+    photo: 'jayashree.jpg',
   },
   {
-    name: 'Meera Nair',
-    review: 'Loved how I got appointment reminders and updates right in my inbox!',
-    photo: 'https://randomuser.me/api/portraits/women/65.jpg',
+    name: 'Lishanth',
+    review: 'As a multi-millionare, I usually get a home consultation but because of the excellent UI of HAMSA, I started using this. I am also planning to fund for this website in the future',
+    photo: 'lish.jpg',
   },
   {
-    name: 'Karan Singh',
-    review: 'Teleconsultation worked smoothly. No need to travel for minor issues. Brilliant!',
-    photo: 'https://randomuser.me/api/portraits/men/21.jpg',
+    name: 'Saajid',
+    review: 'I am totally disappointed with HAMSA as I booked for weight gain program but I lost 5kg in the process',
+    photo: 'saajid.jpg',
   },
   {
-    name: 'Tanvi Patel',
-    review: 'Super easy to reschedule appointments. Way better than waiting at clinics.',
-    photo: 'https://randomuser.me/api/portraits/women/51.jpg',
+    name: 'Mahalakshmi',
+    review: 'Excellent support team! They helped me reschedule quickly and the consultation was thorough and professional.',
+    photo: 'maha.jpg',
   }
 ];
 
