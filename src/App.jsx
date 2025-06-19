@@ -27,6 +27,12 @@ const App = () => {
   localStorage.setItem('loggedIn',false);
 
   useEffect(() => {
+      if (location && location !== "Select Location") {
+        localStorage.setItem("userLocation", location);
+      }
+    }, [location]);
+
+  useEffect(() => {
     const savedLocation = localStorage.getItem("userLocation");
     if (savedLocation) {
       setLocation(savedLocation);
