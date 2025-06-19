@@ -78,7 +78,7 @@ const TopDoc = () => {
         <ScrollButton direction="left" onClick={() => handleScroll(-600)} className="left-0" />
         <div
           ref={carouselRef}
-          className="flex space-x-6 bg-white overflow-x-auto pb-4 no-scrollbar scroll-smooth"
+          className="flex space-x-6 bg-white overflow-x-auto pb-4 scrollbar-hide scroll-smooth"
         >
           {doctors.map((d, idx) => (
             <div
