@@ -29,6 +29,7 @@ export default function RegisterForm() {
     try {
       if (mode === "Login") {
         const loginData = data || formData;
+        loginData.role = role; // Ensure role is included in login datanpmm 
         await loginHandler(loginData);
         alert("Login successful!");
       } else if (mode === "SignUp") {
@@ -50,6 +51,7 @@ export default function RegisterForm() {
     e.preventDefault();
     try {
       if (userType === "Patient") {
+        console.log("Submitting patient data:", formData);
         await patientHandler(formData);
       } else if (userType === "Doctor") {
         const formattedData = {

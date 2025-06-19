@@ -12,10 +12,11 @@ export const createDoctor = async (doctorData) => {
   }
 };
 
-export const loginUser = async (loginData) => {
+ export const loginUser = async (loginData, role = "patient") => {
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+  const route = role === "doctor" ? "doctors/login" : "patients/login";
   try {
-    const response = await axios.post(`${base_url}/doctors/login`, loginData);
+    const response = await axios.post(`${base_url}/${route}`, loginData);
     return response.data;
   } catch (error) {
     console.error('Login failed:', error.response?.data || error.message);
@@ -25,11 +26,13 @@ export const loginUser = async (loginData) => {
 
 export const createPatient = async (patientData) => {
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
   try {
     const response = await axios.post(`${base_url}/patients/signup`, patientData);
+    console.log("Patient signup successful:", response.data);
     return response.data;
   } catch (error) {
-    console.error('Login failed:', error.response?.data || error.message);
+    console.error("Patient signup failed:", error.response?.data || error.message);
     throw error;
   }
 };
