@@ -11,4 +11,3 @@ export default async function handleUserLogin(formData) {
     throw new Error('Login failed. Please check your credentials.'); // <-- propagate error
   }
 }
-

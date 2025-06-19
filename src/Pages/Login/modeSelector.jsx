@@ -1,9 +1,6 @@
 import { useState } from "react";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import Checkbox from "@mui/material/Checkbox";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import LoginForm from "./loginForm";
 
 export default function ModeSelector({ handleSubmit }) {
   const [mode, setMode] = useState("Login");
@@ -58,60 +55,15 @@ export default function ModeSelector({ handleSubmit }) {
 
         {/* Login Form */}
         {mode === "Login" && (
-          <form
-            className="space-y-4"
-            onSubmit={(e) => handleSubmit(e, formData, mode, signUpRole)}
-          >
-            <div className="flex flex-col gap-4">
-              <TextField
-              label="Phone"
-              type="tel"
-              name="phone"
-              value={formData.email}
-              onChange={handleChange}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Password"
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              fullWidth
-              required
-            />
-            </div>
-            
-
-            <div className="flex justify-between items-center">
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    name="remember"
-                    className="text-sm"
-                    checked={formData.remember}
-                    onChange={handleChange}
-                    color="primary"
-                  />
-                }
-                label="Remember me"
-              />
-              <Button variant="text" size="small" className="text-blue-600 normal-case">
-                Forgot Password?
-              </Button>
-            </div>
-
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              className="!bg-blue-600 !text-white py-3 rounded-full hover:!bg-blue-700 transition-all duration-300"
-            >
-              Log In
-            </Button>
-          </form>
+          <LoginForm
+            formData={formData}
+            handleChange={handleChange}
+            handleLoginSubmit={(e) => handleSubmit(e, formData, mode, signUpRole)}
+            handleBack={() => setMode("Select")}
+            handleRoleChange={(role) => setSignUpRole(role)} // sets doctor/patient role
+          />
         )}
+
 
         {/* Sign Up Mode — Only role selection */}
         {mode === "SignUp" && (

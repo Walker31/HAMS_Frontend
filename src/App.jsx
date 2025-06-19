@@ -24,6 +24,13 @@ const Layout = ({ location, setLocation }) => (
 
 const App = () => {
   const [location, setLocation] = useState("Select Location");
+  localStorage.setItem('loggedIn',false);
+
+  useEffect(() => {
+      if (location && location !== "Select Location") {
+        localStorage.setItem("userLocation", location);
+      }
+    }, [location]);
 
   useEffect(() => {
     const savedLocation = localStorage.getItem("userLocation");
