@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import ScrollButton from "./ScrollButton";
+import ScrollButton from "./scrollButton";
 import axios from "axios";
 
 const TopDoc = () => {
