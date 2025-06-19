@@ -10,7 +10,7 @@ export default function ModeSelector({ handleSubmit }) {
   const [signUpRole, setSignUpRole] = useState("");
 
   const [formData, setFormData] = useState({
-    email: "",
+    phone: "",
     password: "",
     remember: false,
   });
@@ -64,9 +64,9 @@ export default function ModeSelector({ handleSubmit }) {
           >
             <div className="flex flex-col gap-4">
               <TextField
-              label="Email"
-              type="email"
-              name="email"
+              label="Phone"
+              type="tel"
+              name="phone"
               value={formData.email}
               onChange={handleChange}
               fullWidth
