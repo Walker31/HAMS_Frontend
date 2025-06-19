@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import ScrollButton from "./scrollButton";
+import ScrollButton from "./ScrollButton";
 import axios from "axios";
 
 const TopDoc = () => {
@@ -7,41 +7,54 @@ const TopDoc = () => {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const base_url = import.meta.env.VITE_BASE_URL|| "http://localhost:3000";
-    axios.get(`${base_url}/doctors/top`)
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
+ 
+  const fetchTopDoctors = (lat, lon) => {
+    axios
+      .get(`${base_url}/doctors/top/${lat}/${lon}`)
       .then((res) => {
-        // If your API returns { doctors: [...] }
-        setDoctors(res.data['doctors']);
+        setDoctors(res.data.doctors);
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    const storedLat = localStorage.getItem("latitude");
+    const storedLon = localStorage.getItem("longitude");
+
+    if (storedLat && storedLon) {
+     
+      fetchTopDoctors(storedLat, storedLon);
+    } else {
+      
+      navigator.geolocation.getCurrentPosition(
+        ({ coords }) => {
+          const { latitude, longitude } = coords;
+          localStorage.setItem("latitude", latitude);
+          localStorage.setItem("longitude", longitude);
+          fetchTopDoctors(latitude, longitude);
+        },
+        (err) => {
+          console.error("Geolocation error:", err);
+          
+          setLoading(false);
+        }
+      );
+    }
   }, []);
 
   const handleScroll = (offset) => {
     if (carouselRef.current) {
       carouselRef.current.scrollBy({ left: offset, behavior: "smooth" });
     }
-
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        const { latitude, longitude } = coords;
-        axios
-          .get(`http://localhost:3000/doctors/top/${latitude}/${longitude}`)
-          .then((res) => {
-            setDoctors(res.data.doctors);
-          })
-          .catch((err) => console.error(err))
-          .finally(() => setLoading(false));
-      },
-      (err) => {
-        console.error("Geolocation error:", err);
-        setLoading(false);
-      }
-    );
+  };
 
   if (loading) {
     return <div className="text-center py-10">Loading…</div>;
   }
+
   if (!doctors.length) {
     return (
       <div className="text-center py-10 text-gray-600">
@@ -49,12 +62,12 @@ const TopDoc = () => {
       </div>
     );
   }
+
   return (
     <div className="container max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-2xl font-bold text-indigo-900">
-          Top Rated <span className="doc-highlight text-cyan-700">Doctors</span>{" "}
-          Near You
+          Top Rated <span className="doc-highlight text-cyan-700">Doctors</span> Near You
         </h3>
         <a href="#" className="text-sm text-blue-600 hover:underline">
           View All
@@ -62,10 +75,7 @@ const TopDoc = () => {
       </div>
 
       <div className="relative">
-    
         <ScrollButton direction="left" onClick={() => handleScroll(-600)} className="left-0" />
-
-       
         <div
           ref={carouselRef}
           className="flex space-x-6 overflow-x-auto pb-2 no-scrollbar scroll-smooth"
@@ -83,12 +93,7 @@ const TopDoc = () => {
               />
               <div className="space-y-1">
                 <div className="font-semibold text-gray-800">{d.name}</div>
-                <div className="text-xs text-gray-500">
-                  {d.specialization},{" "}
-                  {d.location && d.location.coordinates
-                    ? `${d.location.coordinates[1]}, ${d.location.coordinates[0]}`
-                    : "Unknown Location"}
-                </div>
+                <div className="text-xs text-gray-500">{d.specialization}</div>
               </div>
               <button
                 onClick={() => alert(`Consulting ${d.name}`)}
@@ -99,13 +104,10 @@ const TopDoc = () => {
             </div>
           ))}
         </div>
-
-        {/* Right Scroll */}
         <ScrollButton direction="right" onClick={() => handleScroll(600)} className="right-0" />
       </div>
     </div>
   );
-};
 };
 
 export default TopDoc;
