@@ -85,6 +85,7 @@ const HeaderSection = () => {
       .then(response => setHospitals(response.data))
       .catch(error => console.error('Error fetching hospitals:', error));
   }, []);
+  
 
   return (
     <div style={sectionStyle} className="d-flex justify-content-center align-items-center flex-column text-center m-0 p-0">
