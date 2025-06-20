@@ -9,17 +9,33 @@ import SPECIALIZATIONS from "../../constants/specializations";
 import axios from "axios";
 
 export default function DoctorRegisterForm({
+
   formData,
   handleChange,
   handleRegisterSubmit,
   handleBack,
-  handleFileChange,
-  imagePreview,
 }) {
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-  const fileInputRef = useRef();
+  
+  const fileInputRef = useRef(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const [hospitals, setHospitals] = useState([]);
+
+  const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    handleChange({ target: { name: "photo", value: file } });
+    setImagePreview(URL.createObjectURL(file)); 
+  }
+};
+
+useEffect(() => {
+  return () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+  };
+}, [imagePreview]);
+
 
   useEffect(() => {
     const lat = 12.9058; //For now we set this
@@ -73,6 +89,7 @@ export default function DoctorRegisterForm({
               onChange={handleFileChange}
               ref={fileInputRef}
               style={{ display: "none" }}
+              
             />
             <Button
               variant="outlined"
