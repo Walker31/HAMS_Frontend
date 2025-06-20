@@ -2,7 +2,7 @@ import { useState , useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
 
-const DoctorDescription = () => {
+export const DoctorDescription = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(true); 
@@ -11,9 +11,10 @@ const DoctorDescription = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { doctor, hname } = location.state || {};
+  const { doctor, hname, reason } = location.state || {};
 
   const[doctorDetails,setDoctorDetails] = useState(doctor);
+
   useEffect(() => {
     const fechDoctor=async () => {
       try {
@@ -39,28 +40,27 @@ const DoctorDescription = () => {
       return;
     }
 
-    try {
 
-      const patientId = "HAMS_ADMIN";
-      const clinicId = hname?.hosp || "Unknown Clinic";
-      const doctorId = doctorDetails?._id || "dummy-doctor-id"; 
-
-  const payload = {
+  try {
+    const payload = {
     date: selectedDate,
     patientId: "HAMS_ADMIN",
     doctorId: doctor?._id || "dummy-doctor-id",
     clinicId: hname?.hosp || "Unknown Clinic",
     slotNumber: selectedSlot,
     reason: reason || "General Checkup",
-    payStatus: isOn ? 'Paid' : 'Unpaid'
-  };
-
-
-  try {
+    payStatus: isOn ? 'Paid' : 'Unpaid'};
     const response = await axios.post("http://localhost:3000/appointments/book", payload);
     if (response.status === 201) {
       alert("Appointment booked successfully!");
-      navigate("/PatientDashboard");
+      navigate("/PatientDashboard", {
+        state: {
+          doctor: doctor,
+          hname: {hosp: hname?.hosp},
+          date: selectedDate,
+          slot: selectedSlot,
+        },
+      });
     }
   } catch (error) {
     console.error("Booking error:", error);
@@ -161,5 +161,6 @@ const DoctorDescription = () => {
     </div>
   );
 };
+
 
 export default DoctorDescription;
