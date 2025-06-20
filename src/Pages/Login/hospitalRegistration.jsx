@@ -46,7 +46,7 @@ export default function HospitalRegisterForm({
           <input
             type="text"
             name="RegId"
-            placeholder="Registratiion Number *"
+            placeholder="Registration Number *"
             onChange={handleChange}
             className="h-15 w-full p-3 border rounded-md"
             required

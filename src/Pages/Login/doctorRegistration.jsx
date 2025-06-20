@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import CommonFields from "./commonFields";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -6,16 +6,46 @@ import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import SPECIALIZATIONS from "../../constants/specializations";
+import axios from "axios";
 
 export default function DoctorRegisterForm({
+
   formData,
   handleChange,
   handleRegisterSubmit,
   handleBack,
-  handleFileChange,
-  imagePreview,
 }) {
-  const fileInputRef = useRef();
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+  
+  const fileInputRef = useRef(null);
+  const [imagePreview, setImagePreview] = useState(null);
+
+  const [hospitals, setHospitals] = useState([]);
+
+  const handleFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    handleChange({ target: { name: "photo", value: file } });
+    setImagePreview(URL.createObjectURL(file)); 
+  }
+};
+
+useEffect(() => {
+  return () => {
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+  };
+}, [imagePreview]);
+
+
+  useEffect(() => {
+    const lat = 12.9058; //For now we set this
+    const lon = 80.2270;
+
+    axios.get(`${base_url}/hospitals/getAll/${lat}/${lon}`) 
+      .then(response => setHospitals(response.data))
+      .catch(error => console.error('Error fetching hospitals:', error));
+  }, []);
+
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md space-y-6">
@@ -59,6 +89,7 @@ export default function DoctorRegisterForm({
               onChange={handleFileChange}
               ref={fileInputRef}
               style={{ display: "none" }}
+              
             />
             <Button
               variant="outlined"
@@ -114,6 +145,25 @@ export default function DoctorRegisterForm({
             </MenuItem>
           ))}
         </TextField>
+
+        <TextField
+          select
+          label="Organisation"
+          name="Organisation"
+          value={formData.Organisation || ""}
+          onChange={handleChange}
+          fullWidth
+          required
+        >
+          <MenuItem value="">Select hospital</MenuItem>
+          {hospitals.map((spec) => (
+            <MenuItem key={spec.hospitalId} value={spec.hospitalName}>
+              {spec.hospitalName}
+            </MenuItem>
+          ))}
+        </TextField>
+
+
 
         {/* Submit Button */}
         <Button

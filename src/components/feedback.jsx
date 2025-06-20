@@ -14,10 +14,14 @@ const Feedback=() =>{
     const nextSlide = () => setCurrent(prev => (prev === length-1?0:prev+1));
     const prevSlide= () => setCurrent(prev => (prev===0 ? length-1 : prev-1));
     return <>
-    <div className="max-w-7xl mx-auto">
-        <h3 className=" text-2xl font-bold text-blue-900 p-4">
+    <div className="max-w-7xl mx-auto p-4">
+      <div className="flex items-center justify-between mb-6">
+         <div className=" text-2xl font-bold text-blue-900 ">
         Our  <span className="text-teal-600"> patients'</span> feedback about us
-      </h3>
+      </div>
+      </div>
+       
+      
       <div className="bg-white">
         <div className="bg-[#e8eaf6] flex flex-col md:flex-row h-60 md:h-80">
           <div className="w-full md:w-1/3 mt-6 md:mt-10 ml-0 md:ml-10 flex justify-center">
@@ -26,7 +30,7 @@ const Feedback=() =>{
               <img
                 src={photo}
                 alt={name}
-                className="object-cover m-1 w-full max-w-[320px] h-60 sm:h-72 md:h-80 rounded-2xl"
+                className="object-cover m-2 w-full max-w-[320px] h-60 sm:h-72 md:h-80 rounded-2xl"
               />
 
             </div>

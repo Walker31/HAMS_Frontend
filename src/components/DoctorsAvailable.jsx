@@ -8,7 +8,7 @@ const DoctorsAvailable = () => {
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
   const location = useLocation();
-  const { hname } = location.state || {}; // hname = { hosp: "some hospital name" }
+  const { hname, reason = "General Checkup" } = location.state || {};
 
   useEffect(() => {
     const latitude = localStorage.getItem("latitude");
@@ -39,7 +39,7 @@ const DoctorsAvailable = () => {
                 <p className="card-text"><strong>Specialization:</strong> {doc.specialization || "General"}</p>
                 <button
                   className="btn btn-primary"
-                  onClick={() => navigate(`/${hname.split(' ')[0]}/doctors-available/DoctorDescription`, { state: { doctor: doc, hname: { hosp: hname } } })}
+                  onClick={() => navigate(`/${hname.split(' ')[0]}/doctors-available/DoctorDescription`, { state: { doctor: doc, hname: { hosp: hname } , reason: reason || "General Checkup"} })}
                 >
                   Book Appointment
                 </button>
