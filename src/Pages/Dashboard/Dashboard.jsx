@@ -42,10 +42,22 @@ const DoctorDashboard = () => {
   const [view, setView] = useState("dashboard");
 
   const toggleSidebar = () => setCollapsed(!collapsed);
-  const handleOverviewClick = () => setShowOverview(true);
-  const handleSaveDescription = () => {
-    alert("Saved");
-    setShowOverview(false);
+
+  const handleOverviewClick = () => {
+    setDescription(doctorState.overview || "");
+    setShowOverview(true);
+  };
+
+  const handleSaveDescription = async () => {
+    try {
+      const response = await axios.put(`${base_url}/doctors/update/${doctorState._id}`, {overview: description});
+      setDoctorState((prev) => ({ ...prev, overview: description }));
+      alert("Overview updated successfully");
+      setShowOverview(false);
+    } catch (error) {
+      console.error("Error updating overview:", error);
+      alert("Failed to update overview. Please try again.");
+    }
   };
 
   const handleLogout = () => {
@@ -143,11 +155,21 @@ const DoctorDashboard = () => {
     }
   };
 
+  const fetchDoctorDetails = async () => {
+    try {
+      const res = await axios.get(`${base_url}/doctors/${doctorState._id}`);
+      if (res.data) setDoctorState(res.data);
+    } catch (error) {
+      console.error("Error fetching doctor details:", error);
+    }
+  };
+
   useEffect(() => {
     if (!doctorState._id) return;
+    fetchDoctorDetails();
     fetchTodayAppointments();
     fetchPreviousAppointments();
-  }, [doctorState]);
+  }, [doctorState._id]);
 
   const renderDashboardContent = () => (
     <div className="p-4">

@@ -30,46 +30,48 @@ const HeaderSection = () => {
   };
 
   const specializations = [
-    { name: 'General Physician', icon: '🩺' },
-    { name: 'Neurologist', icon: '🧠' },
-    { name: 'Psychiatrist', icon: '💬' },
-    { name: 'Neurosurgeon', icon: '🧬' },
-    { name: 'Cardiologist', icon: '💔' },
-    { name: 'Orthopedic Surgeon', icon: '🦴' },
-    { name: 'Rheumatologist', icon: '💊' },
-    { name: 'Obstetrician & Gynecologist', icon: '🤰' },
-    { name: 'Pediatrician', icon: '🧒' },
-    { name: 'Fertility Specialist', icon: '🧬' },
-    { name: 'Ophthalmologist', icon: '👁️' },
-    { name: 'ENT Specialist', icon: '👂' },
-    { name: 'Dentist', icon: '🦷' },
-    { name: 'Gastroenterologist', icon: '🍽️' },
-    { name: 'Pulmonologist', icon: '🌬️' },
-    { name: 'Urologist', icon: '🚽' },
-    { name: 'Oncologist', icon: '🎗️' },
-    { name: 'Dermatologist', icon: '🧴' }
-  ];
+  { name: 'General Medicine', icon: '🩺' },
+  { name: 'Pediatrics', icon: '🧒' },
+  { name: 'Cardiology', icon: '💔' },
+  { name: 'Dermatology', icon: '🧴' },
+  { name: 'Orthopedics', icon: '🦴' },
+  { name: 'Gynecology', icon: '🤰' },
+  { name: 'Psychiatry', icon: '💬' },
+  { name: 'ENT (Otorhinolaryngology)', icon: '👂' },
+  { name: 'Ophthalmology', icon: '👁️' },
+  { name: 'Neurology', icon: '🧠' },
+  { name: 'Oncology', icon: '🎗️' },
+  { name: 'Urology', icon: '🚽' },
+  { name: 'Nephrology', icon: '💊' },
+  { name: 'Gastroenterology', icon: '🍽️' },
+  { name: 'Pulmonology', icon: '🌬️' },
+  { name: 'Endocrinology', icon: '🧬' },
+  { name: 'Radiology', icon: '📷' },
+  { name: 'Anesthesiology', icon: '💤' },
+  { name: 'Dentistry', icon: '🦷' }
+];
 
   const reasonMap = {
-    'General Physician': ['Fever', 'Cold and Cough', 'General Checkup'],
-    'Neurologist': ['Headache', 'Seizures', 'Memory Loss'],
-    'Psychiatrist': ['Depression', 'Anxiety', 'Sleep Disorders'],
-    'Neurosurgeon': ['Brain Surgery Consult', 'Spinal Issues'],
-    'Cardiologist': ['Chest Pain', 'High BP', 'Heart Palpitations'],
-    'Orthopedic Surgeon': ['Fracture', 'Joint Pain', 'Back Pain'],
-    'Rheumatologist': ['Arthritis', 'Joint Inflammation'],
-    'Obstetrician & Gynecologist': ['Pregnancy Checkup', 'Menstrual Issues'],
-    'Pediatrician': ['Child Vaccination', 'Fever in Child'],
-    'Fertility Specialist': ['IVF Consultation', 'Infertility'],
-    'Ophthalmologist': ['Vision Checkup', 'Eye Pain'],
-    'ENT Specialist': ['Ear Pain', 'Hearing Loss'],
-    'Dentist': ['Toothache', 'Cavity', 'Braces'],
-    'Gastroenterologist': ['Acidity', 'Stomach Pain'],
-    'Pulmonologist': ['Cough', 'Asthma', 'Breathlessness'],
-    'Urologist': ['Kidney Stone', 'UTI'],
-    'Oncologist': ['Cancer Screening', 'Chemotherapy'],
-    'Dermatologist': ['Skin Rash', 'Acne', 'Hair Loss']
-  };
+  'General Medicine': ['Fever', 'Cold and Cough', 'General Checkup'],
+  'Pediatrics': ['Child Vaccination', 'Fever in Child'],
+  'Cardiology': ['Chest Pain', 'High BP', 'Heart Palpitations'],
+  'Dermatology': ['Skin Rash', 'Acne', 'Hair Loss'],
+  'Orthopedics': ['Fracture', 'Joint Pain', 'Back Pain'],
+  'Gynecology': ['Pregnancy Checkup', 'Menstrual Issues'],
+  'Psychiatry': ['Depression', 'Anxiety', 'Sleep Disorders'],
+  'ENT (Otorhinolaryngology)': ['Ear Pain', 'Hearing Loss'],
+  'Ophthalmology': ['Vision Checkup', 'Eye Pain'],
+  'Neurology': ['Headache', 'Seizures', 'Memory Loss'],
+  'Oncology': ['Cancer Screening', 'Chemotherapy'],
+  'Urology': ['Kidney Stone', 'UTI'],
+  'Nephrology': ['Kidney Function Issues', 'Dialysis'],
+  'Gastroenterology': ['Acidity', 'Stomach Pain'],
+  'Pulmonology': ['Cough', 'Asthma', 'Breathlessness'],
+  'Endocrinology': ['Diabetes', 'Thyroid Disorders'],
+  'Radiology': ['X-Ray', 'MRI', 'CT Scan'],
+  'Anesthesiology': ['Pre-Surgery Consultation', 'Pain Management'],
+  'Dentistry': ['Toothache', 'Cavity', 'Braces']
+};
 
   const currentReasons = reasonMap[selectedSpecialization] || [];
 

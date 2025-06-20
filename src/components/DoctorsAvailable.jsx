@@ -4,6 +4,7 @@ import axios from "axios";
 
 const DoctorsAvailable = () => {
   const [doctors, setDoctors] = useState([]);
+  const [filteredDoctors, setFilteredDoctors] = useState([]);
   const navigate = useNavigate();
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
@@ -14,17 +15,33 @@ const DoctorsAvailable = () => {
   useEffect(() => {
     const latitude = localStorage.getItem("latitude");
     const longitude = localStorage.getItem("longitude");
+
     axios.get(`${base_url}/doctors/nearby/${latitude}/${longitude}`)
       .then((res) => {
-        console.log(res.data);
-        setDoctors(res.data);
+        const allDoctors = res.data;
+        setDoctors(allDoctors);
+
+       
+          if (specialization) {
+          const filtered = allDoctors.filter(doc =>
+            doc.specialization?.toLowerCase() === specialization.toLowerCase()
+          );
+          setFilteredDoctors(filtered);
+        } else {
+          setFilteredDoctors(allDoctors);
+        }
       })
       .catch((err) => console.error(err));
-  }, []);
+  }, [specialization]);
 
   return (
     <div className="container my-5">
       <h2 className="text-center mb-4">Doctors Available</h2>
+      {specialization && (
+        <p className="text-center text-muted">
+          Showing doctors specialized in <strong>{specialization}</strong>
+        </p>
+      )}
       <div className="row">
         {doctors.map((doc, idx) => (
           <div className="col-md-4 mb-4" key={idx}>
@@ -46,8 +63,10 @@ const DoctorsAvailable = () => {
                 </button>
               </div>
             </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-center mt-5">No doctors found for the selected specialization.</p>
+        )}
       </div>
     </div>
   );
