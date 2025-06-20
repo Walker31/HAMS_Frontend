@@ -6,25 +6,23 @@ import {
   Checkbox,
 } from "@mui/material";
 
+import Toggle from "./toggle";
 export default function LoginForm({
   formData,
   handleChange,
   handleLoginSubmit,
-  handleBack,
   handleRoleChange,
 }) {
   const [role, setRole] = useState("doctor");
 
   const toggleRole = (newRole) => {
     setRole(newRole);
-    handleRoleChange(newRole); // Notify parent of selected role
+    handleRoleChange(newRole);
+    localStorage.setItem('role',newRole);
   };
 
   return (
     <div className="w-full max-w-md space-y-6">
-
-      
-
       {/* Login Form */}
       <form className="space-y-4" onSubmit={handleLoginSubmit}>
         <div className="flex flex-col gap-4">
@@ -64,7 +62,10 @@ export default function LoginForm({
             Forgot Password?
           </Button>
         </div>
-        
+
+
+        {/* Toggle */}
+        <Toggle role={role} onRoleChange={toggleRole} />
 
         <Button
           type="submit"
@@ -76,32 +77,7 @@ export default function LoginForm({
         </Button>
       </form>
 
-      {/* Back Button */}
-      <div className="flex justify-center">
-        <Button onClick={handleBack} size="small" className="text-gray-600 normal-case">
-          Back
-        </Button>
-        
-      </div>
-      {/* Role Toggle */}
-      <div className="flex justify-center gap-4 mb-2">
-        <Button
-          variant={role === "doctor" ? "contained" : "outlined"}
-          color="primary"
-          onClick={() => toggleRole("doctor")}
-          className="rounded-full normal-case"
-        >
-          Doctor
-        </Button>
-        <Button
-          variant={role === "patient" ? "contained" : "outlined"}
-          color="primary"
-          onClick={() => toggleRole("patient")}
-          className="rounded-full normal-case"
-        >
-          Patient
-        </Button>
-      </div>
+      
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
-
+import { AuthProvider } from "./contexts/AuthContext";
 import Home from "./Pages/Home";
 import Navbar from "./components/navbar";
 import DoctorsAvailable from "./components/DoctorsAvailable";
@@ -59,6 +59,7 @@ const App = () => {
   }, []);
 
   return (
+    <AuthProvider>
     <Routes>
       <Route element={<Layout location={location} setLocation={setLocation} />}>
         <Route path="/" element={<Home />} />
@@ -75,6 +76,7 @@ const App = () => {
       <Route path="/doctordashboard" element={<DoctorDashboard />} />
       <Route path="/patientdashboard" element={<PatientDashboard />} />
     </Routes>
+    </AuthProvider>
   );
 };
 

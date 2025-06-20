@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import ScrollButton from './ScrollButton';
+import ScrollButton from './scrollButton.jsx';
 import axios from 'axios';
 
 import healthCarePrograms, { iconMap, formatPrice } from "../constants/programs.js";

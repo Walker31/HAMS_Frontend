@@ -1,10 +1,6 @@
 import { useState } from "react";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import Checkbox from "@mui/material/Checkbox";
 import LoginForm from "./loginForm";
-import FormControlLabel from "@mui/material/FormControlLabel";
 
 export default function ModeSelector({ handleSubmit }) {
   const [mode, setMode] = useState("Login");
