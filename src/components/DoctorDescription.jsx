@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState , useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
 
@@ -12,6 +12,19 @@ const DoctorDescription = () => {
   const location = useLocation();
 
   const { doctor, hname } = location.state || {};
+
+  const[doctorDetails,setDoctorDetails] = useState(doctor);
+  useEffect(() => {
+    const fechDoctor=async () => {
+      try {
+        const res= await axios.get(`http://localhost:3000/doctors/${doctor._id}`);
+        setDoctorDetails(res.data);
+      } catch (error) {
+        console.error("Error fetching doctor details:", error);
+      }
+    };
+    if (doctorDetails?._id)fechDoctor();
+  }, [doctorDetails?._id]);
 
   const handleSlotClick = (slot) => setSelectedSlot(slot);
 
@@ -30,7 +43,7 @@ const DoctorDescription = () => {
 
       const patientId = "HAMS_ADMIN";
       const clinicId = hname?.hosp || "Unknown Clinic";
-      const doctorId = doctor?._id || "dummy-doctor-id"; 
+      const doctorId = doctorDetails?._id || "dummy-doctor-id"; 
 
       const payload = {
         date: selectedDate,
@@ -68,30 +81,30 @@ const DoctorDescription = () => {
         <div className="col-md-8">
           <div className="d-flex align-items-start gap-4">
             <img
-              src={doctor?.photo || "/default-doctor.jpg"}
+              src={doctorDetails?.photo || "/default-doctor.jpg"}
               alt="Doctor"
               className="rounded-full"
               style={{ width: "200px", height: "200px", objectFit: "cover" }}
             />
             <div>
-              <h3 className="fw-bold text-white">{doctor?.name || "Doctor Name"}</h3>
+              <h3 className="fw-bold text-white">{doctorDetails?.name || "Doctor Name"}</h3>
               <p className="text-primary mb-1 text-white">
-                {doctor?.experience || "0"} Years Experience
+                {doctorDetails?.experience || "0"} Years Experience
               </p>
               <p className="mb-1 text-white">
-                <strong>Specialization:</strong> {doctor?.specialization || "General"}
+                <strong>Specialization:</strong> {doctorDetails?.specialization || "General"}
               </p>
               <p className="mb-1 text-white">
-                <strong>Languages:</strong> {doctor?.languages?.join(", ") || "English"}
+                <strong>Languages:</strong> {doctorDetails?.languages?.join(", ") || "English"}
               </p>
               <p className="mb-1 text-white">
-                <strong>Qualifications:</strong> {doctor?.qualifications?.join(", ") || "MBBS"}
+                <strong>Qualifications:</strong> {doctorDetails?.qualifications?.join(", ") || "MBBS"}
               </p>
               <p className="mb-1 text-white">
                 Hospital Name: {hname?.hosp || "Not Provided"}
               </p>
               <p className="mb-1 text-white">
-                <strong>Timings:</strong> {doctor?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}
+                <strong>Timings:</strong> {doctorDetails?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}
               </p>
             </div>
           </div>
@@ -148,7 +161,7 @@ const DoctorDescription = () => {
 
       <div className="mt-5">
         <h4 className="fw-bold">Overview</h4>
-        <p>{doctor?.overview || "No overview available."}</p>
+        <p>{doctorDetails?.overview || "No overview available."}</p>
       </div>
     </div>
   );
