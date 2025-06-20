@@ -2,7 +2,7 @@ import { useState , useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from 'axios';
 
-const DoctorDescription = () => {
+export const DoctorDescription = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(true); 
@@ -11,9 +11,10 @@ const DoctorDescription = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { doctor, hname } = location.state || {};
+  const { doctor, hname, reason } = location.state || {};
 
   const[doctorDetails,setDoctorDetails] = useState(doctor);
+
   useEffect(() => {
     const fechDoctor=async () => {
       try {
@@ -39,40 +40,34 @@ const DoctorDescription = () => {
       return;
     }
 
-    try {
 
-      const patientId = "HAMS_ADMIN";
-      const clinicId = hname?.hosp || "Unknown Clinic";
-      const doctorId = doctorDetails?._id || "dummy-doctor-id"; 
-
-      const payload = {
-        date: selectedDate,
-        patientId,
-        doctorId,
-        payStatus: isOn ? 'Paid' : 'Unpaid',
-        clinicId,
-        slotNumber: selectedSlot
-      };
-
-      const response = await axios.post("http://localhost:3000/appointments/book", payload); 
-
-      if (response.status === 201) {
-        alert("Appointment booked successfully!");
-        navigate("/doctordashboard", {
-          state: {
-            doctor: doctor,
-            hname: {hosp: hname?.hosp},
-            date: selectedDate,
-            slot: selectedSlot,
-            
-          },
-        });
-      }
-    } catch (error) {
-      console.error("Booking error:", error.response?.data || error.message);
-      alert("Error booking appointment: " + (error.response?.data?.message || error.message));
+  try {
+    const payload = {
+    date: selectedDate,
+    patientId: "HAMS_ADMIN",
+    doctorId: doctor?._id || "dummy-doctor-id",
+    clinicId: hname?.hosp || "Unknown Clinic",
+    slotNumber: selectedSlot,
+    reason: reason || "General Checkup",
+    payStatus: isOn ? 'Paid' : 'Unpaid'};
+    const response = await axios.post("http://localhost:3000/appointments/book", payload);
+    if (response.status === 201) {
+      alert("Appointment booked successfully!");
+      navigate("/PatientDashboard", {
+        state: {
+          doctor: doctor,
+          hname: {hosp: hname?.hosp},
+          date: selectedDate,
+          slot: selectedSlot,
+        },
+      });
     }
-  };
+  } catch (error) {
+    console.error("Booking error:", error);
+    alert("Error booking appointment");
+  }
+};
+
 
   return (
     
@@ -167,5 +162,6 @@ const DoctorDescription = () => {
     </div>
   );
 };
+
 
 export default DoctorDescription;
