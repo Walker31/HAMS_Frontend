@@ -52,7 +52,9 @@ export const loginUser = async (loginData, role = "patient") => {
   const route = role === "doctor" ? "doctors/login" : "patients/login";
   try {
     const response = await axios.post(`${base_url}/${route}`, loginData);
-    storeSession(response.data, role);
+    console.log(response)
+    if (response.status === 200) storeSession(response.data, role);
+    else alert("Login Failed");
     return response.data;
   } catch (error) {
     if (import.meta.env.DEV) {

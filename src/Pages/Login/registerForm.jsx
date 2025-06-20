@@ -31,7 +31,6 @@ export default function RegisterForm() {
         const loginData = data || formData;
         loginData.role = role; // Ensure role is included in login datanpmm 
         await loginHandler(loginData);
-        alert("Login successful!");
       } else if (mode === "SignUp") {
         if (role === "Patient") {
           setUserType("Patient");
