@@ -14,7 +14,7 @@ const TopDoc = () => {
   const fetchTopDoctors = (lat, lon) => {
     axios
       .get(`${base_url}/doctors/nearby/${lat}/${lon}`)
-      .then((res) => setDoctors(res.data.doctors))
+      .then((res) => setDoctors(res.data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   };
