@@ -12,17 +12,23 @@ export function AuthProvider({children}) {
     const [loading,setLoading] = useState(true);
 
     useEffect(()=> {
-        const savedUser = JSON.parse(localStorage.getItem('user'));
+        try{
+            const saved = localStorage.getItem('user');
+            if(saved){
+                setUser(JSON.parse(saved));
+            }
 
-        if(savedUser) {
-            setUser(savedUser);
+        } catch(err){
+            console.log("Failed To parse user data from localStorage", err)
+            localStorage.removeItem('user');
         }
+        
         setLoading(false);
     },[]);
 
     const login = (userData) => {
         setUser(userData);
-        localStorage.setItem('user',userData);
+        localStorage.setItem('user',JSON.stringify(userData));
     }
 
     const logout = () => {
@@ -35,7 +41,7 @@ export function AuthProvider({children}) {
     };
 
     if(loading) {
-        return <div>Loading....</div>
+        return <div>Let shii Load, pl wait</div>
     }
 
     return <AuthContext.Provider  value={value}>{children}</AuthContext.Provider>

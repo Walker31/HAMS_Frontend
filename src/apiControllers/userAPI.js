@@ -1,9 +1,12 @@
 // userAPI.js
+import { useContext } from "react";
 import axios from "axios";
+import { useAuth } from "../contexts/AuthContext";
+
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 // These now ONLY send requests, and leave state to AuthContext
-export const createDoctor = async (doctorData, login) => {
+export const createDoctor = async (doctorData,login) => {
   const res = await axios.post(`${base_url}/doctors/signup`, doctorData, {
     withCredentials: true,
   });
@@ -16,11 +19,11 @@ export const loginUser = async (loginData, role = "patient", login) => {
   const res = await axios.post(`${base_url}/${route}`, loginData, {
     withCredentials: true,
   });
-  login(res.data, role);
+  login(loginData);
   return res.data;
 };
 
-export const createPatient = async (patientData, login) => {
+export const createPatient = async (patientData) => {
   const res = await axios.post(`${base_url}/patients/signup`, patientData, {
     withCredentials: true,
   });
@@ -28,7 +31,7 @@ export const createPatient = async (patientData, login) => {
   return res.data;
 };
 
-export const createHospital = async (hospitalData, login) => {
+export const createHospital = async (hospitalData) => {
   const res = await axios.post(`${base_url}/hospitals/signup`, hospitalData, {
     withCredentials: true,
   });
