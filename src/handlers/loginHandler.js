@@ -1,13 +1,19 @@
 import { loginUser } from '../apiControllers/userAPI';
 
-export default async function handleUserLogin(formData) {
+export default async function handleUserLogin(formData, role, login) {
   try {
-    const response = await loginUser(formData,"patient"); // <-- specify role if needed
+    const response = await loginUser(formData, role, login);
     console.log('Login successful:', response);
-    localStorage.setItem('token', response.token);
-    return response; // <-- return response if needed
+    
+    if (response?.token) {
+      localStorage.setItem('token', response.token);
+    } else {
+      throw new Error('No token received from server.');
+    }
+
+    return response;
   } catch (error) {
     console.error('Login error:', error);
-    throw new Error('Login failed. Please check your credentials.'); // <-- propagate error
+    throw new Error('Login failed. Please check your credentials.');
   }
 }
