@@ -147,7 +147,7 @@ const DoctorDashboard = () => {
   const fetchPreviousAppointments = async () => {
     try {
       const res = await axios.get(
-        `${base_url}/appointments/previous?doctorId=${doctorState._id}`
+        `${base_url}/appointments/previous?doctorId=${doctorState._id}` 
       );
       setPreviousAppointments(res.data);
     } catch (error) {
