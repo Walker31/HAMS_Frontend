@@ -1,6 +1,5 @@
 // doctorHandler.js
 import { createDoctor } from '../apiControllers/userAPI';
-import { useAuth } from '../contexts/AuthContext';
 
 export default async function doctorHandler(formData,login) {
   try {

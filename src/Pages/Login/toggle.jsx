@@ -1,5 +1,5 @@
 const Toggle = ({ role, onRoleChange }) => {
-  const isPatient = role === "Patient";
+  const isPatient = role === "patient";
 
   return (
     <div className="flex gap-3 justify-center items-center">
@@ -8,7 +8,7 @@ const Toggle = ({ role, onRoleChange }) => {
       </span>
       <div
         className="w-12 h-6 flex items-center bg-gray-300 rounded-full p-1 cursor-pointer transition-colors"
-        onClick={() => onRoleChange(isPatient ? "Doctor" : "Patient")}
+        onClick={() => onRoleChange(isPatient ? "doctor" : "patient")}
       >
         <div
           className={`bg-green-700 w-5 h-5 rounded-full shadow-md transform transition-transform ${

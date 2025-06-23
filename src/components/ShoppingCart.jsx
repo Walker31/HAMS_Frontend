@@ -80,7 +80,7 @@ const Shopping = () => {
         {shopCart.map((item, idx) => (
           <div
             key={idx}
-            className=" snap-start flex-shrink-0 w-40 sm:w-48 bg-white rounded-xl shadow-md text-center p-3"
+            className=" snap-start flex-shrink-0 w-40 sm:w-48 bg-white rounded-xl shadow-md text-center p-3 hover:scale-105 hover:shadow-lg transition-transform duration-300"
           >
             <img
               src={item.image}

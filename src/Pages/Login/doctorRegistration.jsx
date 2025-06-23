@@ -7,6 +7,9 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import SPECIALIZATIONS from "../../constants/specializations";
 import axios from "axios";
+import { InputAdornment } from "@mui/material";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 export default function DoctorRegisterForm({ formData, handleChange, handleBack }) {
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
@@ -14,6 +17,7 @@ export default function DoctorRegisterForm({ formData, handleChange, handleBack 
   const fileInputRef = useRef(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [hospitals, setHospitals] = useState([]);
+  const [show,setShow] = useState(true);
 
   // Handle Image File Selection
   const handleFileChange = (e) => {
@@ -116,14 +120,34 @@ export default function DoctorRegisterForm({ formData, handleChange, handleBack 
           </div>
         </div>
 
+        <TextField
+            select
+            label="Gender"
+            name="gender"
+            value={formData.gender || ""}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+          >
+            <MenuItem value="">Select Gender</MenuItem>
+            <MenuItem value="Male">Male</MenuItem>
+            <MenuItem value="Female">Female</MenuItem>
+            <MenuItem value="Other">Other</MenuItem>
+          </TextField>
+
         {/* Password */}
         <TextField
           label="Password"
           name="password"
-          type="password"
+          type={show ? "text" : "password"}
           value={formData.password || ""}
           onChange={handleChange}
-          inputProps={{ minLength: 6 }}
+          InputProps={{ minLength: 6, endAdornment:(
+            <InputAdornment position="end"><IconButton onClick={()=>setShow(!show)} edge="end">
+              {show ? <VisibilityIcon /> : <VisibilityOffIcon />}
+              </IconButton></InputAdornment>
+          ) }}
           fullWidth
           required
         />

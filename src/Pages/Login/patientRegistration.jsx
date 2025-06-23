@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
+import PasswordField from "../../components/passwordField";
 
 export default function PatientRegisterForm({
   formData,
@@ -26,17 +27,10 @@ export default function PatientRegisterForm({
       <form onSubmit={handleRegisterSubmit} className="flex flex-col w-full">
         <CommonFields formData={formData} handleChange={handleChange} />
 
-        <TextField
-          label="Password"
-          name="password"
-          type="password"
-          value={formData.password || ""}
-          onChange={handleChange}
-          inputProps={{ minLength: 6 }}
-          fullWidth
-          required
-          margin="normal"
-        />
+        <PasswordField
+                      value={formData.password || ""}
+                      onChange={handleChange}
+                    />
 
         <div className="flex flex-col md:flex-row gap-4">
           <TextField
