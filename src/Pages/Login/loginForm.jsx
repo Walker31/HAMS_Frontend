@@ -44,8 +44,7 @@ export default function LoginForm({
             fullWidth
             required
           />
-        </div>
-
+        </div>     
         <div className="flex justify-between items-center">
           <FormControlLabel
             control={
