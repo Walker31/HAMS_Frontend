@@ -1,31 +1,58 @@
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
 export const DoctorDescription = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(true); 
-  const [isOn, setIsOn] = useState(false); 
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isOn, setIsOn] = useState(false); // Payment switch
+  const [isSet, setIsSet] = useState(false); // Consult mode switch
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [doctorDetails, setDoctorDetails] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Get state from navigation
   const { doctor, hname, reason } = location.state || {};
 
-  const[doctorDetails,setDoctorDetails] = useState(doctor);
-
+  // Fetch doctor details only once (if not already fully loaded)
   useEffect(() => {
-    const fechDoctor=async () => {
+    const fetchDoctor = async () => {
       try {
-        const res= await axios.get(`http://localhost:3000/doctors/${doctor._id}`);
-        setDoctorDetails(res.data);
+        const res = await axios.get(
+          `http://localhost:3000/doctors/${doctor.doctorId}/profile`
+        );
+        setDoctorDetails(res.data.doctor);
       } catch (error) {
         console.error("Error fetching doctor details:", error);
       }
     };
-    if (doctorDetails?._id)fechDoctor();
-  }, [doctorDetails?._id]);
+    if (doctor && doctor.doctorId) {
+      fetchDoctor();
+    }
+  }, [doctor]);
+
+  // Fetch slots from backend when date or doctor changes
+  useEffect(() => {
+    const fetchSlots = async () => {
+      if (!selectedDate || !doctor?.doctorId) return;
+      try {
+        const res = await axios.get(
+          `http://localhost:3000/doctors/${doctor.doctorId}/slots`
+        );
+        const allSlots = res.data?.availableSlots || {};
+        const dateKey = new Date(selectedDate).toDateString();
+        const slotsForDate = allSlots[dateKey] || [];
+        setAvailableSlots(slotsForDate);
+      } catch (error) {
+        console.error("Error fetching slots:", error);
+        setAvailableSlots([]);
+      }
+    };
+    fetchSlots();
+  }, [selectedDate, doctor?.doctorId]);
 
   const handleSlotClick = (slot) => setSelectedSlot(slot);
 
@@ -40,37 +67,35 @@ export const DoctorDescription = () => {
       return;
     }
 
+    try {
+      const payload = {
+        date: selectedDate,
+        patientId: localStorage.getItem("patientId") || "HAMS_ADMIN",
+        doctorId: doctor.doctorId || "dummy-doctor-id",
+        clinicId: hname?.hosp || "Unknown Clinic",
+        slotNumber: selectedSlot,
+        reason: reason || "General Checkup",
+        payStatus: isOn ? "Paid" : "Unpaid",
+        MeetLink: "Link",
+        consultStatus: isSet ? "Online" : "Offline",
+      };
 
-  try {
-    const payload = {
-    date: selectedDate,
-    patientId: "HAMS_ADMIN",
-    doctorId: doctor?._id || "dummy-doctor-id",
-    clinicId: hname?.hosp || "Unknown Clinic",
-    slotNumber: selectedSlot,
-    reason: reason || "General Checkup",
-    payStatus: isOn ? 'Paid' : 'Unpaid'};
-    const response = await axios.post("http://localhost:3000/appointments/book", payload);
-    if (response.status === 201) {
-      alert("Appointment booked successfully!");
-      navigate("/doctordashboard", {
-        state: {
-          doctor: doctor,
-          hname: {hosp: hname?.hosp},
-          date: selectedDate,
-          slot: selectedSlot,
-        },
-      });
+      const response = await axios.post(
+        "http://localhost:3000/appointments/book",
+        payload
+      );
+      if (response.status === 201) {
+        alert("Appointment booked successfully!");
+        // Redirect to patient dashboard or confirmation page
+        navigate("/patientdashboard");
+      }
+    } catch (error) {
+      alert("Failed to book appointment. Please try again.");
+      console.error("Booking error:", error);
     }
-  } catch (error) {
-    console.error("Booking error:", error);
-    alert("Error booking appointment");
-  }
-};
-
+  };
 
   return (
-    
     <div className="container my-5">
       <h2 className="text-center mb-4">Doctor Description</h2>
       <div className="row p-5 bg-[#10217D] rounded-3xl">
@@ -83,24 +108,30 @@ export const DoctorDescription = () => {
               style={{ width: "200px", height: "200px", objectFit: "cover" }}
             />
             <div>
-              <h3 className="fw-bold text-white">{doctorDetails?.name || "Doctor Name"}</h3>
+              <h3 className="fw-bold text-white">
+                {doctorDetails?.name || "Doctor Name"}
+              </h3>
               <p className="text-primary mb-1 text-white">
                 {doctorDetails?.experience || "0"} Years Experience
               </p>
               <p className="mb-1 text-white">
-                <strong>Specialization:</strong> {doctorDetails?.specialization || "General"}
+                <strong>Specialization:</strong>{" "}
+                {doctorDetails?.specialization || "General"}
               </p>
               <p className="mb-1 text-white">
-                <strong>Languages:</strong> {doctorDetails?.languages?.join(", ") || "English"}
+                <strong>Languages:</strong>{" "}
+                {doctorDetails?.languages?.join(", ") || "English"}
               </p>
               <p className="mb-1 text-white">
-                <strong>Qualifications:</strong> {doctorDetails?.qualifications?.join(", ") || "MBBS"}
+                <strong>Qualifications:</strong>{" "}
+                {doctorDetails?.qualifications?.join(", ") || "MBBS"}
               </p>
               <p className="mb-1 text-white">
                 Hospital Name: {hname?.hosp || "Not Provided"}
               </p>
               <p className="mb-1 text-white">
-                <strong>Timings:</strong> {doctorDetails?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}
+                <strong>Timings:</strong>{" "}
+                {doctorDetails?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}
               </p>
             </div>
           </div>
@@ -118,24 +149,53 @@ export const DoctorDescription = () => {
 
             <h6 className="fw-bold mb-2">Available Slots:</h6>
             <div className="d-flex flex-wrap gap-2 mb-2">
-              {["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM"].map((slot) => (
-                <button
-                  key={slot}
-                  className={`btn btn-sm ${selectedSlot === slot ? "btn-warning" : "btn-outline-warning"}`}
-                  onClick={() => handleSlotClick(slot)}
-                >
-                  {slot}
-                </button>
-              ))}
+              {availableSlots.length > 0 ? (
+                availableSlots.map((slot) => (
+                  <button
+                    key={slot}
+                    className={`btn btn-sm ${
+                      selectedSlot === slot
+                        ? "btn-warning"
+                        : "btn-outline-warning"
+                    }`}
+                    onClick={() => handleSlotClick(slot)}
+                  >
+                    {slot}
+                  </button>
+                ))
+              ) : (
+                <p className="text-muted">
+                  No slots available for selected date
+                </p>
+              )}
             </div>
 
-            <div className="d-flex items-center mt-2.5 mb-2.5">
+            <div className="d-flex align-items-center mt-2.5 mb-2.5">
+              <p className="m-0 pr-5">Mode of Consulting :</p>
+              <div
+                onClick={() => setIsSet((prev) => !prev)}
+                className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer ${
+                  isSet ? "bg-success" : "bg-secondary"
+                }`}
+                style={{ minWidth: "40px" }}
+              >
+                <div
+                  className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
+                    isSet ? "translate-x-6" : ""
+                  }`}
+                ></div>
+              </div>
+              <span className="ms-2">{isSet ? "Online" : "Offline"}</span>
+            </div>
+
+            <div className="d-flex align-items-center mt-2.5 mb-2.5">
               <p className="m-0 pr-5">Payment done :</p>
               <div
-                onClick={() => setIsOn(!isOn)}
+                onClick={() => setIsOn((prev) => !prev)}
                 className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer ${
-                  isOn ? "bg-green-400" : "bg-gray-300"
+                  isOn ? "bg-success" : "bg-secondary"
                 }`}
+                style={{ minWidth: "40px" }}
               >
                 <div
                   className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
@@ -143,6 +203,7 @@ export const DoctorDescription = () => {
                   }`}
                 ></div>
               </div>
+              <span className="ms-2">{isOn ? "Paid" : "Unpaid"}</span>
             </div>
 
             <button
@@ -162,6 +223,5 @@ export const DoctorDescription = () => {
     </div>
   );
 };
-
 
 export default DoctorDescription;

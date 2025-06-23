@@ -23,38 +23,38 @@ const Feedback=() =>{
        
       
       <div className="bg-white">
-        <div className="bg-[#e8eaf6] flex flex-col md:flex-row h-60 md:h-80">
-          <div className="w-full md:w-1/3 mt-6 md:mt-10 ml-0 md:ml-10 flex justify-center">
+        <div className="bg-[#e8eaf6] flex flex-row h-80">
+          <div className="w-1/3 mt-6 ml-0 flex justify-center">
           <div className="rounded-2xl ">
             <div className="border-teal-600 pt-2 pl-2 border-t-2 border-l-2 rounded-2xl">
               <img
                 src={photo}
                 alt={name}
-                className="object-cover m-2 w-full max-w-[320px] h-60 sm:h-72 md:h-80 rounded-2xl"
+                className="object-cover m-2 w-full max-w-[320px] h-80 rounded-2xl"
               />
-
+              
             </div>
             
           </div>
             
           </div>
-          <div className="w-full md:w-2/3 p-6 flex items-center justify-center text-center">
-            <p className="text-xl text-gray-700 leading-relaxed ">
+          <div className="w-2/3 p-6 flex items-center justify-center text-center">
+            <p className="text-xl text-gray-700 leading-relaxed">
                "{review} " 
             </p>
           </div>
         </div>
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 m-3 p-4">
+        <div className="flex flex-row md:flex-col items-center justify-between gap-4 m-3 p-4">
           <div className="flex w-full justify-between items-center">
             {/* Name & Tag */}
             <div></div>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center mt-4">
               <p className="font-semibold text-gray-900 text-lg">{name}</p>
               <p className="text-sm text-gray-500">HAMSA Customer</p>
             </div>
 
             {/* Arrows */}
-            <div className="flex flex-row gap-5 text-gray-600">
+            <div className="mt-4 flex flex-row gap-5 text-gray-600">
               <button
                 onClick={prevSlide}
                 aria-label="Previous slide"

@@ -1,5 +1,6 @@
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import IconButton from "@mui/material/IconButton";
+import PasswordField from "../../components/passwordField";
 
 export default function HospitalRegisterForm({
   formData,
@@ -23,15 +24,10 @@ export default function HospitalRegisterForm({
           className="w-full p-3 border rounded-md mb-3"
           required
         />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password (min 6 characters) *"
-          minLength="6"
-          onChange={handleChange}
-          className="w-full p-3 border rounded-md mb-3"
-          required
-        />
+        <PasswordField
+                      value={formData.password || ""}
+                      onChange={handleChange}
+                    />
         <div className="flex-row flex">
           <div className="w-70 mr-2">
           <input

@@ -1,6 +1,6 @@
 import { createHospital } from "../apiControllers/userAPI";
 
-export default async function hospitalHandler(formData) {
+export default async function hospitalHandler(formData,login) {
   const formatData = {
     hospitalName: formData.hospitalName,
     phone: formData.phone,
@@ -14,7 +14,7 @@ export default async function hospitalHandler(formData) {
   console.log(formatData);
   try {
 
-    const response = await createHospital(formatData);
+    const response = await createHospital(formatData,login);
     console.log("Hospital registered successfully:", response);
     alert("Hospital registration successful!");
   } catch (error) {

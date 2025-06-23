@@ -26,7 +26,7 @@ const Navbar = ({ location, setLocation }) => {
   const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
 
-  const isLoggedIn = localStorage.getItem('loggedIn') === 'true';
+  const isLoggedIn = localStorage.getItem('token')? true:false ;
 
   return (
     <>

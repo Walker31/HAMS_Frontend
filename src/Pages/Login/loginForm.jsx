@@ -5,7 +5,7 @@ import {
   FormControlLabel,
   Checkbox,
 } from "@mui/material";
-
+import PasswordField from "../../components/passwordField";
 import Toggle from "./toggle";
 export default function LoginForm({
   formData,
@@ -13,7 +13,7 @@ export default function LoginForm({
   handleLoginSubmit,
   handleRoleChange,
 }) {
-  const [role, setRole] = useState("doctor");
+  const [role, setRole] = useState("patient");
 
   const toggleRole = (newRole) => {
     setRole(newRole);
@@ -34,18 +34,11 @@ export default function LoginForm({
             onChange={handleChange}
             fullWidth
             required
-          />
-          <TextField
-            label="Password"
-            type="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            fullWidth
-            required
-          />
-        </div>
-
+          /><PasswordField
+              value={formData.password || ""}
+              onChange={handleChange}
+            />
+        </div>     
         <div className="flex justify-between items-center">
           <FormControlLabel
             control={

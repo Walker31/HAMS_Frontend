@@ -1,8 +1,8 @@
 import { createDoctor } from '../apiControllers/userAPI';
 
-export default async function doctorHandler(formData) {
+export default async function doctorHandler(formData,login) {
   try {
-    const response = await createDoctor(formData);
+    const response = await createDoctor(formData,login);
     console.log('Doctor registered successfully:', response);
     alert('Doctor registration successful!');
   } catch (error) {

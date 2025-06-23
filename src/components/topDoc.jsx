@@ -13,8 +13,8 @@ const TopDoc = () => {
 
   const fetchTopDoctors = (lat, lon) => {
     axios
-      .get(`${base_url}/doctors/top/${lat}/${lon}`)
-      .then((res) => setDoctors(res.data.doctors))
+      .get(`${base_url}/doctors/nearby/${lat}/${lon}`)
+      .then((res) => setDoctors(res.data))
       .catch((err) => console.error(err))
       .finally(() => setLoading(false));
   };
@@ -46,7 +46,7 @@ const TopDoc = () => {
   };
 
   if (loading) return <div className="text-center py-10">Loading…</div>;
-  if (!doctors.length)
+  if (!doctors.length)  
     return (
       <div className="text-center py-10 text-gray-600">
         No doctors available at the moment.
@@ -75,7 +75,7 @@ const TopDoc = () => {
             >
               <div className="w-full h-36 overflow-hidden rounded-lg mb-4">
                 <img
-                  src={d.photo}
+                  src={d.photo || "/default.avif"}
                   alt={`${d.name} photo`}
                   loading="lazy"
                   className="w-full h-full object-cover"
