@@ -45,7 +45,7 @@ export const DoctorDescription = () => {
   try {
     const payload = {
     date: selectedDate,
-    patientId: "HAMS_ADMIN",
+    patientId: localStorage.getItem('patientId'),
     doctorId: doctor.doctorId || "dummy-doctor-id",
     clinicId: hname?.hosp || "Unknown Clinic",
     slotNumber: selectedSlot,
@@ -57,7 +57,7 @@ export const DoctorDescription = () => {
     const response = await axios.post("http://localhost:3000/appointments/book", payload);
     if (response.status === 201) {
       alert("Appointment booked successfully!");
-      navigate("/PatientDashboard", {
+      navigate("/doctordashboard", {
         state: {
           doctor: doctor,
           hname: {hosp: hname?.hosp},

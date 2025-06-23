@@ -15,7 +15,6 @@ const DoctorsAvailable = () => {
     const longitude = localStorage.getItem("longitude");
     axios.get(`${base_url}/doctors/nearby/${latitude}/${longitude}`)
       .then((res) => {
-        console.log(res.data);
         setDoctors(res.data);
       })
       .catch((err) => console.error(err));
@@ -29,10 +28,10 @@ const DoctorsAvailable = () => {
           <div className="col-md-4 mb-4" key={idx}>
             <div className="card p-3 shadow-sm h-100">
               <img
-                src={doc.photo || "/default-doctor.jpg"}
+                src={doc.photo || "/default.avif"}
                 className="card-img-top rounded"
                 alt={doc.name}
-                style={{ height: "200px", objectFit: "cover" }}
+                style={{ height: "200px", objectFit: "scale-down" }}
               />
               <div className="card-body">
                 <h5 className="card-title">{doc.name}</h5>

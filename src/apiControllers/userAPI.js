@@ -16,6 +16,8 @@ export const loginUser = async (loginData, role, login) => {
   const res = await axios.post(`${base_url}/${route}`, loginData, {
     withCredentials: true,
   });
+  console.log(res.data);
+  localStorage.setItem('patientId',res.data.patientId)
   return res.data;
 };
 
