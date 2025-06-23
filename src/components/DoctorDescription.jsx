@@ -1,31 +1,50 @@
-import { useState , useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import axios from 'axios';
+import axios from "axios";
 
 export const DoctorDescription = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(true); 
-  const [isOn, setIsOn] = useState(false); 
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isOn, setIsOn] = useState(false);
+  const [availableSlots, setAvailableSlots] = useState([]);
 
   const navigate = useNavigate();
   const location = useLocation();
 
   const { doctor, hname, reason } = location.state || {};
+  const [doctorDetails, setDoctorDetails] = useState(doctor);
 
-  const[doctorDetails,setDoctorDetails] = useState(doctor);
-
+  // Fetch doctor details
   useEffect(() => {
-    const fechDoctor=async () => {
+    const fetchDoctor = async () => {
       try {
-        const res= await axios.get(`http://localhost:3000/doctors/${doctor.doctorId}/profile`);
+        const res = await axios.get(`http://localhost:3000/doctors/${doctor.doctorId}/profile`);
         setDoctorDetails(res.data.doctor);
       } catch (error) {
         console.error("Error fetching doctor details:", error);
       }
     };
-    if (doctorDetails?._id)fechDoctor();
+    if (doctorDetails?._id) fetchDoctor();
   }, [doctorDetails?._id]);
+
+  // slots from backend
+  useEffect(() => {
+    const fetchSlots = async () => {
+      if (!selectedDate || !doctor?.doctorId) return;
+      try {
+        const res = await axios.get(`http://localhost:3000/doctors/${doctor.doctorId}/slots`);
+        const allSlots = res.data?.availableSlots || {};
+        const dateKey = new Date(selectedDate).toDateString(); 
+        const slotsForDate = allSlots[dateKey] || [];
+        setAvailableSlots(slotsForDate);
+      } catch (error) {
+        console.error("Error fetching slots:", error);
+        setAvailableSlots([]);
+      }
+    };
+    fetchSlots();
+  }, [selectedDate, doctor?.doctorId]);
 
   const handleSlotClick = (slot) => setSelectedSlot(slot);
 
@@ -40,37 +59,37 @@ export const DoctorDescription = () => {
       return;
     }
 
+    try {
+      const payload = {
+        date: selectedDate,
+        patientId: "HAMS_ADMIN",
+        doctorId: doctor.doctorId || "dummy-doctor-id",
+        clinicId: hname?.hosp || "Unknown Clinic",
+        slotNumber: selectedSlot,
+        reason: reason || "General Checkup",
+        payStatus: isOn ? "Paid" : "Unpaid",
+      };
 
-  try {
-    const payload = {
-    date: selectedDate,
-    patientId: "HAMS_ADMIN",
-    doctorId: doctor.doctorId || "dummy-doctor-id",
-    clinicId: hname?.hosp || "Unknown Clinic",
-    slotNumber: selectedSlot,
-    reason: reason || "General Checkup",
-    payStatus: isOn ? 'Paid' : 'Unpaid'};
-    const response = await axios.post("http://localhost:3000/appointments/book", payload);
-    if (response.status === 201) {
-      alert("Appointment booked successfully!");
-      navigate("/PatientDashboard", {
-        state: {
-          doctor: doctor,
-          hname: {hosp: hname?.hosp},
-          date: selectedDate,
-          slot: selectedSlot,
-        },
-      });
+      const response = await axios.post("http://localhost:3000/appointments/book", payload);
+      if (response.status === 201) {
+        alert("Appointment booked successfully!");
+        localStorage.setItem("doctorId", doctor.doctorId);
+        navigate("/doctordashboard", {
+          state: {
+            doctor,
+            hname: { hosp: hname?.hosp },
+            date: selectedDate,
+            slot: selectedSlot,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Booking error:", error);
+      alert("Error booking appointment");
     }
-  } catch (error) {
-    console.error("Booking error:", error);
-    alert("Error booking appointment");
-  }
-};
-
+  };
 
   return (
-    
     <div className="container my-5">
       <h2 className="text-center mb-4">Doctor Description</h2>
       <div className="row p-5 bg-[#10217D] rounded-3xl">
@@ -118,15 +137,21 @@ export const DoctorDescription = () => {
 
             <h6 className="fw-bold mb-2">Available Slots:</h6>
             <div className="d-flex flex-wrap gap-2 mb-2">
-              {["9:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", "1:00 PM", "2:00 PM", "3:00 PM"].map((slot) => (
-                <button
-                  key={slot}
-                  className={`btn btn-sm ${selectedSlot === slot ? "btn-warning" : "btn-outline-warning"}`}
-                  onClick={() => handleSlotClick(slot)}
-                >
-                  {slot}
-                </button>
-              ))}
+              {availableSlots.length > 0 ? (
+                availableSlots.map((slot) => (
+                  <button
+                    key={slot}
+                    className={`btn btn-sm ${
+                      selectedSlot === slot ? "btn-warning" : "btn-outline-warning"
+                    }`}
+                    onClick={() => handleSlotClick(slot)}
+                  >
+                    {slot}
+                  </button>
+                ))
+              ) : (
+                <p className="text-muted">No slots available for selected date</p>
+              )}
             </div>
 
             <div className="d-flex items-center mt-2.5 mb-2.5">
@@ -145,10 +170,7 @@ export const DoctorDescription = () => {
               </div>
             </div>
 
-            <button
-              className="btn btn-outline-primary w-100"
-              onClick={handleBookNow}
-            >
+            <button className="btn btn-outline-primary w-100" onClick={handleBookNow}>
               BOOK APPOINTMENT
             </button>
           </div>
@@ -162,6 +184,5 @@ export const DoctorDescription = () => {
     </div>
   );
 };
-
 
 export default DoctorDescription;

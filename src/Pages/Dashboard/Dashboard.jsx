@@ -50,7 +50,9 @@ const DoctorDashboard = () => {
 
   const handleSaveDescription = async () => {
     try {
-      const response = await axios.put(`${base_url}/doctors/update/${doctorState._id}`, {overview: description});
+      await axios.put(`${base_url}/doctors/update/${doctorState._id}`, {
+        overview: description,
+      });
       setDoctorState((prev) => ({ ...prev, overview: description }));
       alert("Overview updated successfully");
       setShowOverview(false);
@@ -124,7 +126,7 @@ const DoctorDashboard = () => {
     try {
       await axios.put(`${base_url}/appointments/update-status/${apptId}`, {
         appStatus: newStatus,
-        reasonForReject: reason,
+        rejectionReason: reason,
       });
     } catch (error) {
       console.error("Error updating appointment status:", error);
@@ -171,6 +173,13 @@ const DoctorDashboard = () => {
     fetchPreviousAppointments();
   }, [doctorState._id]);
 
+  // ✅ Refetch when coming back from Calendar slot booking
+  useEffect(() => {
+    if (location.state?.date && location.state?.slot) {
+      fetchTodayAppointments();
+    }
+  }, [location.state]);
+
   const renderDashboardContent = () => (
     <div className="p-4">
       <Row className="mb-4">
@@ -181,7 +190,7 @@ const DoctorDashboard = () => {
               <h4>
                 {
                   previousAppointments.filter(
-                    (appt) => appt.status === "Completed"
+                    (appt) => appt.appStatus === "Completed"
                   ).length
                 }
               </h4>
@@ -213,7 +222,6 @@ const DoctorDashboard = () => {
                     <span>Slot: {appt.slotNumber}</span>
                     <br />
                     <span>Status: {appt.appStatus}</span>
-                    <br />
                   </div>
                   <div>
                     <Button
@@ -265,7 +273,6 @@ const DoctorDashboard = () => {
                     <span>Status: {appt.appStatus}</span>
                     <br />
                     <span>Date: {appt.date}</span>
-                    <br />
                     {appt.appStatus === "Rejected" && (
                       <p className="text-danger">
                         Rejection: {appt.reasonForReject}
