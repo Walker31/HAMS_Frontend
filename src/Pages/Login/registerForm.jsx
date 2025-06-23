@@ -21,7 +21,7 @@ export default function RegisterForm() {
 
   const handleBack = () => {
     setUserType(null);
-    setIsLogin(false);
+    setIsLogin(true);
     setFormData({});
   };
 
@@ -32,7 +32,7 @@ export default function RegisterForm() {
       if (mode === "Login") {
         const loginData = data || formData;
         loginData.role = role; // Ensure role is included in login datanpmm 
-        await loginHandler(loginData,loginData.role,login);
+        await loginHandler(loginData,role,login);
       } else if (mode === "SignUp") {
         if (role === "Patient") {
           setUserType("Patient");

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import { FaRegHospital } from "react-icons/fa";
+
 import axios from 'axios';
 
 const HeaderSection = () => {
@@ -89,49 +92,63 @@ const HeaderSection = () => {
   return (
     <div style={sectionStyle} className="d-flex justify-content-center align-items-center flex-column text-center m-0 p-0">
       <div
-        className="border border-primary rounded p-4 bg-light mb-3"
+        className="border w-80 cursor-pointer border-blue-500 p-6 mb-4 rounded-xl bg-white shadow-md transition duration-200 flex flex-col items-center"
         style={{ width: '300px', cursor: 'pointer' }}
         onClick={handleBookClick}
       >
-        <h5 className="text-primary fw-bold mb-2">Book Appointment</h5>
-        <p className="text-muted mb-0">Click to proceed with booking.</p>
+         <div className="mb-3 text-blue-600">
+            <EventAvailableIcon style={{ fontSize: 40 }} />
+          </div>
+        <h5 className="text-xl font-bold text-blue-700 mb-2">Book Appointment</h5>
+        <p className="text-gray-500 text-center">Click to proceed with booking.</p>
       </div>
 
       {showPopup && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center z-3">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-4 rounded position-relative d-flex" style={{ width: '800px', minHeight: '500px' }}>
-            <button className="btn-close position-absolute top-0 end-0 m-2" onClick={handleClose}></button>
+            <button className="btn-close position-absolute top-0 end-0 m-2 p-1" onClick={handleClose}></button>
 
             {/* Step navigation */}
-            <div className="d-flex flex-column justify-content-start pe-4 border-end" style={{ width: '200px' }}>
-              <h4 className="mb-4">Hi</h4>
-              <p>Follow the steps below:</p>
-              <hr />
-              <div className={`d-flex align-items-center mb-3 ${step === 1 ? 'fw-bold text-primary' : 'text-muted'}`} style={{ cursor: 'pointer' }} onClick={() => setStep(1)}>
-                <div className="border rounded-circle d-flex justify-content-center align-items-center" style={{ width: '30px', height: '30px' }}>1</div>
-                <span className="ms-2">Specialization</span>
-              </div>
-              <div className={`d-flex align-items-center ${step === 2 ? 'fw-bold text-primary' : 'text-muted'}`} style={{ cursor: 'pointer' }} onClick={() => setStep(2)}>
-                <div className="border rounded-circle d-flex justify-content-center align-items-center" style={{ width: '30px', height: '30px' }}>2</div>
-                <span className="ms-4">Reason</span>
-              </div>
-              <div className={`d-flex align-items-center ${step === 3 ? 'fw-bold text-primary' : 'text-muted'}`} style={{ cursor: 'pointer' }} onClick={() => setStep(3)}>
-                <div className="border rounded-circle d-flex justify-content-center align-items-center" style={{ width: '30px', height: '30px' }}>3</div>
-                <span className="ms-2">Select Hospital</span>
-              </div>
+            <div className="flex flex-col justify-start pr-4 border-r w-52">
+              <h4 className="mb-4 text-lg font-semibold">Hi</h4>
+              <p className="text-gray-500 text-sm">Follow the steps below:</p>
+              <hr className="my-3" />
+
+              {[
+                { stepNum: 1, label: "Specialization" },
+                { stepNum: 2, label: "Reason" },
+                { stepNum: 3, label: "Select Hospital" }
+              ].map(({ stepNum, label }) => (
+                <div
+                  key={stepNum}
+                  className={`flex items-center mb-3 cursor-pointer transition-colors ${
+                    step === stepNum ? 'text-blue-600 font-semibold' : 'text-gray-900'
+                  }`}
+                  onClick={() => setStep(stepNum)}
+                >
+                  <div
+                    className={`border rounded-full flex items-center justify-center w-8 h-8 text-sm ${
+                      step === stepNum ? 'border-blue-600' : 'border-gray-300'
+                    }`}
+                  >
+                    {stepNum}
+                  </div>
+                  <span className="ml-3 text-sm">{label}</span>
+                </div>
+              ))}
             </div>
+
 
             {/* Step content */}
             <div className="ps-4 w-100">
               {step === 1 && (
                 <>
                   <h5>Select Specialization</h5>
-                  <div className="overflow-auto" style={{ maxHeight: '350px' }}>
-                    <div className="row row-cols-3 g-3">
+                  <div className="row row-cols-3 g-3 mt-3 overflow-auto" style={{ maxHeight: '350px' }}>
                       {specializations.map((spec) => (
                         <div key={spec.name} className="col text-center">
                           <div
-                            className={`border rounded py-3 bg-light ${selectedSpecialization === spec.name ? 'border-primary bg-primary text-black' : ''}`}
+                            className={`border rounded py-3 px-2 h-100 ${selectedSpecialization === spec.name ? 'bg-primary text-white' : 'bg-light'} hover-shadow`}
                             style={{ cursor: 'pointer' }}
                             onClick={() => {
                               setSelectedSpecialization(spec.name);
@@ -140,20 +157,20 @@ const HeaderSection = () => {
                             }}
                           >
                             <div style={{ fontSize: '24px' }}>{spec.icon}</div>
-                            <div style={{ fontSize: '14px', marginTop: '5px' }}>{spec.name}</div>
+                            <div className="mt-1">{spec.name}</div>
                           </div>
                         </div>
                       ))}
-                    </div>
                   </div>
                 </>
               )}
 
               {step === 2 && (
                 <>
-                  <h5>Why do you want to see a {selectedSpecialization}?</h5>
+                <div className='flex flex-col gap-4'>
+                   <h5 className="text-lg font-semibold text-gray-800">Reason for visiting a <span className="text-blue-600">{selectedSpecialization}</span> Doctor</h5>
                   <select
-                    className="form-select mt-3 mb-4"
+                    className="form-select mt-2 p-3 border rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                     value={reason}
                     onChange={(e) => setReason(e.target.value)}
                   >
@@ -163,21 +180,23 @@ const HeaderSection = () => {
                     ))}
                   </select>
                   {reason && (
-                    <button className="btn btn-primary" onClick={() => setStep(3)}>
-                      Next: Select Hospital
+                    <button className="self-start px-4 py-2 roude bg-blue-600 hover:bg-blue-700 text-white transition duration-200 text-sm font-medium rounded-xl" onClick={() => setStep(3)}>
+                      Next: Choose Hospital 
                     </button>
                   )}
+                  </div>
                 </>
               )}
 
               {step === 3 && (
                 <>
-                  <h5 className="mb-3">Select Hospital</h5>
-                  <div className="row row-cols-2 g-3">
+                <div className='flex flex-col gap-4'>
+                  <h5 className='text-lg font-semibold text-gray-800'>Select Hospital</h5>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-y-auto max-h-96 pr-2">
                     {hospitals.map((hosp) => (
                       <div key={hosp.RegId} className="col text-center">
                         <div
-                          className="border rounded py-3 bg-light"
+                          className="border rounded py-3 bg-gray-50 hover:bg-blue-50 hover:shadow transition duration-200 text-center"
                           style={{ cursor: 'pointer' }}
                           onClick={() => {
                             setShowPopup(false);
@@ -190,11 +209,12 @@ const HeaderSection = () => {
                             });
                           }}
                         >
-                          🏥
-                          <div style={{ fontSize: '14px', marginTop: '5px' }}>{hosp.hospitalName}</div>
+                          <div className='text-2xl mb-2'>🏥</div>
+                          <div className='text-sm font-medium text-gray-700'>{hosp.hospitalName}</div>
                         </div>
                       </div>
                     ))}
+                  </div>
                   </div>
                 </>
               )}
