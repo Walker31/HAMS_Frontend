@@ -128,6 +128,7 @@ const PatientDashboard = () => {
       const enrichedAppointments = await Promise.all(
         appts.map(async (appt) => {
           const doctorName = await fetchDoctorDetails(appt.doctorId);
+          console.log(appt);
           return { ...appt, doctorName };
         })
       );
