@@ -1,4 +1,3 @@
-// doctorHandler.js
 import { createDoctor } from '../apiControllers/userAPI';
 
 export default async function doctorHandler(formData) {

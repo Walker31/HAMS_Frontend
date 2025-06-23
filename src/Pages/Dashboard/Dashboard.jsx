@@ -50,7 +50,9 @@ const DoctorDashboard = () => {
 
   const handleSaveDescription = async () => {
     try {
-      const response = await axios.put(`${base_url}/doctors/update/${doctorState._id}`, {overview: description});
+      await axios.put(`${base_url}/doctors/update/${doctorState._id}`, {
+        overview: description,
+      });
       setDoctorState((prev) => ({ ...prev, overview: description }));
       alert("Overview updated successfully");
       setShowOverview(false);
@@ -91,7 +93,7 @@ const DoctorDashboard = () => {
       {
         ...appt,
         reasonForReject: reasonOverride || rejectionReason,
-        status,
+        appStatus: status,
       },
     ]);
   };
@@ -120,11 +122,12 @@ const DoctorDashboard = () => {
     setShowPrescriptionModal(false);
   };
 
+
   const updateAppointmentStatus = async (apptId, newStatus, reason = "") => {
     try {
       await axios.put(`${base_url}/appointments/update-status/${apptId}`, {
         appStatus: newStatus,
-        reasonForReject: reason,
+        reasonForReject: reason,   
       });
     } catch (error) {
       console.error("Error updating appointment status:", error);
@@ -147,7 +150,7 @@ const DoctorDashboard = () => {
   const fetchPreviousAppointments = async () => {
     try {
       const res = await axios.get(
-        `${base_url}/appointments/previous?doctorId=${doctorState._id}` 
+        `${base_url}/appointments/previous?doctorId=${doctorState._id}`
       );
       setPreviousAppointments(res.data);
     } catch (error) {
