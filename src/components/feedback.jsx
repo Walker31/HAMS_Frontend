@@ -32,19 +32,19 @@ const Feedback=() =>{
                 alt={name}
                 className="object-cover m-2 w-full max-w-[320px] h-60 sm:h-72 md:h-80 rounded-2xl"
               />
-
+              
             </div>
             
           </div>
             
           </div>
           <div className="w-full md:w-2/3 p-6 flex items-center justify-center text-center">
-            <p className="text-xl text-gray-700 leading-relaxed ">
+            <p className="text-xl text-gray-700 leading-relaxed mb-4">
                "{review} " 
             </p>
           </div>
         </div>
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 m-3 p-4">
+        <div className="flex flex-row md:flex-col items-center justify-between gap-4 m-3 p-4">
           <div className="flex w-full justify-between items-center">
             {/* Name & Tag */}
             <div></div>

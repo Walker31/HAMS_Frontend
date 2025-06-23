@@ -110,6 +110,22 @@ useEffect(() => {
           </div>
         </div>
 
+        <TextField
+            select
+            label="Gender"
+            name="gender"
+            value={formData.gender || ""}
+            onChange={handleChange}
+            fullWidth
+            required
+            margin="normal"
+          >
+            <MenuItem value="">Select Gender</MenuItem>
+            <MenuItem value="Male">Male</MenuItem>
+            <MenuItem value="Female">Female</MenuItem>
+            <MenuItem value="Other">Other</MenuItem>
+          </TextField>
+
         {/* Password */}
         <TextField
           label="Password"

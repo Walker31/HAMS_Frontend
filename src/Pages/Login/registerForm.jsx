@@ -10,6 +10,24 @@ import hospitalHandler from "../../handlers/hospitalHandler.js"
 import { useAuth } from "../../contexts/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
 
+function getCurrentLocation() {
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject(new Error("Geolocation is not supported by your browser"));
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        resolve({ latitude, longitude });
+      },
+      (error) => {
+        reject(error);
+      }
+    );
+  });
+}
+
 export default function RegisterForm() {
   const [userType, setUserType] = useState(null);
   const [formData, setFormData] = useState({});
@@ -65,16 +83,18 @@ export default function RegisterForm() {
 
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
+    
     try {
       if (userType === "Patient") {
         console.log("Submitting patient data:", formData);
         await patientHandler(formData,login);
       } else if (userType === "Doctor") {
+        const { latitude,longitude } = await getCurrentLocation();
         const formattedData = {
           ...formData,
           location: {
-            latitude: formData.latitude,
-            longitude: formData.longitude,
+            type: "Point",
+            coordinates: [longitude, latitude],
           },
         };
         delete formattedData.latitude;
