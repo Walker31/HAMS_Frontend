@@ -8,44 +8,64 @@ import MenuItem from "@mui/material/MenuItem";
 import SPECIALIZATIONS from "../../constants/specializations";
 import axios from "axios";
 
-export default function DoctorRegisterForm({
-
-  formData,
-  handleChange,
-  handleRegisterSubmit,
-  handleBack,
-}) {
+export default function DoctorRegisterForm({ formData, handleChange, handleBack }) {
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-  
+
   const fileInputRef = useRef(null);
   const [imagePreview, setImagePreview] = useState(null);
-
   const [hospitals, setHospitals] = useState([]);
 
+  // Handle Image File Selection
   const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    handleChange({ target: { name: "photo", value: file } });
-    setImagePreview(URL.createObjectURL(file)); 
-  }
-};
-
-useEffect(() => {
-  return () => {
-    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    const file = e.target.files[0];
+    if (file) {
+      handleChange({ target: { name: "photo", value: file } });
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
-}, [imagePreview]);
 
-
+  // Cleanup preview URL
   useEffect(() => {
-    const lat = 12.9058; //For now we set this
+    return () => {
+      if (imagePreview) URL.revokeObjectURL(imagePreview);
+    };
+  }, [imagePreview]);
+
+  // Fetch hospitals on mount
+  useEffect(() => {
+    const lat = 12.9058;
     const lon = 80.2270;
 
-    axios.get(`${base_url}/hospitals/getAll/${lat}/${lon}`) 
-      .then(response => setHospitals(response.data))
-      .catch(error => console.error('Error fetching hospitals:', error));
+    axios
+      .get(`${base_url}/hospitals/getAll/${lat}/${lon}`)
+      .then((response) => setHospitals(response.data))
+      .catch((error) => console.error("Error fetching hospitals:", error));
   }, []);
 
+  // Submit Handler (Internal)
+  const handleRegisterSubmit = async (e) => {
+    e.preventDefault();
+
+    const formDataToSend = new FormData();
+    Object.keys(formData).forEach((key) => {
+      formDataToSend.append(key, formData[key]);
+    });
+
+    try {
+      const response = await axios.post(`${base_url}/doctors/signup`, formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+        withCredentials: true,
+      });
+
+      alert("Doctor registered successfully!");
+      // Optionally reset form here
+    } catch (error) {
+      console.error("Doctor registration error:", error);
+      alert("Doctor registration failed. Please try again.");
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md space-y-6">
@@ -54,16 +74,11 @@ useEffect(() => {
         <ArrowBackIcon />
       </IconButton>
 
-      {/* Heading */}
       <h2 className="text-2xl font-bold text-center">Doctor Registration</h2>
 
-      <form
-        onSubmit={handleRegisterSubmit}
-        className="flex flex-col gap-6 w-full"
-      >
-        {/* Top Section: Image + Common Fields */}
+      <form onSubmit={handleRegisterSubmit} className="flex flex-col gap-6 w-full">
         <div className="flex flex-col md:flex-row items-start gap-6">
-          {/* Image Upload and Preview */}
+          {/* Image Upload */}
           <div className="flex flex-col items-center gap-2">
             <div
               className="w-32 h-32 rounded-full bg-gray-200 overflow-hidden cursor-pointer"
@@ -71,11 +86,7 @@ useEffect(() => {
               title="Click to upload"
             >
               {imagePreview ? (
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="w-full h-full object-cover"
-                />
+                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-500">
                   Upload Photo
@@ -89,7 +100,6 @@ useEffect(() => {
               onChange={handleFileChange}
               ref={fileInputRef}
               style={{ display: "none" }}
-              
             />
             <Button
               variant="outlined"
@@ -146,6 +156,7 @@ useEffect(() => {
           ))}
         </TextField>
 
+        {/* Organisation/Hospital */}
         <TextField
           select
           label="Organisation"
@@ -156,23 +167,15 @@ useEffect(() => {
           required
         >
           <MenuItem value="">Select hospital</MenuItem>
-          {hospitals.map((spec) => (
-            <MenuItem key={spec.hospitalId} value={spec.hospitalName}>
-              {spec.hospitalName}
+          {hospitals.map((hosp) => (
+            <MenuItem key={hosp.hospitalId} value={hosp.hospitalName}>
+              {hosp.hospitalName}
             </MenuItem>
           ))}
         </TextField>
 
-
-
         {/* Submit Button */}
-        <Button
-          variant="contained"
-          color="primary"
-          type="submit"
-          fullWidth
-          className="mt-4"
-        >
+        <Button variant="contained" color="primary" type="submit" fullWidth className="mt-4">
           Register
         </Button>
       </form>
