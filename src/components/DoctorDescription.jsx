@@ -7,6 +7,7 @@ export const DoctorDescription = () => {
   const [selectedSlot, setSelectedSlot] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(true); 
   const [isOn, setIsOn] = useState(false); 
+  const [isSet,setIsSet]=useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,11 +50,14 @@ export const DoctorDescription = () => {
     clinicId: hname?.hosp || "Unknown Clinic",
     slotNumber: selectedSlot,
     reason: reason || "General Checkup",
-    payStatus: isOn ? 'Paid' : 'Unpaid'};
+    payStatus: isOn ? 'Paid' : 'Unpaid',
+    MeetLink:"Link",
+    consultStatus: isSet ? 'Online': 'Offline'};
+    
     const response = await axios.post("http://localhost:3000/appointments/book", payload);
     if (response.status === 201) {
       alert("Appointment booked successfully!");
-      navigate("/doctordashboard", {
+      navigate("/PatientDashboard", {
         state: {
           doctor: doctor,
           hname: {hosp: hname?.hosp},
@@ -127,6 +131,22 @@ export const DoctorDescription = () => {
                   {slot}
                 </button>
               ))}
+            </div>
+
+            <div className="d-flex items-center mt-2.5 mb-2.5">
+              <p className="m-0 pr-5">Mode of Consulting :</p>
+              <div
+                onClick={() => setIsSet(!isSet)}
+                className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer ${
+                  isSet ? "bg-green-400" : "bg-gray-300"
+                }`}
+              >
+                <div
+                  className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
+                    isSet ? "translate-x-6" : ""
+                  }`}
+                ></div>
+              </div>
             </div>
 
             <div className="d-flex items-center mt-2.5 mb-2.5">

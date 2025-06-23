@@ -7,6 +7,9 @@ import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
 import SPECIALIZATIONS from "../../constants/specializations";
 import axios from "axios";
+import { InputAdornment } from "@mui/material";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
 export default function DoctorRegisterForm({
 
@@ -21,6 +24,7 @@ export default function DoctorRegisterForm({
   const [imagePreview, setImagePreview] = useState(null);
 
   const [hospitals, setHospitals] = useState([]);
+  const [show,setShow] = useState(true);
 
   const handleFileChange = (e) => {
   const file = e.target.files[0];
@@ -126,10 +130,14 @@ useEffect(() => {
         <TextField
           label="Password"
           name="password"
-          type="password"
+          type={show ? "text" : "password"}
           value={formData.password || ""}
           onChange={handleChange}
-          inputProps={{ minLength: 6 }}
+          InputProps={{ minLength: 6, endAdornment:(
+            <InputAdornment position="end"><IconButton onClick={()=>setShow(!show)} edge="end">
+              {show ? <VisibilityIcon /> : <VisibilityOffIcon />}
+              </IconButton></InputAdornment>
+          ) }}
           fullWidth
           required
         />

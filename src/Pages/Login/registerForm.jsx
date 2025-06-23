@@ -39,7 +39,7 @@ export default function RegisterForm() {
 
   const handleBack = () => {
     setUserType(null);
-    setIsLogin(false);
+    setIsLogin(true);
     setFormData({});
   };
 
