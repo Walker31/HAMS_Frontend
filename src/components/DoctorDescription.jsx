@@ -18,8 +18,8 @@ export const DoctorDescription = () => {
   useEffect(() => {
     const fechDoctor=async () => {
       try {
-        const res= await axios.get(`http://localhost:3000/doctors/${doctor._id}`);
-        setDoctorDetails(res.data);
+        const res= await axios.get(`http://localhost:3000/doctors/${doctor.doctorId}/profile`);
+        setDoctorDetails(res.data.doctor);
       } catch (error) {
         console.error("Error fetching doctor details:", error);
       }
@@ -45,7 +45,7 @@ export const DoctorDescription = () => {
     const payload = {
     date: selectedDate,
     patientId: "HAMS_ADMIN",
-    doctorId: doctor?._id || "dummy-doctor-id",
+    doctorId: doctor.doctorId || "dummy-doctor-id",
     clinicId: hname?.hosp || "Unknown Clinic",
     slotNumber: selectedSlot,
     reason: reason || "General Checkup",

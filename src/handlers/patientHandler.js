@@ -1,8 +1,8 @@
 import { createPatient } from "../apiControllers/userAPI";
 
-export default async function handlePatientRegistration(formData) {
+export default async function handlePatientRegistration(formData,login) {
   try {
-    const response = await createPatient(formData);
+    const response = await createPatient(formData,login);
     console.log("Patient registered successfully:", response);
     return response; // success
   } catch (error) {
