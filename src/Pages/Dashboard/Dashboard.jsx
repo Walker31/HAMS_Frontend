@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
-import PropTypes from "prop-types";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Row, Col, Card, Button, Nav } from "react-bootstrap";
+import HomeIcon from '@mui/icons-material/Home';
+import { Container, Row, Col, Card, Button,OverlayTrigger,Tooltip, Nav } from "react-bootstrap";
 import CalendarWithSlots from "./CalendarWithSlots";
 import "react-calendar/dist/Calendar.css";
 import { useNavigate, useLocation } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
 import axios from "axios";
 import {
   OverviewModal,
@@ -43,6 +44,36 @@ const DoctorDashboard = () => {
     const token = localStorage.getItem("token");
     if (token) axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }, []);
+
+      const handleRejectConfirm = async () => {
+      if (currentIndex === null) return;
+      const appt = todayAppointments[currentIndex];
+      await updateAppointmentStatus(appt.appId, "Rejected", rejectionReason);
+      moveToPrevious(currentIndex, "Rejected", rejectionReason);
+      setModals((m) => ({ ...m, reject: false }));
+      setRejectionReason("");
+      setCurrentIndex(null);
+    };
+
+    const handleSavePrescription = async () => {
+      if (currentIndex === null) return;
+      const appt = todayAppointments[currentIndex];
+      try {
+        await axios.post(`${base_url}/prescriptions`, {
+          appointmentId: appt.appId,
+          prescription: currentPrescription,
+        });
+        await updateAppointmentStatus(appt.appId, "Completed");
+        moveToPrevious(currentIndex, "Completed");
+        setModals((m) => ({ ...m, prescription: false }));
+        setCurrentPrescription("");
+        setCurrentIndex(null);
+      } catch (error) {
+        console.error("Failed to save prescription:", error);
+        alert("Failed to save prescription");
+      }
+    };
+
 
   // Fetch doctor details and appointments
   const fetchDoctorDetails = useCallback(async () => {
@@ -86,8 +117,11 @@ const DoctorDashboard = () => {
 
   const handleSaveDescription = async () => {
     try {
-      const response = await axios.put(`${base_url}/doctors/update/${doctorState.doctorId}`, {overview: description});
-      setDoctorState((prev) => ({ ...prev, overview: description }));
+      const response = await axios.put(`${base_url}/doctors/update/${doctor.doctorId}`, {
+      overview: description,
+      });
+      setDoctor((prev) => ({ ...prev, overview: description }));
+
       alert("Overview updated successfully");
       setModals((m) => ({ ...m, overview: false }));
     } catch (error) {
@@ -136,13 +170,6 @@ const DoctorDashboard = () => {
     }
   };
 
-  useEffect(() => {
-    if (!doctorState._id) return;
-    fetchDoctorDetails();
-    fetchTodayAppointments();
-    fetchPreviousAppointments();
-  }, [doctorState._id]);
-
   const renderDashboardContent = () => (
     <div className="p-4">
       <Row className="mb-4">
@@ -179,7 +206,7 @@ const DoctorDashboard = () => {
               <Card key={appt.appId || idx} className="mb-3 shadow-sm">
                 <Card.Body className="d-flex justify-content-between align-items-center">
                   <div>
-                    <span>Patient name: {appt.patientId}</span>
+                    <span>Patient name: {appt.name}</span>
                     <br />
                     <span>Slot: {appt.slotNumber}</span>
                     <br />
@@ -227,7 +254,7 @@ const DoctorDashboard = () => {
               >
                 <Card.Body>
                   <div>
-                    <span>Patient name: {appt.patientId}</span>
+                    <span>Patient name: {appt.name}</span>
                     <br />
                     <span>Slot: {appt.slotNumber}</span>
                     <br />
@@ -315,16 +342,20 @@ const DoctorDashboard = () => {
   );
 
   // Header
-  const Header = () => (
-    <div
-      className="bg-primary text-white p-3 d-flex align-items-center"
-      style={{ position: "sticky", top: 0, zIndex: 1001 }}
-    >
-      <Button variant="outline-light" onClick={toggleSidebar} className="me-3">
-        ☰
-      </Button>
-      <h4 className="mb-0">Doctor Dashboard</h4>
-    </div>
+  const Header = ({ toggleSidebar, onHomeClick }) => (
+    <header className="bg-primary text-white p-3 d-flex justify-content-between align-items-center shadow">
+      <div className="d-flex align-items-center gap-3">
+        <Button variant="outline-light" onClick={toggleSidebar}>
+          ☰
+        </Button>
+        <h5 className="mb-0">Doctor Dashboard</h5>
+      </div>
+      <OverlayTrigger placement="bottom" overlay={<Tooltip>Go to Home</Tooltip>}>
+        <IconButton onClick={() => navigate('/')} style={{ color: "white" }}>
+          <HomeIcon />
+        </IconButton>
+      </OverlayTrigger>
+    </header>
   );
 
   return (
