@@ -8,12 +8,14 @@ import patientHandler from "../../handlers/patientHandler";
 import doctorHandler from "../../handlers/doctorHandler";
 import hospitalHandler from "../../handlers/hospitalHandler.js"
 import { useAuth } from "../../contexts/AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterForm() {
   const [userType, setUserType] = useState(null);
   const [formData, setFormData] = useState({});
   const [isLogin, setIsLogin] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -31,8 +33,21 @@ export default function RegisterForm() {
     try {
       if (mode === "Login") {
         const loginData = data || formData;
-        loginData.role = role; // Ensure role is included in login datanpmm 
-        await loginHandler(loginData,role,login);
+        const res = await loginHandler(loginData,role,login);
+        console.log(res)
+        const savedRole = localStorage.getItem('role')
+        if(res?.token){
+          if (savedRole.toLowerCase() === "patient") {
+            console.log('Entering dashboard')
+            navigate("/patientdashboard");
+          } else if (savedRole.toLowerCase() === "doctor") {
+            console.log('Entering Doctor dashboard')
+            navigate("/doctordashboard");
+          } else if (savedRole === "Hospital") {
+            console.log('Entering Hospital dashboard')
+            navigate("/hospitaldashboard");
+          }
+        }
       } else if (mode === "SignUp") {
         if (role === "Patient") {
           setUserType("Patient");
