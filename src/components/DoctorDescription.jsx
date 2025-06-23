@@ -53,7 +53,7 @@ export const DoctorDescription = () => {
     const response = await axios.post("http://localhost:3000/appointments/book", payload);
     if (response.status === 201) {
       alert("Appointment booked successfully!");
-      navigate("/PatientDashboard", {
+      navigate("/doctordashboard", {
         state: {
           doctor: doctor,
           hname: {hosp: hname?.hosp},
