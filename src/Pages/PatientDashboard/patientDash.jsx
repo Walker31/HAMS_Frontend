@@ -50,6 +50,7 @@ const AppointmentList = ({ appointments, onCancel }) => {
             <p className="text-sm text-gray-500">{appt.date} | {appt.slotNumber}</p>
             <p className="text-sm text-gray-500">Clinic: {appt.clinicId}</p>
             <p className="text-sm text-gray-500">Payment: {appt.payStatus}</p>
+            <p className="text-sm text-gray-500">Mode of Consulting: {appt.consultStatus}</p>
           </div>
           {appt.appStatus === "Pending" && (
             <button className="bg-cyan-500 text-white px-4 py-2 rounded-xl hover:bg-cyan-600"
