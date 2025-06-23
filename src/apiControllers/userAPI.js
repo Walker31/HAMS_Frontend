@@ -9,7 +9,7 @@ export const createDoctor = async (doctorData) => {
   return res.data;
 };
 
-export const loginUser = async (loginData, role = "patient") => {
+export const loginUser = async (loginData, role, login) => {
   const route = role === "doctor" ? "doctors/login" : "patients/login";
   const res = await axios.post(`${base_url}/${route}`, loginData, {
     withCredentials: true,
@@ -17,14 +17,14 @@ export const loginUser = async (loginData, role = "patient") => {
   return res.data;
 };
 
-export const createPatient = async (patientData) => {
+export const createPatient = async (patientData,login) => {
   const res = await axios.post(`${base_url}/patients/signup`, patientData, {
     withCredentials: true,
   });
   return res.data;
 };
 
-export const createHospital = async (hospitalData) => {
+export const createHospital = async (hospitalData,login) => {
   const res = await axios.post(`${base_url}/hospitals/signup`, hospitalData, {
     withCredentials: true,
   });
