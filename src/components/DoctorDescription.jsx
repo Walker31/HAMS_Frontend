@@ -20,6 +20,7 @@ export const DoctorDescription = () => {
     const fechDoctor=async () => {
       try {
         const res= await axios.get(`http://localhost:3000/doctors/${doctor.doctorId}/profile`);
+        console.log(`http://localhost:3000/doctors/${doctor.doctorId}/profile`)
         setDoctorDetails(res.data.doctor);
       } catch (error) {
         console.error("Error fetching doctor details:", error);

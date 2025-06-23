@@ -105,7 +105,7 @@ const PatientDashboard = () => {
   // 🔥 Fetch doctor details function (as you asked)
   const fetchDoctorDetails = async (doctorId) => {
     try {
-      const res = await axios.get(`http://localhost:3000/doctors/${doctorId}`);
+      const res = await axios.get(`http://localhost:3000/doctors/${doctorId}/profile`);
       if (res.data && res.data.name) {
         return res.data.name;
       } else {
@@ -127,6 +127,7 @@ const PatientDashboard = () => {
       const enrichedAppointments = await Promise.all(
         appts.map(async (appt) => {
           const doctorName = await fetchDoctorDetails(appt.doctorId);
+          console.log(appt);
           return { ...appt, doctorName };
         })
       );
