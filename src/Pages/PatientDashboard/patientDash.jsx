@@ -3,12 +3,12 @@ import { FaFilePrescription, FaCalendarAlt, FaSignOutAlt, FaBars } from "react-i
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+// Sidebar Component
 const Sidebar = ({ collapsed, toggleSidebar, handleLogout }) => (
   <div className={`h-screen ${collapsed ? "w-20" : "w-64"} bg-white shadow-lg flex flex-col py-6 transition-all duration-300`}>
     <button onClick={toggleSidebar} className="mb-6 self-center">
       <FaBars size={24} />
     </button>
-
     <div className="flex flex-col items-center space-y-6 mt-6">
       <button className="flex items-center gap-4 mb-4">
         <FaCalendarAlt size={28} className="text-cyan-500" />
@@ -28,12 +28,14 @@ const Sidebar = ({ collapsed, toggleSidebar, handleLogout }) => (
   </div>
 );
 
+// Dashboard Header
 const DashboardHeader = () => (
   <div className="flex justify-between items-center p-6 bg-FCECDD-50 shadow-sm">
     <h2 className="text-2xl font-bold">Your Appointments</h2>
   </div>
 );
 
+// Appointment List Component
 const AppointmentList = ({ appointments, onCancel }) => {
   if (appointments.length === 0) return <p>No Appointments Found</p>;
 
@@ -44,7 +46,7 @@ const AppointmentList = ({ appointments, onCancel }) => {
         <div key={appt.appointmentId} className="flex justify-between items-center border-b py-3">
           <div>
             <h4 className="font-semibold">{appt.reason}</h4>
-            <p className="text-sm text-gray-500">Doctor ID: {appt.doctorId}</p>
+            <p className="text-sm text-gray-500">Doctor: {appt.doctorName}</p>
             <p className="text-sm text-gray-500">{appt.date} | {appt.slotNumber}</p>
             <p className="text-sm text-gray-500">Clinic: {appt.clinicId}</p>
             <p className="text-sm text-gray-500">Payment: {appt.payStatus}</p>
@@ -61,6 +63,7 @@ const AppointmentList = ({ appointments, onCancel }) => {
   );
 };
 
+// History List Component
 const HistoryList = ({ history }) => {
   if (history.length === 0) return <p>No Cancelled Appointments</p>;
 
@@ -80,26 +83,59 @@ const HistoryList = ({ history }) => {
   );
 };
 
+// MAIN PATIENT DASHBOARD
 const PatientDashboard = () => {
   const [collapsed, setCollapsed] = useState(true);
   const [appointments, setAppointments] = useState([]);
   const [history, setHistory] = useState([]);
   const navigate = useNavigate();
-  const patientId = "HAMS_ADMIN";
+  const patientId = "HAMS_ADMIN";  // hardcoded for now
 
+  // Sidebar toggle
   const toggleSidebar = () => setCollapsed(!collapsed);
 
+  // Logout
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/", { replace: true });
     alert("Logged out successfully");
   };
 
-  const fetchAppointments = () => {
-    axios.get(`http://localhost:3000/appointments/patient/${patientId}`)
-      .then(res => setAppointments(res.data))
-      .catch(err => console.error(err));
+  // 🔥 Fetch doctor details function (as you asked)
+  const fetchDoctorDetails = async (doctorId) => {
+    try {
+      const res = await axios.get(`http://localhost:3000/doctors/${doctorId}`);
+      if (res.data && res.data.name) {
+        return res.data.name;
+      } else {
+        return "Unknown Doctor";
+      }
+    } catch (error) {
+      console.error(`Error fetching doctor for ID ${doctorId}:`, error);
+      return "Unknown Doctor";
+    }
+  };
 
+  // Fetch Appointments + attach doctor name
+  const fetchAppointments = async () => {
+    try {
+      const res = await axios.get(`http://localhost:3000/appointments/patient/${patientId}`);
+      const appts = res.data;
+
+      // Enrich with doctor name
+      const enrichedAppointments = await Promise.all(
+        appts.map(async (appt) => {
+          const doctorName = await fetchDoctorDetails(appt.doctorId);
+          return { ...appt, doctorName };
+        })
+      );
+
+      setAppointments(enrichedAppointments);
+    } catch (err) {
+      console.error("Error fetching appointments:", err);
+    }
+
+    // Fetch history
     axios.get(`http://localhost:3000/appointments/history/${patientId}`)
       .then(res => setHistory(res.data))
       .catch(err => console.error(err));
@@ -109,6 +145,7 @@ const PatientDashboard = () => {
     fetchAppointments();
   }, []);
 
+  // Cancel Appointment
   const handleCancel = (appointmentId) => {
     axios.put(`http://localhost:3000/appointments/cancel`, { appointmentId })
       .then(() => {
