@@ -110,7 +110,7 @@ const Navbar = ({ location, setLocation }) => {
 
       {/* FloatingBar Overlay (Profile Sidebar) */}
       {isVisible && (
-        <div className="fixed inset-0 bg-black/30 z-40" onClick={toggle}>
+        <div className="fixed inset-0" onClick={toggle}>
           <FloatingBar />
         </div>
       )}

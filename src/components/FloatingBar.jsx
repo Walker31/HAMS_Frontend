@@ -6,6 +6,7 @@ import {
   Close as CloseIcon,
 } from '@mui/icons-material';
 import { useFloatingBarStore } from '../store/floatingBarStore';
+import { useNavigate } from 'react-router-dom';
 
 const navItems = [
   { label: 'Dashboard', icon: <DashboardIcon fontSize="small" />, key: 'dashboard' },
@@ -13,14 +14,26 @@ const navItems = [
   { label: 'History', icon: <HistoryIcon fontSize="small" />, key: 'history' },
 ];
 
+const routeMap = {
+  dashboard: '/dashboard',
+  settings: '/settings',
+  history: '/history',
+};
+
 const FloatingBar = () => {
+  const navigate = useNavigate();
   const close = useFloatingBarStore((state) => state.close);
-  const [activeTab, setActiveTab] = React.useState('dashboard');
+  const isVisible = useFloatingBarStore((state) => state.isVisible);
+  const [activeTab, setActiveTab] = React.useState('');
+  
 
   const handleTabChange = (key) => {
-    setActiveTab(key);
-    console.log('Selected:', key);
-  };
+  close()
+  navigate(`/${key}`);
+};
+
+  
+  if(!isVisible) return ;
 
   return (
     <div
