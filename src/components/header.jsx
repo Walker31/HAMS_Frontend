@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from 'react-router-dom';
 import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import { FaRegHospital } from "react-icons/fa";
+
 import axios from 'axios';
 
 const HeaderSection = () => {
-  const [showPopup, setShowPopup] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
   const [reason, setReason] = useState('');
   const [step, setStep] = useState(1);
