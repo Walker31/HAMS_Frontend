@@ -5,8 +5,8 @@ export default function CommonFields({ formData = {}, handleChange }) {
     <>
       <TextField
         label="Full Name"
-        name="fullName"
-        value={formData.fullName || ""}
+        name="name"
+        value={formData.name || ""}
         onChange={handleChange}
         fullWidth
         required
