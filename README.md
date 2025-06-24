@@ -1,12 +1,292 @@
-# React + Vite
+# HAMS (Healthcare Appointment Management System) Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+HAMS is a digital healthcare platform designed to streamline medical services for patients, doctors, and hospitals. This web application enables users to find the best available doctors nearby, book appointments seamlessly, and manage healthcare interactions efficiently.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Table of Contents
+- [About HAMS](#about-hams)
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+  - [Installation](#installation)
+  - [Running the App](#running-the-app)
+  - [Environment Variables](#environment-variables)
+- [Project Structure](#project-structure)
+- [Core Functionality](#core-functionality)
+- [Healthcare Programs](#healthcare-programs)
+- [FAQ](#faq)
+- [Live Demo](#live-demo)
+- [User Roles & Permissions](#user-roles--permissions)
+- [API Integration](#api-integration)
+- [Authentication & Security](#authentication--security)
+- [Customization & Theming](#customization--theming)
+- [Testing](#testing)
+- [Known Issues & Roadmap](#known-issues--roadmap)
+- [Contact & Support](#contact--support)
+- [Credits](#credits)
+- [License](#license)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## About HAMS
+
+HAMS (Healthcare Appointment Management System) is a multi-role healthcare platform. Patients, doctors, and hospitals can register, manage their profiles, and interact through a unified interface. The platform focuses on in-person appointments, ensuring quality care and personal interaction.
+
+**Mission:** To provide high-quality, affordable, and compassionate healthcare services while upholding the highest standards of ethics and professionalism.
+
+**Vision:** To be a leading healthcare provider known for clinical excellence, patient satisfaction, and community trust.
+
+---
+
+## Features
+
+- **Patient Portal:**
+  - Register, login, and manage your profile.
+  - Search for doctors by location and specialization.
+  - Book, reschedule, or cancel appointments.
+  - View appointment history and feedback.
+  - Secure data handling and privacy.
+
+- **Doctor Portal:**
+  - Register and verify credentials.
+  - Set and manage availability, appointment slots, and breaks.
+  - View and manage today's and previous appointments.
+  - Write and manage patient prescriptions.
+  - Update personal overview and profile.
+
+- **Hospital Portal:**
+  - Register and manage hospital profile.
+  - Add and manage doctors, departments, and services.
+  - Track doctor performance, appointments, and patient feedback.
+
+- **General:**
+  - Responsive, modern UI with React, Bootstrap, and Tailwind CSS.
+  - Location-based doctor search (with GPS support).
+  - Floating quick-access bar for navigation.
+  - Feedback and testimonials section.
+  - Comprehensive healthcare programs and packages.
+
+---
+
+## Screenshots
+
+*(Add screenshots of the Home page, Patient Dashboard, Doctor Dashboard, and Booking flow here)*
+
+---
+
+## Tech Stack
+
+- **Frontend:** React, React Router, Bootstrap, Tailwind CSS, Zustand (state management)
+- **APIs:** Axios for HTTP requests
+- **Icons:** Material UI Icons, React Icons
+- **Build Tool:** Vite
+
+---
+
+## Getting Started
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Walker31/HAMS_Frontend.git
+   cd HAMS_Frontend
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+### Running the App
+
+- **Development mode:**
+  ```bash
+  npm run dev
+  ```
+  The app will be available at `http://localhost:5173` (or as specified by Vite).
+
+- **Production build:**
+  ```bash
+  npm run build
+  npm run preview
+  ```
+
+### Environment Variables
+
+- The app expects a backend API URL via the `VITE_BASE_URL` environment variable.
+- Create a `.env` file in the root directory:
+  ```
+  VITE_BASE_URL=http://localhost:3000
+  ```
+  *(Adjust the URL as per your backend setup.)*
+
+---
+
+## Project Structure
+
+```
+src/
+  apiControllers/    # API request logic
+  components/        # Reusable UI components (Navbar, Footer, etc.)
+  constants/         # Static data (doctors, programs, feedback, etc.)
+  contexts/          # React Contexts (Auth)
+  handlers/          # Business logic for forms and actions
+  Pages/             # Main pages (Home, Dashboard, Login, etc.)
+  store/             # Zustand stores for state management
+  utils/             # Utility functions (location, etc.)
+  assets/            # Images and static assets
+  index.css          # Global styles
+  App.jsx            # Main app component and routing
+  main.jsx           # Entry point
+```
+
+---
+
+## Core Functionality
+
+### Patient Flow
+
+- Register or login as a patient.
+- Set your location (manually or via GPS).
+- Browse available doctors by specialization and proximity.
+- Book appointments by selecting date and time slot.
+- View, reschedule, or cancel appointments from your dashboard.
+- Access appointment history and feedback.
+
+### Doctor Flow
+
+- Register as a doctor and submit credentials for verification.
+- Set your working hours, appointment intervals, and breaks.
+- View today's and previous appointments.
+- Accept, reject, or reschedule appointments.
+- Write and manage prescriptions for patients.
+- Update your profile and overview.
+
+### Hospital Flow
+
+- Register your hospital and complete verification.
+- Add and manage doctors and departments.
+- Monitor appointments, doctor schedules, and patient feedback.
+
+---
+
+## Healthcare Programs
+
+HAMS offers a variety of healthcare programs, including:
+
+- Complete Nutrition & Dietetics
+- Comprehensive Cardiac Check-Up
+- Diabetes Management Program
+- Oncology Care Package
+- Orthopedic Rehabilitation
+- Maternity Care Package
+- Pulmonary Rehabilitation Program
+- Renal Dialysis Sessions
+- Mental Health & Wellness
+- Pediatric Wellness & Immunization
+
+*(See the "Programs" section in the app for details and pricing.)*
+
+---
+
+## FAQ
+
+- **Is HAMS free to use?**  
+  Yes, patients can search and book appointments for free. Doctors and hospitals may opt for premium features.
+
+- **How is my data protected?**  
+  HAMS uses secure encryption and adheres to HIPAA & Indian data privacy standards.
+
+- **Can I reschedule or cancel appointments?**  
+  Yes, from your dashboard, at least 2 hours before the appointment.
+
+- **Does HAMS support teleconsultation?**  
+  No, HAMS currently focuses on in-person appointments.
+
+- **Is there a mobile app?**  
+  Not yet, but the web app is mobile-optimized.
+
+*(See the in-app FAQ for more.)*
+
+---
+
+## Live Demo
+
+Try HAMS live: [https://hams-frontend-demo.example.com](#)  
+*(Replace with your actual demo link)*
+
+---
+
+## User Roles & Permissions
+
+| Role     | Capabilities                                                                 |
+|----------|------------------------------------------------------------------------------|
+| Patient  | Register, search doctors, book/cancel/reschedule appointments, view history  |
+| Doctor   | Register, manage availability, view/manage appointments, write prescriptions |
+| Hospital | Register, manage doctors/departments, track appointments & feedback          |
+
+---
+
+## API Integration
+
+- All data is fetched and updated via RESTful API endpoints.
+- Axios is used for HTTP requests.
+- Authentication tokens (JWT) are stored in localStorage and sent with each request.
+
+---
+
+## Authentication & Security
+
+- User sessions are managed using JWT tokens.
+- Sensitive actions require authentication.
+- Data privacy is enforced according to HIPAA & Indian standards.
+
+---
+
+## Customization & Theming
+
+- The UI uses both Bootstrap and Tailwind CSS for rapid prototyping and customization.
+- To change the theme, edit `index.css` or Tailwind config.
+
+---
+
+## Testing
+
+- *(If you have tests:)*  
+  Run all tests with:
+  ```bash
+  npm test
+  ```
+- *(If not:)*  
+  Automated testing is planned for future releases.
+
+---
+
+## Known Issues & Roadmap
+
+- Teleconsultation is not yet supported.
+- Mobile app is not available, but the web app is mobile-friendly.
+- Planned: Notification system, advanced analytics for hospitals, telemedicine.
+
+---
+
+## Contact & Support
+
+For support, email: **Jangaa@hams.in**  
+Helpline: **+91 98765 43210**
+
+---
+
+## Credits
+
+- Built by the HAMS team.
+- Special thanks to all contributors and open-source libraries.
+
+---
+
+## License
+
+This project is licensed under the MIT License.
