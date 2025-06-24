@@ -29,6 +29,7 @@ const FloatingBar = () => {
   const [activeTab, setActiveTab] = React.useState('');
   
   const handleLogout = () => {
+    close()
     localStorage.removeItem("token");
     navigate("/", { replace: true });
     alert("Logged out successfully");
@@ -48,18 +49,10 @@ const FloatingBar = () => {
 
   return (
     <div
-      className="fixed top-24 right-6 z-50 shadow-xl rounded-2xl border border-gray-300 dark:border-white/10 
-      bg-white dark:bg-[#1c1c28]/60 backdrop-blur-lg flex flex-col overflow-hidden w-[240px]"
+      className="fixed top-16 right-0 z-50 shadow-xl rounded-bl-2xl border border-gray-300 dark:border-white/10 
+      bg-white backdrop-blur-lg flex flex-col overflow-hidden w-[160px]"
     >
-      <div className="p-4 border-b border-gray-300 dark:border-white/10 relative flex items-center justify-between w-full">
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Navigation</h2>
-        <button
-          onClick={close}
-          className="absolute top-2 right-2 text-gray-700 dark:text-gray-300"
-        >
-          <CloseIcon fontSize="small" />
-        </button>
-      </div>
+      
 
       <div className="flex-1 divide-y divide-gray-200 dark:divide-white/10 w-full">
         {navItems.map(({ label, icon, key }) => {
@@ -68,12 +61,15 @@ const FloatingBar = () => {
             <button
               key={key}
               onClick={() => handleTabChange(key)}
-              className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-left hover:bg-gray-100 dark:hover:bg-gray-800 transition-all
-                ${isActive ? 'bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}
+              
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-left text-blue-700 hover:bg-gray-100 transition-all
+                ${key === 'logout' ? 'text-red-700' : ''}`}
             >
               {icon}
               {label}
+              <hr />
             </button>
+            
           );
         })}
       </div>
