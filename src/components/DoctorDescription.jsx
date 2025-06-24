@@ -86,15 +86,7 @@ export const DoctorDescription = () => {
       );
       if (response.status === 201) {
         alert("Appointment booked successfully!");
-        localStorage.setItem("doctorId", doctor.doctorId);
-        navigate("/doctordashboard", {
-          state: {
-            doctor,
-            hname: { hosp: hname?.hosp },
-            date: selectedDate,
-            slot: selectedSlot,
-          },
-        });
+        navigate("/dashboard");
       }
     } catch (error) {
       alert("Failed to book appointment. Please try again.");
