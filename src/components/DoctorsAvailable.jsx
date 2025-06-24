@@ -10,7 +10,7 @@ const DoctorsAvailable = () => {
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
   const location = useLocation();
-  const { reason = "General Checkup", specialization = "" } = location.state || {};
+  const { hname = "", reason = "General Checkup", specialization = "" } = location.state || {};
 
   useEffect(() => {
     const latitude = localStorage.getItem("latitude");
@@ -29,7 +29,7 @@ const DoctorsAvailable = () => {
         setDoctors(res.data || []);
         setError("");
       })
-      .catch(() => {
+      .catch((err) => {
         setError("Failed to fetch doctors. Please try again.");
         setDoctors([]);
       })
@@ -53,6 +53,11 @@ const DoctorsAvailable = () => {
           Showing doctors specialized in <strong>{specialization}</strong>
         </p>
       )}
+      {hname && (
+        <p className="text-center text-muted">
+          from <strong>{hname}</strong>
+        </p>
+      )}
       {loading && <div className="text-center my-5">Loading doctors...</div>}
       {error && <div className="alert alert-danger text-center">{error}</div>}
       {!loading && !error && (
@@ -69,18 +74,21 @@ const DoctorsAvailable = () => {
                 <div className="card-body">
                   <h5 className="card-title">{doc.name}</h5>
                   <p className="card-text">
-                    <strong>Specialization:</strong>{" "}
-                    {doc.specialization || "General"}
+                    <strong>Specialization:</strong> {doc.specialization || "General"}
                   </p>
                   <button
                     className="btn btn-primary"
                     onClick={() =>
-                      navigate(`/hospital/doctors-available/DoctorDescription`, {
-                        state: {
-                          doctor: doc,
-                          reason: reason || "General Checkup",
-                        },
-                      })
+                      navigate(
+                        `/${(hname || "hospital").split(" ")[0]}/doctors-available/DoctorDescription`,
+                        {
+                          state: {
+                            doctor: doc,
+                            hname: { hosp: hname },
+                            reason: reason || "General Checkup",
+                          },
+                        }
+                      )
                     }
                   >
                     Book Appointment
@@ -91,7 +99,7 @@ const DoctorsAvailable = () => {
           ))}
           {filteredDoctors.length === 0 && (
             <p className="text-center mt-4">
-              No doctors found for the selected specialization.
+              No doctors found for the selected specialization and hospital.
             </p>
           )}
         </div>

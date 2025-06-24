@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Routes, Route, Outlet } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Home from "./Pages/Home";
+import { Navigate } from 'react-router-dom';
 import Navbar from "./components/navbar";
 import DoctorsAvailable from "./components/DoctorsAvailable";
 import DoctorDescription from "./components/DoctorDescription";
@@ -22,6 +23,18 @@ const MainLayout = ({ location, setLocation }) => (
     <Outlet />
   </>
 );
+
+const DashboardRouter = () => {
+  const userType = localStorage.getItem('role');
+
+  if (userType === 'doctor') {
+    return <DoctorDashboard />;
+  } else if (userType === 'patient') {
+    return <PatientDashboard />;
+  } else {
+    return <Navigate to="/" replace />; // Redirect to home or login
+  }
+};
 
 const DashboardLayout = () => (
   <div>
@@ -83,8 +96,7 @@ const App = () => {
 
         {/* Dashboard layout */}
         <Route element={<DashboardLayout />}>
-          <Route path="/doctordashboard" element={<DoctorDashboard />} />
-          <Route path="/patientdashboard" element={<PatientDashboard />} />
+          <Route path="/dashboard" element={<DashboardRouter />} />
         </Route>
       </Routes>
     </AuthProvider>

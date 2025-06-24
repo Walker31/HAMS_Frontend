@@ -6,36 +6,44 @@ export const DoctorDescription = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [isOn, setIsOn] = useState(false);
+  const [isOn, setIsOn] = useState(false); // Payment switch
+  const [isSet, setIsSet] = useState(false); // Consult mode switch
   const [availableSlots, setAvailableSlots] = useState([]);
+  const [doctorDetails, setDoctorDetails] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Get state from navigation
   const { doctor, hname, reason } = location.state || {};
-  const [doctorDetails, setDoctorDetails] = useState(doctor);
 
-  const patientId = localStorage.getItem("patientId") || "HAMS_ADMIN"; 
-
+  // Fetch doctor details only once (if not already fully loaded)
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/doctors/${doctor.doctorId}/profile`);
+        const res = await axios.get(
+          `http://localhost:3000/doctors/${doctor.doctorId}/profile`
+        );
         setDoctorDetails(res.data.doctor);
       } catch (error) {
         console.error("Error fetching doctor details:", error);
       }
     };
-    if (doctorDetails?._id) fetchDoctor();
-  }, [doctorDetails?._id]);
+    if (doctor && doctor.doctorId) {
+      fetchDoctor();
+    }
+  }, [doctor]);
 
+  // Fetch slots from backend when date or doctor changes
   useEffect(() => {
     const fetchSlots = async () => {
       if (!selectedDate || !doctor?.doctorId) return;
       try {
-        const res = await axios.get(`http://localhost:3000/doctors/${doctor.doctorId}/slots`);
+        const res = await axios.get(
+          `http://localhost:3000/doctors/${doctor.doctorId}/slots`
+        );
         const allSlots = res.data?.availableSlots || {};
-        const dateKey = new Date(selectedDate).toISOString().split("T")[0];
+        const dateKey = new Date(selectedDate).toDateString();
         const slotsForDate = allSlots[dateKey] || [];
         setAvailableSlots(slotsForDate);
       } catch (error) {
@@ -62,31 +70,28 @@ export const DoctorDescription = () => {
     try {
       const payload = {
         date: selectedDate,
-        patientId: patientId,
-        doctorId: doctor.doctorId,
+        patientId: localStorage.getItem("patientId") || "HAMS_ADMIN",
+        doctorId: doctor.doctorId || "dummy-doctor-id",
         clinicId: hname?.hosp || "Unknown Clinic",
         slotNumber: selectedSlot,
         reason: reason || "General Checkup",
         payStatus: isOn ? "Paid" : "Unpaid",
+        MeetLink: "Link",
+        consultStatus: isSet ? "Online" : "Offline",
       };
 
-      const response = await axios.post("http://localhost:3000/appointments/book", payload);
-      if (response.status === 201 || response.status === 200) {
+      const response = await axios.post(
+        "http://localhost:3000/appointments/book",
+        payload
+      );
+      if (response.status === 201) {
         alert("Appointment booked successfully!");
-        localStorage.setItem("doctorId", doctor.doctorId);
-        console.log("Navigating with doctor:", doctor);
-        navigate("/doctordashboard", {
-          state: {
-            doctor,
-            hname: { hosp: hname?.hosp },
-            date: selectedDate,
-            slot: selectedSlot,
-          },
-        });
+        // Redirect to patient dashboard or confirmation page
+        navigate("/dashboard");
       }
     } catch (error) {
+      alert("Failed to book appointment. Please try again.");
       console.error("Booking error:", error);
-      alert("Error booking appointment");
     }
   };
 
@@ -103,24 +108,30 @@ export const DoctorDescription = () => {
               style={{ width: "200px", height: "200px", objectFit: "cover" }}
             />
             <div>
-              <h3 className="fw-bold text-white">{doctorDetails?.name || "Doctor Name"}</h3>
+              <h3 className="fw-bold text-white">
+                {doctorDetails?.name || "Doctor Name"}
+              </h3>
               <p className="text-primary mb-1 text-white">
                 {doctorDetails?.experience || "0"} Years Experience
               </p>
               <p className="mb-1 text-white">
-                <strong>Specialization:</strong> {doctorDetails?.specialization || "General"}
+                <strong>Specialization:</strong>{" "}
+                {doctorDetails?.specialization || "General"}
               </p>
               <p className="mb-1 text-white">
-                <strong>Languages:</strong> {doctorDetails?.languages?.join(", ") || "English"}
+                <strong>Languages:</strong>{" "}
+                {doctorDetails?.languages?.join(", ") || "English"}
               </p>
               <p className="mb-1 text-white">
-                <strong>Qualifications:</strong> {doctorDetails?.qualifications?.join(", ") || "MBBS"}
+                <strong>Qualifications:</strong>{" "}
+                {doctorDetails?.qualifications?.join(", ") || "MBBS"}
               </p>
               <p className="mb-1 text-white">
                 Hospital Name: {hname?.hosp || "Not Provided"}
               </p>
               <p className="mb-1 text-white">
-                <strong>Timings:</strong> {doctorDetails?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}
+                <strong>Timings:</strong>{" "}
+                {doctorDetails?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}
               </p>
             </div>
           </div>
@@ -143,7 +154,9 @@ export const DoctorDescription = () => {
                   <button
                     key={slot}
                     className={`btn btn-sm ${
-                      selectedSlot === slot ? "btn-warning" : "btn-outline-warning"
+                      selectedSlot === slot
+                        ? "btn-warning"
+                        : "btn-outline-warning"
                     }`}
                     onClick={() => handleSlotClick(slot)}
                   >
@@ -151,17 +164,38 @@ export const DoctorDescription = () => {
                   </button>
                 ))
               ) : (
-                <p className="text-muted">No slots available for selected date</p>
+                <p className="text-muted">
+                  No slots available for selected date
+                </p>
               )}
             </div>
 
-            <div className="d-flex items-center mt-2.5 mb-2.5">
+            <div className="d-flex align-items-center mt-2.5 mb-2.5">
+              <p className="m-0 pr-5">Mode of Consulting :</p>
+              <div
+                onClick={() => setIsSet((prev) => !prev)}
+                className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer ${
+                  isSet ? "bg-success" : "bg-secondary"
+                }`}
+                style={{ minWidth: "40px" }}
+              >
+                <div
+                  className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
+                    isSet ? "translate-x-6" : ""
+                  }`}
+                ></div>
+              </div>
+              <span className="ms-2">{isSet ? "Online" : "Offline"}</span>
+            </div>
+
+            <div className="d-flex align-items-center mt-2.5 mb-2.5">
               <p className="m-0 pr-5">Payment done :</p>
               <div
-                onClick={() => setIsOn(!isOn)}
+                onClick={() => setIsOn((prev) => !prev)}
                 className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer ${
-                  isOn ? "bg-green-400" : "bg-gray-300"
+                  isOn ? "bg-success" : "bg-secondary"
                 }`}
+                style={{ minWidth: "40px" }}
               >
                 <div
                   className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
@@ -169,9 +203,13 @@ export const DoctorDescription = () => {
                   }`}
                 ></div>
               </div>
+              <span className="ms-2">{isOn ? "Paid" : "Unpaid"}</span>
             </div>
 
-            <button className="btn btn-outline-primary w-100" onClick={handleBookNow}>
+            <button
+              className="btn btn-outline-primary w-100"
+              onClick={handleBookNow}
+            >
               BOOK APPOINTMENT
             </button>
           </div>
