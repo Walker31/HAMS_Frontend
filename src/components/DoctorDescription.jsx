@@ -87,7 +87,7 @@ export const DoctorDescription = () => {
       if (response.status === 201) {
         alert("Appointment booked successfully!");
         // Redirect to patient dashboard or confirmation page
-        navigate("/patientdashboard");
+        navigate("/dashboard");
       }
     } catch (error) {
       alert("Failed to book appointment. Please try again.");
