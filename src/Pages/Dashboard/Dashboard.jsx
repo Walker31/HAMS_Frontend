@@ -22,13 +22,13 @@ const DoctorDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const initialDoctor = location?.state?.doctor || {};
-  
+
   const [doctor, setDoctor] = useState(initialDoctor);
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [view, setView] = useState("dashboard");
-  
+
   const [showOverview, setShowOverview] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
@@ -43,7 +43,6 @@ const DoctorDashboard = () => {
   const [viewedPrescription, setViewedPrescription] = useState("");
   const [viewedPatientName, setViewedPatientName] = useState("");
 
-  // Attach token
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -51,14 +50,12 @@ const DoctorDashboard = () => {
     }
   }, []);
 
-  // Save doctor ID to localStorage
   useEffect(() => {
     if (initialDoctor?.doctorId) {
       localStorage.setItem("doctorId", initialDoctor.doctorId);
     }
   }, [initialDoctor]);
 
-  // Fetch doctor details
   const fetchDoctorDetails = useCallback(async () => {
     const doctorId = initialDoctor?.doctorId || localStorage.getItem("doctorId");
     if (!doctorId) return;
@@ -72,7 +69,7 @@ const DoctorDashboard = () => {
   }, [initialDoctor]);
 
   const fetchAppointments = useCallback(async () => {
-    const doctorId = doctor?.doctorId;
+    const doctorId = doctor?.doctorId || localStorage.getItem("doctorId");
     if (!doctorId) return;
 
     try {
@@ -320,7 +317,6 @@ const DoctorDashboard = () => {
         </div>
       </div>
 
-      {/* Modals */}
       <OverviewModal show={showOverview} onClose={() => setShowOverview(false)} description={description} setDescription={setDescription} onSave={handleSaveDescription} />
       <RejectModal show={showRejectModal} onClose={() => setShowRejectModal(false)} rejectionReason={rejectionReason} setRejectionReason={setRejectionReason} onConfirm={handleRejectConfirm} />
       <PrescriptionModal show={showPrescriptionModal} onClose={() => setShowPrescriptionModal(false)} name={todayAppointments[prescriptionIndex]?.name} prescription={currentPrescription} setPrescription={setCurrentPrescription} onSave={handleSavePrescription} />
