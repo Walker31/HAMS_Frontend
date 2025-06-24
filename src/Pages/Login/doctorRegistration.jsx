@@ -22,17 +22,14 @@ export default function DoctorRegisterForm({
   
   const fileInputRef = useRef(null);
   const [imagePreview, setImagePreview] = useState(null);
-
-  const [hospitals, setHospitals] = useState([]);
   const [show,setShow] = useState(true);
-
   const handleFileChange = (e) => {
-  const file = e.target.files[0];
-  if (file) {
-    handleChange({ target: { name: "photo", value: file } });
-    setImagePreview(URL.createObjectURL(file)); 
-  }
-};
+    const file = e.target.files[0];
+    if (file) {
+      handleChange({ target: { name: "photo", value: file } });
+      setImagePreview(URL.createObjectURL(file)); 
+    }
+  };
 
 useEffect(() => {
   return () => {
@@ -40,7 +37,7 @@ useEffect(() => {
   };
 }, [imagePreview]);
 
-
+const [hospitals, setHospitals] = useState([]);
   useEffect(() => {
     const lat = 12.9058; //For now we set this
     const lon = 80.2270;
