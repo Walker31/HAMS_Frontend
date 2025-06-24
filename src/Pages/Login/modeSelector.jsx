@@ -77,7 +77,7 @@ export default function ModeSelector({ handleSubmit }) {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Patient */}
             <button
-              onClick={() => handleSubmit(null, null, mode, "Patient")}
+              onClick={() => handleSubmit(null, null, mode, "patient")}
               className="w-full py-3 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition duration-300 shadow-sm"
             >
               Patient
@@ -85,7 +85,7 @@ export default function ModeSelector({ handleSubmit }) {
 
             {/* Doctor */}
             <button
-              onClick={() => handleSubmit(null, null, mode, "Doctor")}
+              onClick={() => handleSubmit(null, null, mode, "doctor")}
               className="w-full py-3 rounded-lg font-semibold bg-green-600 text-white hover:bg-green-700 transition duration-300 shadow-sm"
             >
               Doctor
@@ -93,7 +93,7 @@ export default function ModeSelector({ handleSubmit }) {
 
             {/* Hospital */}
             <button
-              onClick={() => handleSubmit(null, null, mode, "Hospital")}
+              onClick={() => handleSubmit(null, null, mode, "hospital")}
               className="w-full py-3 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700 transition duration-300 shadow-sm"
             >
               Hospital

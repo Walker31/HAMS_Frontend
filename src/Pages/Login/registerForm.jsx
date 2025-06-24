@@ -52,27 +52,16 @@ export default function RegisterForm() {
       if (mode === "Login") {
         const loginData = data || formData;
         const res = await loginHandler(loginData,role,login);
-        console.log(res)
-        const savedRole = localStorage.getItem('role')
         if(res?.token){
-          if (savedRole.toLowerCase() === "patient") {
-            console.log('Entering dashboard')
-            navigate("/patientdashboard");
-          } else if (savedRole.toLowerCase() === "doctor") {
-            console.log('Entering Doctor dashboard')
-            navigate("/doctordashboard");
-          } else if (savedRole === "Hospital") {
-            console.log('Entering Hospital dashboard')
-            navigate("/hospitaldashboard");
-          }
+          navigate('dashboard')
         }
       } else if (mode === "SignUp") {
-        if (role === "Patient") {
-          setUserType("Patient");
-        } else if (role === "Doctor") {
-          setUserType("Doctor");
-        } else if (role === "Hospital") {
-          setUserType("Hospital");
+        if (role === "patient") {
+          setUserType("patient");
+        } else if (role === "doctor") {
+          setUserType("doctor");
+        } else if (role === "hospital") {
+          setUserType("hospital");
         }
       }
     } catch (err) {

@@ -6,8 +6,10 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from '@mui/icons-material/Close';
 import RegisterForm from "../Pages/Login/registerForm";
 import dp from '../assets/dp.jpg';
+import FloatingBar from "./FloatingBar";
+import { useFloatingBarStore } from '../store/floatingBarStore';
 
-// Navigation items
+
 const navigation = [
   { name: "Health", href: "/", current: false },
   { name: "Medical Services", href: "/services", current: false },
@@ -15,7 +17,6 @@ const navigation = [
   { name: "FAQs", href: "/faqs", current: false },
 ];
 
-// Utility to join classNames
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
@@ -25,8 +26,9 @@ const Navbar = ({ location, setLocation }) => {
   const [open, setOpen] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
+  const { toggle, isVisible } = useFloatingBarStore();
 
-  const isLoggedIn = localStorage.getItem('token')? true:false ;
+  const isLoggedIn = localStorage.getItem('token') ? true : false;
 
   return (
     <>
@@ -83,7 +85,10 @@ const Navbar = ({ location, setLocation }) => {
 
           {/* Auth / Avatar */}
           {isLoggedIn ? (
-            <div className="rounded-full h-10 w-10 bg-gray-800 overflow-hidden flex items-center justify-center">
+            <div
+              className="rounded-full h-10 w-10 bg-gray-800 overflow-hidden flex items-center justify-center cursor-pointer"
+              onClick={toggle}
+            >
               <img
                 src={dp}
                 alt="User profile"
@@ -102,6 +107,13 @@ const Navbar = ({ location, setLocation }) => {
           )}
         </div>
       </div>
+
+      {/* FloatingBar Overlay (Profile Sidebar) */}
+      {isVisible && (
+        <div className="fixed inset-0" onClick={toggle}>
+          <FloatingBar />
+        </div>
+      )}
 
       {/* Location Selector Modal */}
       <LocationModal

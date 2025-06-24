@@ -6,44 +6,44 @@ export const DoctorDescription = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [isOn, setIsOn] = useState(false); // Payment switch
-  const [isSet, setIsSet] = useState(false); // Consult mode switch
+  const [isOn, setIsOn] = useState(false);
+  const [isSet, setIsSet] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [doctorDetails, setDoctorDetails] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
-
-  // Get state from navigation
   const { doctor, hname, reason } = location.state || {};
 
-  // Fetch doctor details only once (if not already fully loaded)
+  // ✅ Extract reliable doctorId
+  const doctorId =
+    doctor?.doctorId || doctor?._id || location.state?.doctorId || null;
+
+  // ✅ Fetch doctor profile
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:3000/doctors/${doctor.doctorId}/profile`
+          `http://localhost:3000/doctors/${doctorId}/profile`
         );
         setDoctorDetails(res.data.doctor);
       } catch (error) {
         console.error("Error fetching doctor details:", error);
       }
     };
-    if (doctor && doctor.doctorId) {
-      fetchDoctor();
-    }
-  }, [doctor]);
+    if (doctorId) fetchDoctor();
+  }, [doctorId]);
 
-  // Fetch slots from backend when date or doctor changes
+  // ✅ Fetch available slots for selected date
   useEffect(() => {
     const fetchSlots = async () => {
-      if (!selectedDate || !doctor?.doctorId) return;
+      if (!selectedDate || !doctorId) return;
       try {
         const res = await axios.get(
-          `http://localhost:3000/doctors/${doctor.doctorId}/slots`
+          `http://localhost:3000/doctors/${doctorId}/slots`
         );
         const allSlots = res.data?.availableSlots || {};
-        const dateKey = new Date(selectedDate).toDateString();
+        const dateKey = new Date(selectedDate).toISOString().split("T")[0];
         const slotsForDate = allSlots[dateKey] || [];
         setAvailableSlots(slotsForDate);
       } catch (error) {
@@ -52,7 +52,7 @@ export const DoctorDescription = () => {
       }
     };
     fetchSlots();
-  }, [selectedDate, doctor?.doctorId]);
+  }, [selectedDate, doctorId]);
 
   const handleSlotClick = (slot) => setSelectedSlot(slot);
 
@@ -71,7 +71,7 @@ export const DoctorDescription = () => {
       const payload = {
         date: selectedDate,
         patientId: localStorage.getItem("patientId") || "HAMS_ADMIN",
-        doctorId: doctor.doctorId || "dummy-doctor-id",
+        doctorId: doctorId || "dummy-doctor-id",
         clinicId: hname?.hosp || "Unknown Clinic",
         slotNumber: selectedSlot,
         reason: reason || "General Checkup",
@@ -86,8 +86,7 @@ export const DoctorDescription = () => {
       );
       if (response.status === 201) {
         alert("Appointment booked successfully!");
-        // Redirect to patient dashboard or confirmation page
-        navigate("/patientdashboard");
+        navigate("/dashboard");
       }
     } catch (error) {
       alert("Failed to book appointment. Please try again.");
