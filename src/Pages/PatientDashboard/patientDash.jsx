@@ -90,7 +90,6 @@ const PatientDashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [history, setHistory] = useState([]);
   const navigate = useNavigate();
-  const patientId = "HAMS_ADMIN";  // hardcoded for now
 
   // Sidebar toggle
   const toggleSidebar = () => setCollapsed(!collapsed);
@@ -105,6 +104,7 @@ const PatientDashboard = () => {
   // 🔥 Fetch doctor details function (as you asked)
   const fetchDoctorDetails = async (doctorId) => {
     try {
+      const token = localStorage.getItem('token');
       const res = await axios.get(`http://localhost:3000/doctors/${doctorId}`);
       if (res.data && res.data.name) {
         return res.data.name;
@@ -120,13 +120,15 @@ const PatientDashboard = () => {
   // Fetch Appointments + attach doctor name
   const fetchAppointments = async () => {
     try {
-      const res = await axios.get(`http://localhost:3000/appointments/patient/${patientId}`);
+      const token = localStorage.getItem('token');
+      const res = await axios.get(`http://localhost:3000/appointments/patient`,{headers:{'Authorization': `Bearer ${token}`}});
       const appts = res.data;
 
       // Enrich with doctor name
       const enrichedAppointments = await Promise.all(
         appts.map(async (appt) => {
           const doctorName = await fetchDoctorDetails(appt.doctorId);
+          console.log(appt);
           return { ...appt, doctorName };
         })
       );
@@ -137,7 +139,7 @@ const PatientDashboard = () => {
     }
 
     // Fetch history
-    axios.get(`http://localhost:3000/appointments/history/${patientId}`)
+    axios.get(`http://localhost:3000/appointments/history`)
       .then(res => setHistory(res.data))
       .catch(err => console.error(err));
   };

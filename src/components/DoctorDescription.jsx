@@ -15,7 +15,8 @@ export const DoctorDescription = () => {
   const { doctor, hname, reason } = location.state || {};
   const [doctorDetails, setDoctorDetails] = useState(doctor);
 
-  // Fetch doctor details
+  const patientId = localStorage.getItem("patientId") || "HAMS_ADMIN"; 
+
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
@@ -28,14 +29,13 @@ export const DoctorDescription = () => {
     if (doctorDetails?._id) fetchDoctor();
   }, [doctorDetails?._id]);
 
-  // slots from backend
   useEffect(() => {
     const fetchSlots = async () => {
       if (!selectedDate || !doctor?.doctorId) return;
       try {
         const res = await axios.get(`http://localhost:3000/doctors/${doctor.doctorId}/slots`);
         const allSlots = res.data?.availableSlots || {};
-        const dateKey = new Date(selectedDate).toDateString(); 
+        const dateKey = new Date(selectedDate).toISOString().split("T")[0];
         const slotsForDate = allSlots[dateKey] || [];
         setAvailableSlots(slotsForDate);
       } catch (error) {
@@ -62,37 +62,31 @@ export const DoctorDescription = () => {
     try {
       const payload = {
         date: selectedDate,
-        patientId: "HAMS_ADMIN",
-        doctorId: doctor.doctorId || "dummy-doctor-id",
+        patientId: patientId,
+        doctorId: doctor.doctorId,
         clinicId: hname?.hosp || "Unknown Clinic",
         slotNumber: selectedSlot,
         reason: reason || "General Checkup",
         payStatus: isOn ? "Paid" : "Unpaid",
       };
 
-  try {
-    const payload = {
-    date: selectedDate,
-    patientId: "HAMS_ADMIN",
-    doctorId: doctor.doctorId || "dummy-doctor-id",
-    clinicId: hname?.hosp || "Unknown Clinic",
-    slotNumber: selectedSlot,
-    reason: reason || "General Checkup",
-    payStatus: isOn ? 'Paid' : 'Unpaid',
-    MeetLink:"Link",
-    consultStatus: isSet ? 'Online': 'Offline'};
-    
-    const response = await axios.post("http://localhost:3000/appointments/book", payload);
-    if (response.status === 201) {
-      alert("Appointment booked successfully!");
-      navigate("/PatientDashboard", {
-        state: {
-          doctor: doctor,
-          hname: {hosp: hname?.hosp},
-          date: selectedDate,
-          slot: selectedSlot,
-        },
-      });
+      const response = await axios.post("http://localhost:3000/appointments/book", payload);
+      if (response.status === 201 || response.status === 200) {
+        alert("Appointment booked successfully!");
+        localStorage.setItem("doctorId", doctor.doctorId);
+        console.log("Navigating with doctor:", doctor);
+        navigate("/doctordashboard", {
+          state: {
+            doctor,
+            hname: { hosp: hname?.hosp },
+            date: selectedDate,
+            slot: selectedSlot,
+          },
+        });
+      }
+    } catch (error) {
+      console.error("Booking error:", error);
+      alert("Error booking appointment");
     }
   };
 
@@ -159,22 +153,6 @@ export const DoctorDescription = () => {
               ) : (
                 <p className="text-muted">No slots available for selected date</p>
               )}
-            </div>
-
-            <div className="d-flex items-center mt-2.5 mb-2.5">
-              <p className="m-0 pr-5">Mode of Consulting :</p>
-              <div
-                onClick={() => setIsSet(!isSet)}
-                className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer ${
-                  isSet ? "bg-green-400" : "bg-gray-300"
-                }`}
-              >
-                <div
-                  className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
-                    isSet ? "translate-x-6" : ""
-                  }`}
-                ></div>
-              </div>
             </div>
 
             <div className="d-flex items-center mt-2.5 mb-2.5">
