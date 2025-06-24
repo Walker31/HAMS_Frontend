@@ -45,12 +45,6 @@ const DoctorsAvailable = () => {
           doc.specialization?.toLowerCase() === specialization.toLowerCase()
       );
     }
-    if (hname) {
-      filtered = filtered.filter(
-        (doc) =>
-          doc.hospital?.toLowerCase() === hname.toLowerCase()
-      );
-    }
     return filtered;
   }, [doctors, specialization, hname]);
 
