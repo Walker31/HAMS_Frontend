@@ -11,7 +11,9 @@ const HeaderSection = () => {
   const [selectedSpecialization, setSelectedSpecialization] = useState('');
   const [reason, setReason] = useState('');
   const [step, setStep] = useState(1);
+  const [hospitals, setHospitals] = useState([]);
   const navigate = useNavigate();
+
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
   const handleBookClick = () => setShowPopup(true);
@@ -33,58 +35,55 @@ const HeaderSection = () => {
   };
 
   const specializations = [
-  { name: 'General Medicine', icon: '🩺' },
-  { name: 'Pediatrics', icon: '🧒' },
-  { name: 'Cardiology', icon: '💔' },
-  { name: 'Dermatology', icon: '🧴' },
-  { name: 'Orthopedics', icon: '🦴' },
-  { name: 'Gynecology', icon: '🤰' },
-  { name: 'Psychiatry', icon: '💬' },
-  { name: 'ENT (Otorhinolaryngology)', icon: '👂' },
-  { name: 'Ophthalmology', icon: '👁️' },
-  { name: 'Neurology', icon: '🧠' },
-  { name: 'Oncology', icon: '🎗️' },
-  { name: 'Urology', icon: '🚽' },
-  { name: 'Nephrology', icon: '💊' },
-  { name: 'Gastroenterology', icon: '🍽️' },
-  { name: 'Pulmonology', icon: '🌬️' },
-  { name: 'Endocrinology', icon: '🧬' },
-  { name: 'Radiology', icon: '📷' },
-  { name: 'Anesthesiology', icon: '💤' },
-  { name: 'Dentistry', icon: '🦷' }
-];
+    { name: 'General Medicine', icon: '🩺' },
+    { name: 'Pediatrics', icon: '🧒' },
+    { name: 'Cardiology', icon: '💔' },
+    { name: 'Dermatology', icon: '🧴' },
+    { name: 'Orthopedics', icon: '🦴' },
+    { name: 'Gynecology', icon: '🤰' },
+    { name: 'Psychiatry', icon: '💬' },
+    { name: 'ENT (Otorhinolaryngology)', icon: '👂' },
+    { name: 'Ophthalmology', icon: '👁️' },
+    { name: 'Neurology', icon: '🧠' },
+    { name: 'Oncology', icon: '🎗️' },
+    { name: 'Urology', icon: '🚽' },
+    { name: 'Nephrology', icon: '💊' },
+    { name: 'Gastroenterology', icon: '🍽️' },
+    { name: 'Pulmonology', icon: '🌬️' },
+    { name: 'Endocrinology', icon: '🧬' },
+    { name: 'Radiology', icon: '📷' },
+    { name: 'Anesthesiology', icon: '💤' },
+    { name: 'Dentistry', icon: '🦷' },
+  ];
 
   const reasonMap = {
-  'General Medicine': ['Fever', 'Cold and Cough', 'General Checkup'],
-  'Pediatrics': ['Child Vaccination', 'Fever in Child'],
-  'Cardiology': ['Chest Pain', 'High BP', 'Heart Palpitations'],
-  'Dermatology': ['Skin Rash', 'Acne', 'Hair Loss'],
-  'Orthopedics': ['Fracture', 'Joint Pain', 'Back Pain'],
-  'Gynecology': ['Pregnancy Checkup', 'Menstrual Issues'],
-  'Psychiatry': ['Depression', 'Anxiety', 'Sleep Disorders'],
-  'ENT (Otorhinolaryngology)': ['Ear Pain', 'Hearing Loss'],
-  'Ophthalmology': ['Vision Checkup', 'Eye Pain'],
-  'Neurology': ['Headache', 'Seizures', 'Memory Loss'],
-  'Oncology': ['Cancer Screening', 'Chemotherapy'],
-  'Urology': ['Kidney Stone', 'UTI'],
-  'Nephrology': ['Kidney Function Issues', 'Dialysis'],
-  'Gastroenterology': ['Acidity', 'Stomach Pain'],
-  'Pulmonology': ['Cough', 'Asthma', 'Breathlessness'],
-  'Endocrinology': ['Diabetes', 'Thyroid Disorders'],
-  'Radiology': ['X-Ray', 'MRI', 'CT Scan'],
-  'Anesthesiology': ['Pre-Surgery Consultation', 'Pain Management'],
-  'Dentistry': ['Toothache', 'Cavity', 'Braces']
-};
+    'General Medicine': ['Fever', 'Cold and Cough', 'General Checkup'],
+    'Pediatrics': ['Child Vaccination', 'Fever in Child'],
+    'Cardiology': ['Chest Pain', 'High BP', 'Heart Palpitations'],
+    'Dermatology': ['Skin Rash', 'Acne', 'Hair Loss'],
+    'Orthopedics': ['Fracture', 'Joint Pain', 'Back Pain'],
+    'Gynecology': ['Pregnancy Checkup', 'Menstrual Issues'],
+    'Psychiatry': ['Depression', 'Anxiety', 'Sleep Disorders'],
+    'ENT (Otorhinolaryngology)': ['Ear Pain', 'Hearing Loss'],
+    'Ophthalmology': ['Vision Checkup', 'Eye Pain'],
+    'Neurology': ['Headache', 'Seizures', 'Memory Loss'],
+    'Oncology': ['Cancer Screening', 'Chemotherapy'],
+    'Urology': ['Kidney Stone', 'UTI'],
+    'Nephrology': ['Kidney Function Issues', 'Dialysis'],
+    'Gastroenterology': ['Acidity', 'Stomach Pain'],
+    'Pulmonology': ['Cough', 'Asthma', 'Breathlessness'],
+    'Endocrinology': ['Diabetes', 'Thyroid Disorders'],
+    'Radiology': ['X-Ray', 'MRI', 'CT Scan'],
+    'Anesthesiology': ['Pre-Surgery Consultation', 'Pain Management'],
+    'Dentistry': ['Toothache', 'Cavity', 'Braces'],
+  };
 
   const currentReasons = reasonMap[selectedSpecialization] || [];
 
-  const [hospitals, setHospitals] = useState([]);
-
   useEffect(() => {
-    const lat = 12.9058; //For now we set this
+    const lat = 12.9058;
     const lon = 80.2270;
-
-    axios.get(`${base_url}/hospitals/getAll/${lat}/${lon}`) 
+    axios.get(`${base_url}/hospitals/getAll/${lat}/${lon}`)
       .then(response => setHospitals(response.data))
       .catch(error => console.error('Error fetching hospitals:', error));
   }, []);
@@ -204,7 +203,7 @@ const HeaderSection = () => {
                               state: {
                                 hname: hosp.hospitalName,
                                 specialization: selectedSpecialization,
-                                reason: reason
+                                reason: reason,
                               }
                             });
                           }}

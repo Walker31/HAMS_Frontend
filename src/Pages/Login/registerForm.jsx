@@ -8,6 +8,7 @@ import patientHandler from "../../handlers/patientHandler";
 import doctorHandler from "../../handlers/doctorHandler";
 import hospitalHandler from "../../handlers/hospitalHandler.js"
 import { useAuth } from "../../contexts/AuthContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 function getCurrentLocation() {
   return new Promise((resolve, reject) => {
@@ -32,6 +33,7 @@ export default function RegisterForm() {
   const [formData, setFormData] = useState({});
   const [isLogin, setIsLogin] = useState(false);
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -49,15 +51,17 @@ export default function RegisterForm() {
     try {
       if (mode === "Login") {
         const loginData = data || formData;
-        loginData.role = role; // Ensure role is included in login datanpmm 
-        await loginHandler(loginData,role,login);
+        const res = await loginHandler(loginData,role,login);
+        if(res?.token){
+          navigate('dashboard')
+        }
       } else if (mode === "SignUp") {
-        if (role === "Patient") {
-          setUserType("Patient");
-        } else if (role === "Doctor") {
-          setUserType("Doctor");
-        } else if (role === "Hospital") {
-          setUserType("Hospital");
+        if (role === "patient") {
+          setUserType("patient");
+        } else if (role === "doctor") {
+          setUserType("doctor");
+        } else if (role === "hospital") {
+          setUserType("hospital");
         }
       }
     } catch (err) {
