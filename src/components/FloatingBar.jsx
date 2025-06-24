@@ -3,6 +3,7 @@ import {
   Dashboard as DashboardIcon,
   Settings as SettingsIcon,
   History as HistoryIcon,
+  Logout as LogoutIcon,
   Close as CloseIcon,
 } from '@mui/icons-material';
 import { useFloatingBarStore } from '../store/floatingBarStore';
@@ -12,6 +13,7 @@ const navItems = [
   { label: 'Dashboard', icon: <DashboardIcon fontSize="small" />, key: 'dashboard' },
   { label: 'Settings', icon: <SettingsIcon fontSize="small" />, key: 'settings' },
   { label: 'History', icon: <HistoryIcon fontSize="small" />, key: 'history' },
+  { label: 'Logout', icon : <LogoutIcon fontSize='small' />, key: 'logout'},
 ];
 
 const routeMap = {
@@ -26,10 +28,19 @@ const FloatingBar = () => {
   const isVisible = useFloatingBarStore((state) => state.isVisible);
   const [activeTab, setActiveTab] = React.useState('');
   
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/", { replace: true });
+    alert("Logged out successfully");
+  };
 
   const handleTabChange = (key) => {
+  if (key === 'logout') {
+    handleLogout()
+  }
+  else{
   close()
-  navigate(`/${key}`);
+  navigate(`/${key}`);}
 };
 
   
@@ -38,7 +49,7 @@ const FloatingBar = () => {
   return (
     <div
       className="fixed top-24 right-6 z-50 shadow-xl rounded-2xl border border-gray-300 dark:border-white/10 
-      bg-white/70 dark:bg-[#1c1c28]/60 backdrop-blur-lg flex flex-col overflow-hidden w-[240px]"
+      bg-white dark:bg-[#1c1c28]/60 backdrop-blur-lg flex flex-col overflow-hidden w-[240px]"
     >
       <div className="p-4 border-b border-gray-300 dark:border-white/10 relative flex items-center justify-between w-full">
         <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Navigation</h2>
