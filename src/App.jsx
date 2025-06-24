@@ -1,20 +1,21 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, Outlet } from "react-router-dom";
+import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Home from "./Pages/Home";
-import { Navigate } from 'react-router-dom';
 import Navbar from "./components/navbar";
 import DoctorsAvailable from "./components/DoctorsAvailable";
 import DoctorDescription from "./components/DoctorDescription";
 import RegisterForm from "./Pages/Login/registerForm";
 import Confirmation from "./components/Confirmation";
 import DoctorDashboard from "./Pages/Dashboard/Dashboard";
-import PatientDashboard from "./Pages/PatientDashboard/patientDash";
+import PatientDashboard from "./Pages/PatientDashboard/patientDashboard";
 import AboutUs from "./components/Aboutus";
 import FAQs from "./components/FAQs";
 import Services from "./components/Services";
+import AppointmentDetails from "./Pages/Dashboard/AppointmentDetails";
+import DashboardLayout from "./Pages/Dashboard/DashboardLayout";
+import RoleBasedRoute from "./RoleBasedRoute"; // path as appropriate
 import { getCityFromCoords } from "./utils/locationUtils";
-
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const MainLayout = ({ location, setLocation }) => (
@@ -22,24 +23,6 @@ const MainLayout = ({ location, setLocation }) => (
     <Navbar location={location} setLocation={setLocation} />
     <Outlet />
   </>
-);
-
-const DashboardRouter = () => {
-  const userType = localStorage.getItem('role');
-
-  if (userType === 'doctor') {
-    return <DoctorDashboard />;
-  } else if (userType === 'patient') {
-    return <PatientDashboard />;
-  } else {
-    return <Navigate to="/" replace />; // Redirect to home or login
-  }
-};
-
-const DashboardLayout = () => (
-  <div>
-    <Outlet />
-  </div>
 );
 
 const App = () => {
@@ -77,10 +60,18 @@ const App = () => {
     }
   }, []);
 
+  // Decide which dashboard to render at /dashboard
+  const DashboardIndex = () => {
+    const role = localStorage.getItem("role");
+    if (role === "doctor") return <DoctorDashboard />;
+    if (role === "patient") return <PatientDashboard />;
+    return <Navigate to="/" replace />;
+  };
+
   return (
     <AuthProvider>
       <Routes>
-        {/* Public-facing layout */}
+        {/* Public routes */}
         <Route element={<MainLayout location={location} setLocation={setLocation} />}>
           <Route path="/" element={<Home />} />
           <Route path="/doctors-available" element={<DoctorsAvailable />} />
@@ -94,9 +85,19 @@ const App = () => {
           <Route path="/services" element={<Services />} />
         </Route>
 
-        {/* Dashboard layout */}
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<DashboardRouter />} />
+        {/* Dashboard layout with nested routes */}
+        <Route path="/dashboard/*" element={<DashboardLayout />}>
+          <Route index element={<DashboardIndex />} />
+          {/* Appointments route only for doctors */}
+          <Route
+            path="appointments"
+            element={
+              <RoleBasedRoute allowedRoles={["doctor"]}>
+                <AppointmentDetails />
+              </RoleBasedRoute>
+            }
+          />
+          <Route path="*" element={<div>Not Found</div>} />
         </Route>
       </Routes>
     </AuthProvider>
