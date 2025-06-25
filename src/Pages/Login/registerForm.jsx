@@ -74,10 +74,10 @@ export default function RegisterForm() {
     e.preventDefault();
     
     try {
-      if (userType === "Patient") {
+      if (userType === "patient") {
         console.log("Submitting patient data:", formData);
         await patientHandler(formData,login);
-      } else if (userType === "Doctor") {
+      } else if (userType === "doctor") {
         const { latitude,longitude } = await getCurrentLocation();
         const formattedData = {
           ...formData,
@@ -88,9 +88,10 @@ export default function RegisterForm() {
         };
         delete formattedData.latitude;
         delete formattedData.longitude;
+        
         await doctorHandler(formattedData,login);
 
-      } else if (userType === "Hospital") {
+      } else if (userType === "hospital") {
         const lat = localStorage.getItem('latitude');
         const lon = localStorage.getItem('longitude');
         const formattedData = {
@@ -116,7 +117,7 @@ export default function RegisterForm() {
       {!userType && !isLogin && (
         <ModeSelector handleSubmit={handleSubmit} />
       )}
-      {userType === "Doctor" && (
+      {userType === "doctor" && (
         <DoctorRegisterForm
           formData={formData}
           handleChange={handleChange}
@@ -124,7 +125,7 @@ export default function RegisterForm() {
           handleBack={handleBack}
         />
       )}
-      {userType === "Patient" && (
+      {userType === "patient" && (
         <PatientRegisterForm
           formData={formData}
           handleChange={handleChange}
@@ -132,7 +133,7 @@ export default function RegisterForm() {
           handleBack={handleBack}
         />
       )}
-      {userType === "Hospital" && !isLogin && (
+      {userType === "hospital" && !isLogin && (
         <HospitalRegisterForm
           formData={formData}
           handleChange={handleChange}

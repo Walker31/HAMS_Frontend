@@ -10,26 +10,29 @@ import { useAuth } from "../../contexts/AuthContext";
 const base_url = "http://localhost:3000"; 
 
 const PatientDashboard = () => {
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   const [collapsed, setCollapsed] = useState(true);
   const [appointments, setAppointments] = useState([]);
   const [history, setHistory] = useState([]);
   const navigate = useNavigate();
-  const { user } = useAuth(); // ✅ FIXED
 
   const toggleSidebar = () => setCollapsed(!collapsed);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    logout();
     navigate("/", { replace: true });
     alert("Logged out successfully");
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  const fetchDoctorDetails = async (doctorId) => {
+    try {
+      const res = await axios.get(`http://localhost:3000/doctors/${doctorId}`);
+      return res.data?.name || "Unknown Doctor";
+    } catch {
+      return "Unknown Doctor";
     }
-  }, []);
+  }
 
   const fetchAppointments = useCallback(async () => {
     if (!user?.id) return;

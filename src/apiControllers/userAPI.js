@@ -4,7 +4,6 @@ const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 // These now ONLY send requests, and leave state to AuthContext
 export const createDoctor = async (doctorData,login) => {
-  console.log(doctorData)
   const res = await axios.post(`${base_url}/doctors/signup`, doctorData, {
     withCredentials: true,
   });
@@ -13,12 +12,10 @@ export const createDoctor = async (doctorData,login) => {
 
 export const loginUser = async (loginData, role, login) => {
   const route = role === "doctor" ? "doctors/login" : "patients/login";
-  console.log(loginData);
   const res = await axios.post(`${base_url}/${route}`, loginData, {
     withCredentials: true,
   });
-  console.log(res.data);
-  localStorage.setItem('patientId',res.data.patientId)
+  login(res.data.token);
   return res.data;
 };
 

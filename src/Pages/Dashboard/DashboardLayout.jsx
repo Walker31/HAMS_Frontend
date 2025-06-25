@@ -4,12 +4,14 @@ import Header from "./Header";
 import { Outlet } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useAuth } from "../../contexts/AuthContext";
 
 const DashboardLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [doctor, setDoctor] = useState(null);
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => !prev);
@@ -31,15 +33,14 @@ const DashboardLayout = () => {
     fetchDoctor();
   }, []);
 
-  // ✅ Define mock or actual handlers
   const handleOverviewClick = () => {
     console.log("Overview clicked");
-    // Navigate or perform other logic
   };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/", { replace: true });
+    logout();
     alert("Logged out successfully");
   };
 
