@@ -50,14 +50,11 @@ const DoctorDashboard = () => {
       const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${user.id}`;
       const prevURL = `${base_url}/appointments/previous?doctorId=${user.id}`;
 
-      console.log("Requesting:", todayURL);
-
       const [todayRes, prevRes] = await Promise.all([
         axios.get(todayURL),
         axios.get(prevURL),
       ]);
 
-      console.log("Fetched today's appointments:", todayRes.data);
       setTodayAppointments(todayRes.data || []);
       setPreviousAppointments(prevRes.data || []);
     } catch (err) {
@@ -72,11 +69,18 @@ const DoctorDashboard = () => {
   // Update appointment status
   const updateAppointmentStatus = async (appointmentId, status, reason = "", prescriptionText = "") => {
     try {
-      await axios.put(`${base_url}/appointments/update-status/${appointmentId}`, {
+      const url = `${base_url}/appointments/update-status/${appointmentId}`;
+      const payload = {
         appStatus: status,
         rejectionReason: reason,
         prescription: prescriptionText,
-      });
+      };
+
+      console.log("PUT Request to:", url);
+      console.log("Payload:", JSON.stringify(payload, null, 2));
+
+      await axios.put(url, payload);
+      console.log(response);
     } catch (err) {
       console.error("Failed to update status:", err);
     }
