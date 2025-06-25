@@ -15,6 +15,9 @@ export const DoctorDescription = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { doctor, hname, reason } = location.state || {};
+  const rawPatientId = localStorage.getItem("patientId");
+  const patientId = rawPatientId && rawPatientId !== "undefined" ? rawPatientId : "HAMS_ADMIN";
+
 
   // ✅ Extract reliable doctorId
   const doctorId =
@@ -71,7 +74,7 @@ export const DoctorDescription = () => {
     try {
       const payload = {
         date: selectedDate,
-        patientId: localStorage.getItem("patientId") || "HAMS_ADMIN",
+        patientId,
         doctorId: doctorId || "dummy-doctor-id",
         clinicId: hname?.hosp || "Unknown Clinic",
         slotNumber: selectedSlot,
