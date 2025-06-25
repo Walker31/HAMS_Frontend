@@ -7,13 +7,13 @@ import AppointmentList from "./components/appointmentList";
 import HistoryList from "./components/historyList";
 import { useAuth } from "../../contexts/AuthContext";
 
-const base_url = "http://localhost:3000"; 
 
 const PatientDashboard = () => {
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   const [collapsed, setCollapsed] = useState(true);
   const [appointments, setAppointments] = useState([]);
   const [history, setHistory] = useState([]);
+  const {logout}=useAuth();
   const navigate = useNavigate();
 
   const toggleSidebar = () => setCollapsed(!collapsed);
