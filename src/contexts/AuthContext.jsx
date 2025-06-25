@@ -8,20 +8,36 @@ export function useAuth() {
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
-  const [role, setRole] = useState(null);     
+  const [user, setUser] = useState(null); // stores the full decoded token
   const [loading, setLoading] = useState(true);
+
+  // Utility to decode token and check expiry
+  const decodeAndValidateToken = (token) => {
+    try {
+      const decoded = jwtDecode(token);
+
+      // Check for token expiration
+      const now = Date.now() / 1000;
+      if (decoded.exp && decoded.exp < now) {
+        console.warn("Token expired");
+        return null;
+      }
+
+      return decoded;
+    } catch (error) {
+      console.error("Token decoding failed:", error);
+      return null;
+    }
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
 
     if (token) {
-      try {
-        const decoded = jwtDecode(token);
+      const decoded = decodeAndValidateToken(token);
+      if (decoded) {
         setUser(decoded);
-        setRole(decoded.role); // assuming token payload has `role`
-      } catch (err) {
-        console.error("Invalid token:", err);
+      } else {
         localStorage.removeItem("token");
       }
     }
@@ -30,29 +46,27 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (token) => {
-    try {
-      const decoded = jwtDecode(token);
+    const decoded = decodeAndValidateToken(token);
+    if (decoded) {
       setUser(decoded);
-      setRole(decoded.role);
       localStorage.setItem("token", token);
       alert("Logged in successfully");
-    } catch (err) {
-      console.error("Invalid token on login:", err);
+    } else {
+      console.error("Invalid or expired token during login");
     }
   };
 
   const logout = () => {
     setUser(null);
-    setRole(null);
     localStorage.removeItem("token");
   };
 
   const value = {
-    user,
-    role,
+    user,                           // full payload from JWT
+    role: user?.role || null,       // shortcut for convenience
+    isLoggedIn: !!user,
     login,
     logout,
-    isLoggedIn: !!user,
   };
 
   if (loading) return <div>Loading... Please wait</div>;
