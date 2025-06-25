@@ -1,6 +1,6 @@
-import { Nav } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import defImage from "/default.avif";
+import LibraryBooksSharpIcon from '@mui/icons-material/LibraryBooksSharp';
 
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
@@ -12,7 +12,8 @@ const Sidebar = ({ doctor, sidebarCollapsed, setSidebarCollapsed, handleOverview
 
   const navItems = [
     { label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
-    { label: "Appointments", icon: <CalendarTodayIcon />, path: "/dashboard/appointments" },
+    { label: "Appointments", icon: <LibraryBooksSharpIcon />, path: "/dashboard/appointments" },
+    { label: "Slots", icon: <CalendarTodayIcon />, path: "/dashboard/slots" },
     { label: "Overview", icon: <InsightsIcon />, action: handleOverviewClick },
   ];
 

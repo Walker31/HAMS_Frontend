@@ -1,10 +1,214 @@
+import { useState, useEffect, useCallback } from "react";
 import { Row, Col, Card, Button } from "react-bootstrap";
+import { IconButton } from "@mui/material";
+import RefreshIcon from '@mui/icons-material/Refresh';
+import axios from "axios";
+import {
+  RejectModal,
+  PrescriptionModal,
+  ViewPrescriptionModal
+} from "./DoctorModals";
 
+const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
+const DoctorDashboard = () => {
+  const [todayAppointments, setTodayAppointments] = useState([]);
+  const [previousAppointments, setPreviousAppointments] = useState([]);
+  
+  // Modal states
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
+  const [showViewPrescription, setShowViewPrescription] = useState(false);
+  
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(null);
+  const [prescriptionIndex, setPrescriptionIndex] = useState(null);
+  const [currentPrescription, setCurrentPrescription] = useState("");
+  const [viewedPrescription, setViewedPrescription] = useState("");
+  const [viewedPatientName, setViewedPatientName] = useState("");
+
+  // Authentication setup
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+  }, []);
+
+  // Fetch appointments from backend
+  const fetchAppointments = useCallback(async () => {
+    const doctorId = localStorage.getItem("doctorId");
+    if (!doctorId) return;
+
+    try {
+      const today = new Date().toISOString().split("T")[0];
+      const [todayRes, prevRes] = await Promise.all([
+        axios.get(`${base_url}/appointments/pending/${today}?doctorId=${doctorId}`),
+        axios.get(`${base_url}/appointments/previous?doctorId=${doctorId}`),
+      ]);
+      setTodayAppointments(todayRes.data || []);
+      setPreviousAppointments(prevRes.data || []);
+    } catch (err) {
+      console.error("Error fetching appointments:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAppointments();
+  }, [fetchAppointments]);
+
+  // Update appointment status in backend
+  const updateAppointmentStatus = async (apptId, status, reason = "", prescriptionText = "") => {
+    try {
+      await axios.put(`${base_url}/appointments/update-status/${apptId}`, {
+        appStatus: status,
+        rejectionReason: reason,
+        prescription: prescriptionText,
+      });
+      return true;
+    } catch (err) {
+      console.error("Failed to update status:", err);
+      return false;
+    }
+  };
+
+  // Move appointment to history
+  const moveToPrevious = (index, status, reason = "", prescription = "") => {
+    const appt = todayAppointments[index];
+    const updatedToday = [...todayAppointments];
+    updatedToday.splice(index, 1);
+    setTodayAppointments(updatedToday);
+
+    setPreviousAppointments(prev => [
+      ...prev,
+      {
+        ...appt,
+        appStatus: status,
+        reasonForReject: reason,
+        prescription,
+      },
+    ]);
+  };
+
+  // Handle button actions
+  const handleStatusChange = (index, status) => {
+    setCurrentIndex(index);
+
+    switch(status) {
+      case "Done":
+        setPrescriptionIndex(index);
+        setShowPrescriptionModal(true);
+        break;
+      case "Rejected":
+        setShowRejectModal(true);
+        break;
+      case "Rescheduled":
+        const appt = todayAppointments[index];
+        updateAppointmentStatus(appt.appId, "Rescheduled");
+        moveToPrevious(index, "Rescheduled");
+        break;
+      default:
+        console.warn("Unknown status:", status);
+    }
+  };
+
+  // Handle rejection confirmation
+  const handleRejectConfirm = async () => {
+    if (!rejectionReason.trim()) {
+      alert("Please provide a reason.");
+      return;
+    }
+    
+    const appt = todayAppointments[currentIndex];
+    const success = await updateAppointmentStatus(
+      appt.appId, 
+      "Rejected", 
+      rejectionReason
+    );
+    
+    if (success) {
+      moveToPrevious(currentIndex, "Rejected", rejectionReason);
+      setShowRejectModal(false);
+      setRejectionReason("");
+      setCurrentIndex(null);
+    }
+  };
+
+  // Handle prescription saving
+  const handleSavePrescription = async () => {
+    const appt = todayAppointments[prescriptionIndex];
+    try {
+      const success = await updateAppointmentStatus(
+        appt.appId, 
+        "Completed", 
+        "", 
+        currentPrescription
+      );
+      
+      if (success) {
+        moveToPrevious(prescriptionIndex, "Completed", "", currentPrescription);
+        setShowPrescriptionModal(false);
+        setCurrentPrescription("");
+        setPrescriptionIndex(null);
+      }
+    } catch (err) {
+      console.error("Error saving prescription:", err);
+    }
+  };
+
+  // View prescription handler
+  const handleViewPrescription = (prescription, patientName) => {
+    setViewedPrescription(prescription);
+    setViewedPatientName(patientName);
+    setShowViewPrescription(true);
+  };
+
+  return (
+    <div className="p-4">
+      {/* DashboardHome component with integrated functionality */}
+      <DashboardHome
+        previousAppointments={previousAppointments}
+        todayAppointments={todayAppointments}
+        fetchAppointments={fetchAppointments}
+        handleStatusChange={handleStatusChange}
+        onViewPrescription={handleViewPrescription}
+      />
+      
+      {/* Modals */}
+      <RejectModal
+        show={showRejectModal}
+        onClose={() => setShowRejectModal(false)}
+        rejectionReason={rejectionReason}
+        setRejectionReason={setRejectionReason}
+        onConfirm={handleRejectConfirm}
+      />
+      
+      <PrescriptionModal
+        show={showPrescriptionModal}
+        onClose={() => setShowPrescriptionModal(false)}
+        name={todayAppointments[prescriptionIndex]?.name}
+        prescription={currentPrescription}
+        setPrescription={setCurrentPrescription}
+        onSave={handleSavePrescription}
+      />
+      
+      <ViewPrescriptionModal
+        show={showViewPrescription}
+        onClose={() => setShowViewPrescription(false)}
+        name={viewedPatientName}
+        prescription={viewedPrescription}
+      />
+    </div>
+  );
+};
+
+// Your DashboardHome component with minor enhancements
 const DashboardHome = ({
   previousAppointments = [],
   todayAppointments = [],
   fetchAppointments,
   handleStatusChange,
+  onViewPrescription
 }) => (
   <div className="p-4">
     {/* Stats Row */}
@@ -35,9 +239,9 @@ const DashboardHome = ({
       <Col md={6}>
         <div className="d-flex justify-content-between align-items-center mb-2">
           <h5 className="text-primary mb-0">Today's Appointments</h5>
-          <Button variant="outline-primary" size="sm" onClick={fetchAppointments}>
-            🔄 Refresh
-          </Button>
+          <IconButton size="sm" onClick={fetchAppointments}>
+            <RefreshIcon/>
+          </IconButton>
         </div>
         {todayAppointments.length === 0 ? (
           <p>No appointments for today.</p>
@@ -128,9 +332,18 @@ const DashboardHome = ({
                   </p>
                 )}
                 {appt.prescription && (
-                  <p className="text-success">
-                    <strong>Prescription:</strong> {appt.prescription}
-                  </p>
+                  <div>
+                    <p className="text-success">
+                      <strong>Prescription:</strong> 
+                    </p>
+                    <Button 
+                      variant="outline-info" 
+                      size="sm"
+                      onClick={() => onViewPrescription(appt.prescription, appt.name)}
+                    >
+                      View Details
+                    </Button>
+                  </div>
                 )}
               </Card.Body>
             </Card>
@@ -141,4 +354,4 @@ const DashboardHome = ({
   </div>
 );
 
-export default DashboardHome;
+export default DoctorDashboard;
