@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./components/sidebar";
 import DashboardHeader from "./components/header";
 import AppointmentList from "./components/appointmentList";
 import HistoryList from "./components/historyList";
+import { useAuth } from "../../contexts/AuthContext";
+
+const base_url = "http://localhost:3000"; 
 
 const PatientDashboard = () => {
   const [collapsed, setCollapsed] = useState(true);
   const [appointments, setAppointments] = useState([]);
   const [history, setHistory] = useState([]);
   const navigate = useNavigate();
+  const { user } = useAuth(); // ✅ FIXED
 
   const toggleSidebar = () => setCollapsed(!collapsed);
 
@@ -20,54 +24,46 @@ const PatientDashboard = () => {
     alert("Logged out successfully");
   };
 
-  const fetchDoctorDetails = async (doctorId) => {
-    try {
-      const res = await axios.get(`http://localhost:3000/doctors/${doctorId}`);
-      return res.data?.name || "Unknown Doctor";
-    } catch {
-      return "Unknown Doctor";
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
-  };
+  }, []);
 
-  const fetchAppointments = async () => {
+  const fetchAppointments = useCallback(async () => {
+    if (!user?.id) return;
+    const today = new Date().toISOString().split("T")[0];
+
     try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:3000/appointments/patient`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const todayURL = `${base_url}/appointments/pending/${today}/patient?patientId=${user.id}`;
+      const prevURL = `${base_url}/appointments/previous?patientId=${user.id}`;
 
-      const enriched = await Promise.all(
-        res.data.map(async (appt) => {
-          const doctorName = await fetchDoctorDetails(appt.doctorId);
-          return { ...appt, doctorName };
-        })
-      );
-      setAppointments(enriched);
+      const [todayRes, prevRes] = await Promise.all([
+        axios.get(todayURL),
+        axios.get(prevURL),
+      ]);
+
+      setAppointments(todayRes.data || []);
+      setHistory(prevRes.data || []);
     } catch (err) {
       console.error("Error fetching appointments:", err);
     }
+  }, [user?.id]);
 
-    try {
-      const resHistory = await axios.get(`http://localhost:3000/appointments/history`);
-      setHistory(resHistory.data);
-    } catch (err) {
-      console.error("Error fetching history:", err);
-    }
-  };
+  useEffect(() => {
+    fetchAppointments();
+  }, [fetchAppointments]);
 
   const handleCancel = async (appointmentId) => {
     try {
-      await axios.put(`http://localhost:3000/appointments/cancel`, { appointmentId });
+      await axios.put(`${base_url}/appointments/cancel`, { appointmentId });
       alert("Appointment Cancelled");
       fetchAppointments();
     } catch (err) {
       console.error("Cancel error:", err);
     }
   };
-
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
 
   return (
     <div className="flex flex-col h-screen bg-orange-50">
