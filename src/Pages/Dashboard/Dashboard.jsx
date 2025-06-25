@@ -40,26 +40,30 @@ const DoctorDashboard = () => {
   }, []);
 
   // Fetch appointments
-  const fetchAppointments = useCallback(async () => {
-    const doctorId = doctor?.doctorId || localStorage.getItem("doctorId");
-    if (!doctorId) return;
+ const fetchAppointments = useCallback(async () => {
+ 
 
-    try {
-      const today = new Date().toISOString().split("T")[0];
-      const [todayRes, prevRes] = await Promise.all([
-        axios.get(`${base_url}/appointments/pending/${today}?doctorId=${doctorId}`),
-        axios.get(`${base_url}/appointments/previous?doctorId=${doctorId}`),
-      ]);
-      setTodayAppointments(todayRes.data || []);
-      setPreviousAppointments(prevRes.data || []);
-    } catch (err) {
-      console.error("Error fetching appointments:", err);
-    }
-  }, [doctor]);
+  const doctorId = doctor?.doctorId || localStorage.getItem("doctorId");
+   console.log("Using doctorId:", doctorId);
+  if (!doctorId) return;
 
-  useEffect(() => {
-    fetchAppointments();
-  }, [fetchAppointments]);
+  const today = new Date().toISOString().split("T")[0];
+
+  try {
+    console.log("Requesting:", `${base_url}/appointments/pending/${today}?doctorId=${doctorId}`);
+
+    const [todayRes, prevRes] = await Promise.all([
+      axios.get(`${base_url}/appointments/pending/${today}?doctorId=${doctorId}`),
+      axios.get(`${base_url}/appointments/previous?doctorId=${doctorId}`),
+    ]);
+
+    console.log("Fetched today appointments:", todayRes.data); // 🪵 helpful debug
+    setTodayAppointments(todayRes.data || []);
+    setPreviousAppointments(prevRes.data || []);
+  } catch (err) {
+    console.error("Error fetching appointments:", err);
+  }
+}, [doctor]);
 
   // Appointment status update
   const updateAppointmentStatus = async (apptId, status, reason = "", prescriptionText = "") => {
