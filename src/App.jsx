@@ -97,7 +97,7 @@ const App = () => {
                 </RoleBasedRoute>
               }
             />
-            <Route path="slots" element={<CalendarWithSlots />}/> {/* Fixed here */}
+            <Route path="slots" element={<CalendarWithSlots />} /> 
             <Route path="*" element={<div>Not Found</div>} />
           </Route>
       </Routes>

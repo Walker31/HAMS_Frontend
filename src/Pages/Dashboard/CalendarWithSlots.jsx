@@ -4,8 +4,19 @@ import 'react-calendar/dist/Calendar.css';
 import { Form, Button, Badge, Card } from 'react-bootstrap';
 import { generateTimeSlots } from './Slotgenerator';
 import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 
 const CalendarWithSlots = () => {
+  const location = useLocation();
+
+  // ✅ Robust doctorId extraction
+  const doctorId =
+    location.state?.doctor?.doctorId ||
+    location.state?.doctorId ||
+    localStorage.getItem("doctorId");
+
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
   const [selectedDate, setSelectedDate] = useState(null);
   const [interval, setInterval] = useState(15);
   const [slots, setSlots] = useState([]);
@@ -13,10 +24,6 @@ const CalendarWithSlots = () => {
   const [savedSlots, setSavedSlots] = useState({});
   const [bookedSlots, setBookedSlots] = useState([]);
 
-  const doctorId = localStorage.getItem("doctorId");
-  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-
-  // ✅ Format date in local time (avoid UTC issues)
   const formatLocalDate = (dateObj) => {
     const year = dateObj.getFullYear();
     const month = String(dateObj.getMonth() + 1).padStart(2, "0");
@@ -25,6 +32,11 @@ const CalendarWithSlots = () => {
   };
 
   useEffect(() => {
+    if (!doctorId) {
+      console.error("Doctor ID not found in location or localStorage.");
+      return;
+    }
+
     const fetchSavedSlots = async () => {
       try {
         const res = await axios.get(`${base_url}/doctors/${doctorId}/slots`);
@@ -35,7 +47,8 @@ const CalendarWithSlots = () => {
         console.error("Error fetching saved slots:", error.response?.data || error.message);
       }
     };
-    if (doctorId) fetchSavedSlots();
+
+    fetchSavedSlots();
   }, [doctorId]);
 
   const fetchBookedSlots = async (dateKey) => {
@@ -50,7 +63,7 @@ const CalendarWithSlots = () => {
   };
 
   const handleDateChange = (date) => {
-    const dateKey = formatLocalDate(date); // ✅ fixed
+    const dateKey = formatLocalDate(date);
     setSelectedDate(date);
     setSlots(generateTimeSlots(interval));
     setSelectedSlots(savedSlots[dateKey] || []);
@@ -61,7 +74,7 @@ const CalendarWithSlots = () => {
     const newInterval = parseInt(e.target.value);
     setInterval(newInterval);
     if (selectedDate) {
-      const dateKey = formatLocalDate(selectedDate); // ✅ fixed
+      const dateKey = formatLocalDate(selectedDate);
       setSlots(generateTimeSlots(newInterval));
       setSelectedSlots(savedSlots[dateKey] || []);
     }
@@ -80,7 +93,7 @@ const CalendarWithSlots = () => {
       return;
     }
 
-    const dateKey = formatLocalDate(selectedDate); // ✅ fixed
+    const dateKey = formatLocalDate(selectedDate);
     const payload = {
       date: dateKey,
       slots: selectedSlots,
