@@ -11,13 +11,11 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Utility to decode token and check expiry
   const decodeAndValidateToken = (token) => {
     try {
       const decoded = jwtDecode(token);
-
-      // Check for token expiration
       const now = Date.now() / 1000;
+
       if (decoded.exp && decoded.exp < now) {
         console.warn("Token expired");
         return null;
@@ -50,7 +48,7 @@ export function AuthProvider({ children }) {
     if (decoded) {
       setUser(decoded);
       localStorage.setItem("token", token);
-      alert("Logged in successfully");
+      alert(`Logged in successfully as ${decoded.role}`);
     } else {
       console.error("Invalid or expired token during login");
     }
@@ -62,12 +60,13 @@ export function AuthProvider({ children }) {
   };
 
   const value = {
-    user,                           // full payload from JWT
-    role: user?.role || null,       // shortcut for convenience
+    user,
+    role: user?.role || null,       // dynamic role based on token
     isLoggedIn: !!user,
     login,
     logout,
   };
+  console.log(value);
 
   if (loading) return <div>Loading... Please wait</div>;
 
