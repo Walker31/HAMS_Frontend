@@ -1,28 +1,32 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./components/sidebar";
 import DashboardHeader from "./components/header";
 import AppointmentList from "./components/appointmentList";
 import HistoryList from "./components/historyList";
+import { useAuth } from '../../contexts/AuthContext';
 
 const PatientDashboard = () => {
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   const [collapsed, setCollapsed] = useState(true);
   const [appointments, setAppointments] = useState([]);
   const [history, setHistory] = useState([]);
   const navigate = useNavigate();
+  const { logout } =  useAuth();
 
   const toggleSidebar = () => setCollapsed(!collapsed);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    logout();
     navigate("/", { replace: true });
     alert("Logged out successfully");
   };
 
   const fetchDoctorDetails = async (doctorId) => {
     try {
-      const res = await axios.get(`http://localhost:3000/doctors/${doctorId}`);
+      const res = await axios.get(`${base_url}/doctors/${doctorId}`);
       return res.data?.name || "Unknown Doctor";
     } catch {
       return "Unknown Doctor";
@@ -32,7 +36,7 @@ const PatientDashboard = () => {
   const fetchAppointments = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:3000/appointments/patient`, {
+      const res = await axios.get(`${base_url}/appointments/patient`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -48,7 +52,7 @@ const PatientDashboard = () => {
     }
 
     try {
-      const resHistory = await axios.get(`http://localhost:3000/appointments/history`);
+      const resHistory = await axios.get(`${base_url}/appointments/history`);
       setHistory(resHistory.data);
     } catch (err) {
       console.error("Error fetching history:", err);
@@ -57,7 +61,7 @@ const PatientDashboard = () => {
 
   const handleCancel = async (appointmentId) => {
     try {
-      await axios.put(`http://localhost:3000/appointments/cancel`, { appointmentId });
+      await axios.put(`${base_url}/appointments/cancel`, { appointmentId });
       alert("Appointment Cancelled");
       fetchAppointments();
     } catch (err) {
