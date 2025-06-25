@@ -14,7 +14,7 @@ const CalendarWithSlots = () => {
   const [bookedSlots, setBookedSlots] = useState([]);
 
   const doctorId = localStorage.getItem("doctorId");
-  const base_url = "http://localhost:3000";
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
   // ✅ Format date in local time (avoid UTC issues)
   const formatLocalDate = (dateObj) => {
