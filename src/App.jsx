@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, Outlet, Navigate } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
+import { AuthProvider,useAuth } from "./contexts/AuthContext";
+
 import Home from "./Pages/Home";
 import Navbar from "./components/navbar";
 import DoctorsAvailable from "./components/DoctorsAvailable";
@@ -15,16 +16,33 @@ import Services from "./components/Services";
 import CalendarWithSlots from "./Pages/Dashboard/CalendarWithSlots";
 import AppointmentDetails from "./Pages/Dashboard/AppointmentDetails";
 import DashboardLayout from "./Pages/Dashboard/DashboardLayout";
-import RoleBasedRoute from "./RoleBasedRoute"; // path as appropriate
+import RoleBasedRoute from "./RoleBasedRoute";
 import { getCityFromCoords } from "./utils/locationUtils";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 
+// Layout for public pages (with navbar)
 const MainLayout = ({ location, setLocation }) => (
   <>
     <Navbar location={location} setLocation={setLocation} />
     <Outlet />
   </>
 );
+
+// Route handler for /dashboard entry
+const DashboardRouter = () => {
+  const { role } = useAuth();
+
+  if (role === "doctor") {
+    return <Navigate to="/dashboard/home" replace />;
+  }
+
+  if (role === "patient") {
+    return <PatientDashboard />;
+  }
+
+  return <Navigate to="/" replace />;
+};
 
 const App = () => {
   const [location, setLocation] = useState("Select Location");
@@ -61,18 +79,10 @@ const App = () => {
     }
   }, []);
 
-  // Decide which dashboard to render at /dashboard
-  const DashboardIndex = () => {
-    const role = localStorage.getItem("role");
-    if (role === "doctor") return <DoctorDashboard />;
-    if (role === "patient") return <PatientDashboard />;
-    return <Navigate to="/" replace />;
-  };
-
   return (
     <AuthProvider>
       <Routes>
-        {/* Public routes */}
+        {/* Public pages */}
         <Route element={<MainLayout location={location} setLocation={setLocation} />}>
           <Route path="/" element={<Home />} />
           <Route path="/doctors-available" element={<DoctorsAvailable />} />
@@ -86,20 +96,30 @@ const App = () => {
           <Route path="/services" element={<Services />} />
         </Route>
 
-        {/* Dashboard layout with nested routes */}
-        <Route path="/dashboard/*" element={<DashboardLayout />}>
-            <Route index element={<DashboardIndex />} />
-            <Route
-              path="appointments"
-              element={
-                <RoleBasedRoute allowedRoles={["doctor"]}>
-                  <AppointmentDetails />
-                </RoleBasedRoute>
-              }
-            />
-            <Route path="slots" element={<CalendarWithSlots />}/> {/* Fixed here */}
-            <Route path="*" element={<div>Not Found</div>} />
-          </Route>
+        {/* Entry route - decide between doctor or patient */}
+        <Route
+          path="/dashboard"
+          element={
+            <RoleBasedRoute allowedRoles={["doctor", "patient"]}>
+              <DashboardRouter />
+            </RoleBasedRoute>
+          }
+        />
+
+        {/* Doctor-specific dashboard layout and subroutes */}
+        <Route
+          path="/dashboard/*"
+          element={
+            <RoleBasedRoute allowedRoles={["doctor"]}>
+              <DashboardLayout />
+            </RoleBasedRoute>
+          }
+        >
+          <Route path="home" element={<DoctorDashboard />} />
+          <Route path="appointments" element={<AppointmentDetails />} />
+          <Route path="slots" element={<CalendarWithSlots />} />
+          <Route path="*" element={<div>Page Not Found</div>} />
+        </Route>
       </Routes>
     </AuthProvider>
   );
