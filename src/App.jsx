@@ -12,6 +12,7 @@ import PatientDashboard from "./Pages/PatientDashboard/patientDashboard";
 import AboutUs from "./components/Aboutus";
 import FAQs from "./components/FAQs";
 import Services from "./components/Services";
+import CalendarWithSlots from "./Pages/Dashboard/CalendarWithSlots";
 import AppointmentDetails from "./Pages/Dashboard/AppointmentDetails";
 import DashboardLayout from "./Pages/Dashboard/DashboardLayout";
 import RoleBasedRoute from "./RoleBasedRoute"; // path as appropriate
@@ -87,18 +88,18 @@ const App = () => {
 
         {/* Dashboard layout with nested routes */}
         <Route path="/dashboard/*" element={<DashboardLayout />}>
-          <Route index element={<DashboardIndex />} />
-          {/* Appointments route only for doctors */}
-          <Route
-            path="appointments"
-            element={
-              <RoleBasedRoute allowedRoles={["doctor"]}>
-                <AppointmentDetails />
-              </RoleBasedRoute>
-            }
-          />
-          <Route path="*" element={<div>Not Found</div>} />
-        </Route>
+            <Route index element={<DashboardIndex />} />
+            <Route
+              path="appointments"
+              element={
+                <RoleBasedRoute allowedRoles={["doctor"]}>
+                  <AppointmentDetails />
+                </RoleBasedRoute>
+              }
+            />
+            <Route path="slots" element={<CalendarWithSlots />}/> {/* Fixed here */}
+            <Route path="*" element={<div>Not Found</div>} />
+          </Route>
       </Routes>
     </AuthProvider>
   );
