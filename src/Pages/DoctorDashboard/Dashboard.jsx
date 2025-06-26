@@ -367,7 +367,7 @@ const DoctorDashboard = () => {
         {todayAppointments.map((appt, i) => (
           <div key={i} className="grid min-w-[600px] grid-cols-5 gap-4 items-center py-3 border-b">
             <div className="flex items-center gap-2 text-gray-800">
-              <img src={appt.avatar || dp} alt={appt.name} className="w-8 h-8 rounded-full" />
+              <img src={appt?.avatar || dp} alt={appt.name} className="w-8 h-8 rounded-full" />
               {appt.patientId}
             </div>
             <div className="text-gray-700">{appt.reason}</div>

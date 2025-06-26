@@ -70,7 +70,7 @@ export const DoctorDescription = () => {
       navigate("/login");
       return;
     }
-
+    
     try {
       const payload = {
         date: selectedDate,
@@ -83,7 +83,7 @@ export const DoctorDescription = () => {
         MeetLink: "Link",
         consultStatus: isSet ? "Online" : "Offline",
       };
-
+      console.log(payload)
       const response = await axios.post(
         `${base_url}/appointments/book`,
         payload
