@@ -25,6 +25,7 @@ const DashboardLayout = () => {
         headers: { Authorization: `Bearer ${newToken}` },
       });
         setDoctor(res.data.doctor);
+        console.log(doctor)
       } catch (error) {
         console.error("Error fetching doctor profile:", error);
       }
