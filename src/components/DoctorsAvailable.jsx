@@ -36,18 +36,14 @@ const DoctorsAvailable = () => {
       .finally(() => setLoading(false));
   }, [base_url]);
 
-  // Memoized filtering
+  // Filter only by specialization
   const filteredDoctors = useMemo(() => {
-    let filtered = [...doctors];
-    if (specialization) {
-      filtered = filtered.filter(
-        (doc) =>
-          doc.specialization?.toLowerCase() === specialization.toLowerCase()
-      );
-    }
-    
-    return filtered;
-  }, [doctors, specialization, hname]);
+    if (!specialization) return doctors;
+    return doctors.filter(
+      (doc) =>
+        doc.specialization?.toLowerCase() === specialization.toLowerCase()
+    );
+  }, [doctors, specialization]);
 
   return (
     <div className="container my-5">

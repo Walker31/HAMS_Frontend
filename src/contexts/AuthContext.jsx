@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
@@ -10,43 +11,63 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const decodeAndValidateToken = (token) => {
     try {
-      const saved = localStorage.getItem("user");
-      if (saved) {
-        setUser(JSON.parse(saved));
+      const decoded = jwtDecode(token);
+      const now = Date.now() / 1000;
+
+      if (decoded.exp && decoded.exp < now) {
+        console.warn("Token expired");
+        return null;
       }
-    } catch (err) {
-      console.log("Failed To parse user data from localStorage", err);
-      localStorage.removeItem("user");
+
+      return decoded;
+    } catch (error) {
+      console.error("Token decoding failed:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      const decoded = decodeAndValidateToken(token);
+      if (decoded) {
+        setUser(decoded);
+      } else {
+        localStorage.removeItem("token");
+      }
     }
 
     setLoading(false);
   }, []);
 
-  const login = (userData) => {
-    setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
-    localStorage.setItem("loggedIn", "true");
-    alert("Logged in")
+  const login = (token) => {
+    const decoded = decodeAndValidateToken(token);
+    if (decoded) {
+      setUser(decoded);
+      localStorage.setItem("token", token);
+      alert(`Logged in successfully as ${decoded.role}`);
+    } else {
+      console.error("Invalid or expired token during login");
+    }
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem("user");
-    localStorage.setItem("loggedIn", "false");
+    localStorage.removeItem("token");
   };
 
   const value = {
     user,
+    role: user?.role || null,       // dynamic role based on token
+    isLoggedIn: !!user,
     login,
     logout,
-    isLoggedIn: !!user,
   };
 
-  if (loading) {
-    return <div>Let shii Load, pl wait</div>;
-  }
+  if (loading) return <div>Loading... Please wait</div>;
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

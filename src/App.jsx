@@ -1,22 +1,27 @@
 import { useState, useEffect } from "react";
-import { Routes, Route, Outlet } from "react-router-dom";
-import { AuthProvider } from "./contexts/AuthContext";
+import { Routes, Route, Outlet, Navigate } from "react-router-dom";
+import { AuthProvider,useAuth } from "./contexts/AuthContext";
+
 import Home from "./Pages/Home";
-import { Navigate } from 'react-router-dom';
 import Navbar from "./components/navbar";
 import DoctorsAvailable from "./components/DoctorsAvailable";
 import DoctorDescription from "./components/DoctorDescription";
 import RegisterForm from "./Pages/Login/registerForm";
 import Confirmation from "./components/Confirmation";
 import DoctorDashboard from "./Pages/Dashboard/Dashboard";
-import PatientDashboard from "./Pages/PatientDashboard/patientDash";
+import PatientDashboard from "./Pages/PatientDashboard/patientDashboard";
 import AboutUs from "./components/Aboutus";
 import FAQs from "./components/FAQs";
 import Services from "./components/Services";
+import CalendarWithSlots from "./Pages/Dashboard/CalendarWithSlots";
+import AppointmentDetails from "./Pages/Dashboard/AppointmentDetails";
+import DashboardLayout from "./Pages/Dashboard/DashboardLayout";
+import RoleBasedRoute from "./RoleBasedRoute";
 import { getCityFromCoords } from "./utils/locationUtils";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
+// Layout for public pages (with navbar)
 const MainLayout = ({ location, setLocation }) => (
   <>
     <Navbar location={location} setLocation={setLocation} />
@@ -24,23 +29,20 @@ const MainLayout = ({ location, setLocation }) => (
   </>
 );
 
+// Route handler for /dashboard entry
 const DashboardRouter = () => {
-  const userType = localStorage.getItem('role');
+  const { role } = useAuth();
 
-  if (userType === 'doctor') {
-    return <DoctorDashboard />;
-  } else if (userType === 'patient') {
-    return <PatientDashboard />;
-  } else {
-    return <Navigate to="/" replace />; // Redirect to home or login
+  if (role === "doctor") {
+    return <Navigate to="/dashboard/home" replace />;
   }
-};
 
-const DashboardLayout = () => (
-  <div>
-    <Outlet />
-  </div>
-);
+  if (role === "patient") {
+    return <PatientDashboard />;
+  }
+
+  return <Navigate to="/" replace />;
+};
 
 const App = () => {
   const [location, setLocation] = useState("Select Location");
@@ -80,7 +82,7 @@ const App = () => {
   return (
     <AuthProvider>
       <Routes>
-        {/* Public-facing layout */}
+        {/* Public pages */}
         <Route element={<MainLayout location={location} setLocation={setLocation} />}>
           <Route path="/" element={<Home />} />
           <Route path="/doctors-available" element={<DoctorsAvailable />} />
@@ -94,9 +96,29 @@ const App = () => {
           <Route path="/services" element={<Services />} />
         </Route>
 
-        {/* Dashboard layout */}
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<DashboardRouter />} />
+        {/* Entry route - decide between doctor or patient */}
+        <Route
+          path="/dashboard"
+          element={
+            <RoleBasedRoute allowedRoles={["doctor", "patient"]}>
+              <DashboardRouter />
+            </RoleBasedRoute>
+          }
+        />
+
+        {/* Doctor-specific dashboard layout and subroutes */}
+        <Route
+          path="/dashboard/*"
+          element={
+            <RoleBasedRoute allowedRoles={["doctor"]}>
+              <DashboardLayout />
+            </RoleBasedRoute>
+          }
+        >
+          <Route path="home" element={<DoctorDashboard />} />
+          <Route path="appointments" element={<AppointmentDetails />} />
+          <Route path="slots" element={<CalendarWithSlots />} />
+          <Route path="*" element={<div>Page Not Found</div>} />
         </Route>
       </Routes>
     </AuthProvider>

@@ -1,12 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
-import HomeIcon from '@mui/icons-material/Home';
-import { Container, Row, Col, Card, Button,OverlayTrigger,Tooltip, Nav } from "react-bootstrap";
-import CalendarWithSlots from "./CalendarWithSlots";
-import "react-calendar/dist/Calendar.css";
-import { useNavigate, useLocation } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
+import { Container, Row, Col, Card, Button } from "react-bootstrap";
+import { IconButton } from "@mui/material";
+import RefreshIcon from '@mui/icons-material/Refresh';
 import axios from "axios";
+import { useAuth } from "../../contexts/AuthContext";
 import {
   OverviewModal,
   RejectModal,
@@ -17,388 +14,258 @@ import {
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const DoctorDashboard = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const locationState = location.state || {};
-  const initialDoctor = locationState.doctor || {};
-
-  const [doctor, setDoctor] = useState(initialDoctor);
+  const { user } = useAuth();
+  const [doctor, setDoctor] = useState({});
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
-  const [modals, setModals] = useState({
-    overview: false,
-    reject: false,
-    prescription: false,
-    viewPrescription: false,
-  });
-  const [rejectionReason, setRejectionReason] = useState("");
-  const [currentIndex, setCurrentIndex] = useState(null);
-  const [currentPrescription, setCurrentPrescription] = useState("");
-  const [viewedPrescription, setViewedPrescription] = useState({ name: "", prescription: "" });
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [description, setDescription] = useState("");
-  const [view, setView] = useState("dashboard");
 
-  // Axios: Attach token if present
+  // Modal states
+  const [showOverview, setShowOverview] = useState(false);
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
+  const [showViewPrescription, setShowViewPrescription] = useState(false);
+
+  const [rejectionReason, setRejectionReason] = useState("");
+  const [description, setDescription] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(null);
+  const [prescriptionIndex, setPrescriptionIndex] = useState(null);
+  const [currentPrescription, setCurrentPrescription] = useState("");
+  const [viewedPrescription, setViewedPrescription] = useState("");
+  const [viewedPatientName, setViewedPatientName] = useState("");
+
+  // Attach token for axios
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (token) axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
   }, []);
 
-      const handleRejectConfirm = async () => {
-      if (currentIndex === null) return;
-      const appt = todayAppointments[currentIndex];
-      await updateAppointmentStatus(appt.appId, "Rejected", rejectionReason);
-      moveToPrevious(currentIndex, "Rejected", rejectionReason);
-      setModals((m) => ({ ...m, reject: false }));
-      setRejectionReason("");
-      setCurrentIndex(null);
-    };
-
-    const handleSavePrescription = async () => {
-      if (currentIndex === null) return;
-      const appt = todayAppointments[currentIndex];
-      try {
-        await axios.post(`${base_url}/prescriptions`, {
-          appointmentId: appt.appId,
-          prescription: currentPrescription,
-        });
-        await updateAppointmentStatus(appt.appId, "Completed");
-        moveToPrevious(currentIndex, "Completed");
-        setModals((m) => ({ ...m, prescription: false }));
-        setCurrentPrescription("");
-        setCurrentIndex(null);
-      } catch (error) {
-        console.error("Failed to save prescription:", error);
-        alert("Failed to save prescription");
-      }
-    };
-
-
-  // Fetch doctor details and appointments
-  const fetchDoctorDetails = useCallback(async () => {
-    if (!doctor.doctorId) return;
-    try {
-      const { data } = await axios.get(`${base_url}/doctors/${doctor.doctorId}`);
-      setDoctor(data);
-    } catch (error) {
-      console.error("Error fetching doctor details:", error);
-    }
-  }, [doctor.doctorId]);
-
+  // Fetch appointments
   const fetchAppointments = useCallback(async () => {
-    if (!doctor.doctorId) return;
-    const today = new Date().toLocaleDateString("en-CA");
+    if (!user?.id) return;
+    const today = new Date().toISOString().split("T")[0];
+
     try {
-      const [{ data: todayData }, { data: prevData }] = await Promise.all([
-        axios.get(`${base_url}/appointments/pending/${today}?doctorId=${doctor.doctorId}`),
-        axios.get(`${base_url}/appointments/previous?doctorId=${doctor.doctorId}`),
+      const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${user.id}`;
+      const prevURL = `${base_url}/appointments/previous?doctorId=${user.id}`;
+
+      const [todayRes, prevRes] = await Promise.all([
+        axios.get(todayURL),
+        axios.get(prevURL),
       ]);
-      setTodayAppointments(todayData);
-      setPreviousAppointments(prevData);
-    } catch (error) {
-      console.error("Error fetching appointments:", error);
+
+      setTodayAppointments(todayRes.data || []);
+      setPreviousAppointments(prevRes.data || []);
+    } catch (err) {
+      console.error("Error fetching appointments:", err);
     }
-  }, [doctor.doctorId]);
+  }, [user?.id]);
 
   useEffect(() => {
-    fetchDoctorDetails();
     fetchAppointments();
-  }, [fetchDoctorDetails, fetchAppointments]);
+  }, [fetchAppointments]);
 
-  // Sidebar toggle
-  const toggleSidebar = () => setSidebarCollapsed((prev) => !prev);
-
-  // Overview
-  const handleOverviewClick = () => {
-    setDescription(doctor.overview || "");
-    setModals((m) => ({ ...m, overview: true }));
-  };
-
-  const handleSaveDescription = async () => {
+  // Update appointment status
+  const updateAppointmentStatus = async (appointmentId, status, reason = "", prescriptionText = "") => {
     try {
-      const response = await axios.put(`${base_url}/doctors/update/${doctor.doctorId}`, {
-      overview: description,
-      });
-      setDoctor((prev) => ({ ...prev, overview: description }));
-
-      alert("Overview updated successfully");
-      setModals((m) => ({ ...m, overview: false }));
-    } catch (error) {
-      console.error("Error updating overview:", error);
-      alert("Failed to update overview. Please try again.");
-    }
-  };
-
-  // Logout
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/", { replace: true });
-    alert("Logged out successfully");
-  };
-
-  // Appointment status changes
-  const updateAppointmentStatus = async (apptId, newStatus, reason = "") => {
-    try {
-      await axios.put(`${base_url}/appointments/update-status/${apptId}`, {
-        appStatus: newStatus,
+      const url = `${base_url}/appointments/update-status/${appointmentId}`;
+      const payload = {
+        appStatus: status,
         rejectionReason: reason,
-      });
-    } catch (error) {
-      console.error("Error updating appointment status:", error);
+        prescription: prescriptionText,
+      };
+
+      console.log("PUT Request to:", url);
+      console.log("Payload:", JSON.stringify(payload, null, 2));
+
+      await axios.put(url, payload);
+      console.log(response);
+    } catch (err) {
+      console.error("Failed to update status:", err);
     }
   };
 
-  const moveToPrevious = (index, status, reason = "") => {
+  const moveToPrevious = (index, status, reason = "", prescription = "") => {
     const appt = todayAppointments[index];
-    setTodayAppointments((prev) => prev.filter((_, i) => i !== index));
+    const updatedToday = [...todayAppointments];
+    updatedToday.splice(index, 1);
+    setTodayAppointments(updatedToday);
+
     setPreviousAppointments((prev) => [
       ...prev,
-      { ...appt, reasonForReject: reason, appStatus: status },
+      {
+        ...appt,
+        appStatus: status,
+        reasonForReject: reason,
+        prescription,
+      },
     ]);
   };
 
   const handleStatusChange = (index, status) => {
     setCurrentIndex(index);
+
     if (status === "Done") {
-      setModals((m) => ({ ...m, prescription: true }));
+      setPrescriptionIndex(index);
+      setShowPrescriptionModal(true);
     } else if (status === "Rejected") {
-      setModals((m) => ({ ...m, reject: true }));
+      setShowRejectModal(true);
     } else if (status === "Rescheduled") {
-      updateAppointmentStatus(todayAppointments[index].appId, "Rescheduled");
+      const appt = todayAppointments[index];
+      updateAppointmentStatus(appt.appointmentId, "Rescheduled");
       moveToPrevious(index, "Rescheduled");
     }
   };
 
-  const renderDashboardContent = () => (
-    <div className="p-4">
-      <Row className="mb-4">
-        <Col md={6} lg={3}>
-          <Card className="text-center shadow-sm">
-            <Card.Body>
-              <Card.Title>Total Patients</Card.Title>
-              <h4>
-                {
-                  previousAppointments.filter(
-                    (appt) => appt.status === "Completed"
-                  ).length
-                }
-              </h4>
-            </Card.Body>
-          </Card>
-        </Col>
-        <Col md={6} lg={3}>
-          <Card className="text-center shadow-sm">
-            <Card.Body>
-              <Card.Title>Today's Appointments</Card.Title>
-              <h4>{todayAppointments.length}</h4>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-      <Row>
-        <Col md={6}>
-          <h5 className="text-primary">Today's Appointments</h5>
-          {todayAppointments.length === 0 ? (
-            <p>No appointments for today.</p>
-          ) : (
-            todayAppointments.map((appt, idx) => (
-              <Card key={appt.appId || idx} className="mb-3 shadow-sm">
-                <Card.Body className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <span>Patient name: {appt.name}</span>
-                    <br />
-                    <span>Slot: {appt.slotNumber}</span>
-                    <br />
-                    <span>Status: {appt.appStatus}</span>
-                  </div>
-                  <div>
-                    <Button
-                      variant="success"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => handleStatusChange(idx, "Done")}
-                    >
-                      Done
-                    </Button>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      className="me-2"
-                      onClick={() => handleStatusChange(idx, "Rejected")}
-                    >
-                      Reject
-                    </Button>
-                    <Button
-                      variant="warning"
-                      size="sm"
-                      onClick={() => handleStatusChange(idx, "Rescheduled")}
-                    >
-                      Reschedule
-                    </Button>
-                  </div>
-                </Card.Body>
-              </Card>
-            ))
-          )}
-        </Col>
-        <Col md={6}>
-          <h5 className="text-primary">Previous Appointments</h5>
-          {previousAppointments.length === 0 ? (
-            <p>No previous appointments.</p>
-          ) : (
-            previousAppointments.map((appt, idx) => (
-              <Card
-                key={appt.appId || idx}
-                className="mb-3 border-start border-4 border-primary shadow-sm"
-              >
-                <Card.Body>
-                  <div>
-                    <span>Patient name: {appt.name}</span>
-                    <br />
-                    <span>Slot: {appt.slotNumber}</span>
-                    <br />
-                    <span>Status: {appt.appStatus}</span>
-                    <br />
-                    <span>Date: {appt.date}</span>
-                    {appt.appStatus === "Rejected" && (
-                      <p className="text-danger">
-                        Rejection: {appt.reasonForReject}
-                      </p>
-                    )}
-                    <span
-                      className={`badge bg-${
-                        appt.appStatus === "Completed"
-                          ? "success"
-                          : appt.appStatus === "Rejected"
-                          ? "danger"
-                          : "warning"
-                      }`}
-                    >
-                      {appt.appStatus}
-                    </span>
-                  </div>
-                </Card.Body>
-              </Card>
-            ))
-          )}
-        </Col>
-      </Row>
-    </div>
-  );
+  const handleRejectConfirm = async () => {
+    if (!rejectionReason.trim()) {
+      alert("Please provide a reason.");
+      return;
+    }
+    const appt = todayAppointments[currentIndex];
+    await updateAppointmentStatus(appt.appointmentId, "Rejected", rejectionReason);
+    moveToPrevious(currentIndex, "Rejected", rejectionReason);
+    setShowRejectModal(false);
+    setRejectionReason("");
+    setCurrentIndex(null);
+  };
 
-  // Calendar view
-  const renderAppointmentCalendar = () => (
-    <div className="p-4">
-      <CalendarWithSlots />
-    </div>
-  );
+  const handleSavePrescription = async () => {
+    const appt = todayAppointments[prescriptionIndex];
+    const appointmentId = appt.appointmentId;
+    try {
+      await updateAppointmentStatus(appointmentId, "Completed", "", currentPrescription);
+      moveToPrevious(prescriptionIndex, "Completed", "", currentPrescription);
+      setShowPrescriptionModal(false);
+      setCurrentPrescription("");
+      setPrescriptionIndex(null);
+    } catch (err) {
+      console.error("Error saving prescription:", err);
+    }
+  };
 
-  // Sidebar
-  const Sidebar = () => (
-    <div
-      className={`p-0 bg-dark text-white ${sidebarCollapsed ? "collapsed" : ""}`}
-      style={{
-        width: sidebarCollapsed ? "0" : "250px",
-        overflow: "hidden",
-        transition: "all 0.3s ease-in-out",
-      }}
-    >
-      {!sidebarCollapsed && (
-        <div>
-          <div className="d-flex flex-column align-items-center text-center p-3">
-            <img
-              src={doctor?.photo || "Doctor photo"}
-              className="rounded-circle mb-3"
-              style={{
-                width: "120px",
-                height: "120px",
-                objectFit: "cover",
-              }}
-              alt="Doctor"
-            />
-            <h5>{doctor?.name || "Doctor Name"}</h5>
-          </div>
-          <Nav className="flex-column">
-            <Nav.Link className="text-white" onClick={() => navigate("/")}>
-              Home
-            </Nav.Link>
-            <Nav.Link className="text-white" onClick={() => setView("dashboard")}>
-              Dashboard
-            </Nav.Link>
-            <Nav.Link className="text-white" onClick={() => setView("appointments")}>
-              Appointments
-            </Nav.Link>
-            <Nav.Link className="text-white" onClick={handleOverviewClick}>
-              Overview
-            </Nav.Link>
-            <Nav.Link className="text-warning" onClick={handleLogout}>
-              Logout
-            </Nav.Link>
-          </Nav>
-        </div>
-      )}
-    </div>
-  );
+  const handleOverviewClick = () => {
+    setDescription(doctor?.overview || "");
+    setShowOverview(true);
+  };
 
-  // Header
-  const Header = ({ toggleSidebar, onHomeClick }) => (
-    <header className="bg-primary text-white p-3 d-flex justify-content-between align-items-center shadow">
-      <div className="d-flex align-items-center gap-3">
-        <Button variant="outline-light" onClick={toggleSidebar}>
-          ☰
-        </Button>
-        <h5 className="mb-0">Doctor Dashboard</h5>
-      </div>
-      <OverlayTrigger placement="bottom" overlay={<Tooltip>Go to Home</Tooltip>}>
-        <IconButton onClick={() => navigate('/')} style={{ color: "white" }}>
-          <HomeIcon />
-        </IconButton>
-      </OverlayTrigger>
-    </header>
-  );
+  const handleSaveDescription = async () => {
+    try {
+      await axios.put(`${base_url}/doctors/update/${user.id}`, { overview: description });
+      setDoctor((prev) => ({ ...prev, overview: description }));
+      setShowOverview(false);
+    } catch (err) {
+      alert("Failed to save overview");
+    }
+  };
 
   return (
     <Container fluid className="p-0" style={{ overflowX: "hidden" }}>
-      <Header />
-      <div className="d-flex" style={{ minHeight: "100vh" }}>
-        <Sidebar />
-        <div style={{ flex: 1 }}>
-          {view === "dashboard" ? renderDashboardContent() : renderAppointmentCalendar()}
-        </div>
+      <div className="p-4">
+        <Row className="mb-4">
+          <Col md={6} lg={3}>
+            <Card className="text-center shadow-sm">
+              <Card.Body>
+                <Card.Title>Total Patients</Card.Title>
+                <h4>{previousAppointments.filter((a) => a.appStatus === "Completed").length}</h4>
+              </Card.Body>
+            </Card>
+          </Col>
+          <Col md={6} lg={3}>
+            <Card className="text-center shadow-sm">
+              <Card.Body>
+                <Card.Title>Today's Appointments</Card.Title>
+                <h4>{todayAppointments.length}</h4>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={6}>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <h5 className="text-primary mb-0">Today's Appointments</h5>
+              <IconButton size="sm" onClick={fetchAppointments}><RefreshIcon /></IconButton>
+            </div>
+            {todayAppointments.length === 0 ? (
+              <p>No appointments for today.</p>
+            ) : (
+              todayAppointments.map((appt, idx) => (
+                <Card key={appt.appointmentId || idx} className="mb-3 shadow-sm">
+                  <Card.Body className="d-flex justify-content-between">
+                    <div>
+                      <div><strong>Patient ID:</strong> {appt.patientId}</div>
+                      <div><strong>Date:</strong> {appt.date}</div>
+                      <div><strong>Slot:</strong> {appt.slotNumber}</div>
+                    </div>
+                    <div>
+                      <Button className="me-2" size="sm" variant="success" onClick={() => handleStatusChange(idx, "Done")}>Done</Button>
+                      <Button className="me-2" size="sm" variant="danger" onClick={() => handleStatusChange(idx, "Rejected")}>Reject</Button>
+                      <Button size="sm" variant="warning" onClick={() => handleStatusChange(idx, "Rescheduled")}>Reschedule</Button>
+                    </div>
+                  </Card.Body>
+                </Card>
+              ))
+            )}
+          </Col>
+          <Col md={6}>
+            <h5 className="text-primary">Previous Appointments</h5>
+            {previousAppointments.map((appt, idx) => (
+              <Card key={idx} className="mb-3 border-start border-4 border-primary shadow-sm">
+                <Card.Body>
+                  <p><strong>Patient ID:</strong> {appt.patientId}</p>
+                  <p><strong>Date:</strong> {appt.date}</p>
+                  <p><strong>Slot:</strong> {appt.slotNumber}</p>
+                  <p>
+                    <strong>Status:</strong>{" "}
+                    <span className={`badge bg-${appt.appStatus === "Completed" ? "success" : appt.appStatus === "Rejected" ? "danger" : "warning"}`}>
+                      {appt.appStatus}
+                    </span>
+                  </p>
+                  {appt.reasonForReject && (
+                    <p className="text-danger"><strong>Reason:</strong> {appt.reasonForReject}</p>
+                  )}
+                  {appt.prescription && (
+                    <p className="text-success"><strong>Prescription:</strong> {appt.prescription}</p>
+                  )}
+                </Card.Body>
+              </Card>
+            ))}
+          </Col>
+        </Row>
       </div>
+
+      {/* Modals */}
       <OverviewModal
-        show={modals.overview}
-        onClose={() => setModals((m) => ({ ...m, overview: false }))}
+        show={showOverview}
+        onClose={() => setShowOverview(false)}
         description={description}
         setDescription={setDescription}
         onSave={handleSaveDescription}
       />
       <RejectModal
-        show={modals.reject}
-        onClose={() => setModals((m) => ({ ...m, reject: false }))}
+        show={showRejectModal}
+        onClose={() => setShowRejectModal(false)}
         rejectionReason={rejectionReason}
         setRejectionReason={setRejectionReason}
         onConfirm={handleRejectConfirm}
       />
       <PrescriptionModal
-        show={modals.prescription}
-        onClose={() => setModals((m) => ({ ...m, prescription: false }))}
-        name={todayAppointments[currentIndex]?.name}
+        show={showPrescriptionModal}
+        onClose={() => setShowPrescriptionModal(false)}
+        name={todayAppointments[prescriptionIndex]?.patientId || ""}
         prescription={currentPrescription}
         setPrescription={setCurrentPrescription}
         onSave={handleSavePrescription}
       />
       <ViewPrescriptionModal
-        show={modals.viewPrescription}
-        onClose={() => setModals((m) => ({ ...m, viewPrescription: false }))}
-        name={viewedPrescription.name}
-        prescription={viewedPrescription.prescription}
+        show={showViewPrescription}
+        onClose={() => setShowViewPrescription(false)}
+        name={viewedPatientName}
+        prescription={viewedPrescription}
       />
     </Container>
   );
 };
-
-DoctorDashboard.propTypes = {};
 
 export default DoctorDashboard;

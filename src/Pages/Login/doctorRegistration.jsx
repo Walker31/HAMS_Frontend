@@ -8,16 +8,21 @@ import MenuItem from "@mui/material/MenuItem";
 import SPECIALIZATIONS from "../../constants/specializations";
 import axios from "axios";
 import { InputAdornment } from "@mui/material";
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
-export default function DoctorRegisterForm({ formData, handleChange, handleBack }) {
+export default function DoctorRegisterForm({
+  formData,
+  handleChange,
+  handleBack,
+  handleRegisterSubmit
+}) {
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
   const fileInputRef = useRef(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [hospitals, setHospitals] = useState([]);
-  const [show,setShow] = useState(true);
+  const [show, setShow] = useState(true);
 
   // Handle Image File Selection
   const handleFileChange = (e) => {
@@ -38,38 +43,13 @@ export default function DoctorRegisterForm({ formData, handleChange, handleBack 
   // Fetch hospitals on mount
   useEffect(() => {
     const lat = 12.9058;
-    const lon = 80.2270;
+    const lon = 80.227;
 
     axios
       .get(`${base_url}/hospitals/getAll/${lat}/${lon}`)
       .then((response) => setHospitals(response.data))
       .catch((error) => console.error("Error fetching hospitals:", error));
   }, []);
-
-  // Submit Handler (Internal)
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-
-    const formDataToSend = new FormData();
-    Object.keys(formData).forEach((key) => {
-      formDataToSend.append(key, formData[key]);
-    });
-
-    try {
-      const response = await axios.post(`${base_url}/doctors/signup`, formDataToSend, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
-      });
-
-      alert("Doctor registered successfully!");
-      // Optionally reset form here
-    } catch (error) {
-      console.error("Doctor registration error:", error);
-      alert("Doctor registration failed. Please try again.");
-    }
-  };
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md space-y-6">
@@ -80,8 +60,11 @@ export default function DoctorRegisterForm({ formData, handleChange, handleBack 
 
       <h2 className="text-2xl font-bold text-center">Doctor Registration</h2>
 
-      <form onSubmit={handleRegisterSubmit} className="flex flex-col gap-6 w-full">
-        <div className="flex flex-col md:flex-row items-start gap-6">
+      <form
+        onSubmit={handleRegisterSubmit}
+        className="flex flex-col gap-6 w-full"
+      >
+        <div className="flex flex-row md:flex-row items-start gap-6">
           {/* Image Upload */}
           <div className="flex flex-col items-center gap-2">
             <div
@@ -90,7 +73,11 @@ export default function DoctorRegisterForm({ formData, handleChange, handleBack 
               title="Click to upload"
             >
               {imagePreview ? (
-                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                <img
+                  src={imagePreview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-500">
                   Upload Photo
@@ -121,20 +108,20 @@ export default function DoctorRegisterForm({ formData, handleChange, handleBack 
         </div>
 
         <TextField
-            select
-            label="Gender"
-            name="gender"
-            value={formData.gender || ""}
-            onChange={handleChange}
-            fullWidth
-            required
-            margin="normal"
-          >
-            <MenuItem value="">Select Gender</MenuItem>
-            <MenuItem value="Male">Male</MenuItem>
-            <MenuItem value="Female">Female</MenuItem>
-            <MenuItem value="Other">Other</MenuItem>
-          </TextField>
+          select
+          label="Gender"
+          name="gender"
+          value={formData.gender || ""}
+          onChange={handleChange}
+          fullWidth
+          required
+          margin="normal"
+        >
+          <MenuItem value="">Select Gender</MenuItem>
+          <MenuItem value="Male">Male</MenuItem>
+          <MenuItem value="Female">Female</MenuItem>
+          <MenuItem value="Other">Other</MenuItem>
+        </TextField>
 
         {/* Password */}
         <TextField
@@ -143,11 +130,16 @@ export default function DoctorRegisterForm({ formData, handleChange, handleBack 
           type={show ? "text" : "password"}
           value={formData.password || ""}
           onChange={handleChange}
-          InputProps={{ minLength: 6, endAdornment:(
-            <InputAdornment position="end"><IconButton onClick={()=>setShow(!show)} edge="end">
-              {show ? <VisibilityIcon /> : <VisibilityOffIcon />}
-              </IconButton></InputAdornment>
-          ) }}
+          InputProps={{
+            minLength: 6,
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setShow(!show)} edge="end">
+                  {show ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
           fullWidth
           required
         />
@@ -183,9 +175,9 @@ export default function DoctorRegisterForm({ formData, handleChange, handleBack 
         {/* Organisation/Hospital */}
         <TextField
           select
-          label="Organisation"
-          name="Organisation"
-          value={formData.Organisation || ""}
+          label="Hospital"
+          name="Hospital"
+          value={formData.Hospital || ""}
           onChange={handleChange}
           fullWidth
           required
@@ -199,7 +191,13 @@ export default function DoctorRegisterForm({ formData, handleChange, handleBack 
         </TextField>
 
         {/* Submit Button */}
-        <Button variant="contained" color="primary" type="submit" fullWidth className="mt-4">
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          fullWidth
+          className="mt-4"
+        >
           Register
         </Button>
       </form>

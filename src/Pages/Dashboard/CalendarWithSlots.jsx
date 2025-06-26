@@ -14,7 +14,15 @@ const CalendarWithSlots = () => {
   const [bookedSlots, setBookedSlots] = useState([]);
 
   const doctorId = localStorage.getItem("doctorId");
-  const base_url = "http://localhost:3000";
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
+  // ✅ Format date in local time (avoid UTC issues)
+  const formatLocalDate = (dateObj) => {
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
 
   useEffect(() => {
     const fetchSavedSlots = async () => {
@@ -42,25 +50,25 @@ const CalendarWithSlots = () => {
   };
 
   const handleDateChange = (date) => {
-    const dateKey = date.toDateString();
+    const dateKey = formatLocalDate(date); // ✅ fixed
     setSelectedDate(date);
     setSlots(generateTimeSlots(interval));
     setSelectedSlots(savedSlots[dateKey] || []);
-    fetchBookedSlots(dateKey); // fetch booked slots for that day
+    fetchBookedSlots(dateKey);
   };
 
   const handleIntervalChange = (e) => {
     const newInterval = parseInt(e.target.value);
     setInterval(newInterval);
     if (selectedDate) {
-      const dateKey = selectedDate.toDateString();
+      const dateKey = formatLocalDate(selectedDate); // ✅ fixed
       setSlots(generateTimeSlots(newInterval));
       setSelectedSlots(savedSlots[dateKey] || []);
     }
   };
 
   const toggleSlot = (slot) => {
-    if (bookedSlots.includes(slot)) return; // prevent selecting booked slots
+    if (bookedSlots.includes(slot)) return;
     setSelectedSlots((prev) =>
       prev.includes(slot) ? prev.filter((s) => s !== slot) : [...prev, slot]
     );
@@ -72,7 +80,7 @@ const CalendarWithSlots = () => {
       return;
     }
 
-    const dateKey = selectedDate.toDateString();
+    const dateKey = formatLocalDate(selectedDate); // ✅ fixed
     const payload = {
       date: dateKey,
       slots: selectedSlots,
