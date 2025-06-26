@@ -9,6 +9,7 @@ export const DoctorDescription = () => {
   const [isOn, setIsOn] = useState(false);
   const [isSet, setIsSet] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
+  const [bookedSlots, setBookedSlots] = useState([]);
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   const [doctorDetails, setDoctorDetails] = useState(null);
 
@@ -18,18 +19,12 @@ export const DoctorDescription = () => {
   const rawPatientId = localStorage.getItem("patientId");
   const patientId = rawPatientId && rawPatientId !== "undefined" ? rawPatientId : "HAMS_ADMIN";
 
+  const doctorId = doctor?.doctorId || doctor?._id || location.state?.doctorId || null;
 
-  // ✅ Extract reliable doctorId
-  const doctorId =
-    doctor?.doctorId || doctor?._id || location.state?.doctorId || null;
-
-  // ✅ Fetch doctor profile
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
-        const res = await axios.get(
-          `${base_url}/doctors/${doctorId}/profile`
-        );
+        const res = await axios.get(`${base_url}/doctors/${doctorId}/profile`);
         setDoctorDetails(res.data.doctor);
       } catch (error) {
         console.error("Error fetching doctor details:", error);
@@ -38,14 +33,12 @@ export const DoctorDescription = () => {
     if (doctorId) fetchDoctor();
   }, [doctorId]);
 
-  // ✅ Fetch available slots for selected date
   useEffect(() => {
     const fetchSlots = async () => {
       if (!selectedDate || !doctorId) return;
+
       try {
-        const res = await axios.get(
-          `${base_url}/doctors/${doctorId}/slots`
-        );
+        const res = await axios.get(`${base_url}/doctors/${doctorId}/slots`);
         const allSlots = res.data?.availableSlots || {};
         const dateKey = new Date(selectedDate).toISOString().split("T")[0];
         const slotsForDate = allSlots[dateKey] || [];
@@ -55,10 +48,31 @@ export const DoctorDescription = () => {
         setAvailableSlots([]);
       }
     };
+
+    const fetchBooked = async () => {
+      const parsedDate = new Date(selectedDate);
+      if (isNaN(parsedDate)) return;
+      const dateKey = parsedDate.toISOString().split("T")[0];
+
+      try {
+        const res = await axios.get(
+          `${base_url}/doctors/${doctorId}/booked-slots?date=${encodeURIComponent(dateKey)}`
+        );
+        setBookedSlots(res.data.bookedSlots || []);
+      } catch (error) {
+        console.error("Error fetching booked slots:", error);
+        setBookedSlots([]);
+      }
+    };
+
     fetchSlots();
+    fetchBooked();
   }, [selectedDate, doctorId]);
 
-  const handleSlotClick = (slot) => setSelectedSlot(slot);
+  const handleSlotClick = (slot) => {
+    if (bookedSlots.includes(slot)) return;
+    setSelectedSlot(slot);
+  };
 
   const handleBookNow = async () => {
     if (!selectedDate || !selectedSlot) {
@@ -76,7 +90,7 @@ export const DoctorDescription = () => {
         date: selectedDate,
         patientId,
         doctorId: doctorId || "dummy-doctor-id",
-        clinicId: hname?.hosp || "Unknown Clinic",
+        hospitalId: hname?.hosp || "Unknown Clinic",
         slotNumber: selectedSlot,
         reason: reason || "General Checkup",
         payStatus: isOn ? "Paid" : "Unpaid",
@@ -84,16 +98,17 @@ export const DoctorDescription = () => {
         consultStatus: isSet ? "Online" : "Offline",
       };
 
-      const response = await axios.post(
-        `${base_url}/appointments/book`,
-        payload
-      );
+      const response = await axios.post(`${base_url}/appointments/book`, payload);
       if (response.status === 201) {
         alert("Appointment booked successfully!");
         navigate("/dashboard");
       }
     } catch (error) {
-      alert("Failed to book appointment. Please try again.");
+      if (error.response?.status === 409) {
+        alert("This slot has already been booked by another patient. Please choose another slot.");
+      } else {
+        alert("Failed to book appointment. Please try again.");
+      }
       console.error("Booking error:", error);
     }
   };
@@ -153,23 +168,28 @@ export const DoctorDescription = () => {
             <h6 className="fw-bold mb-2">Available Slots:</h6>
             <div className="d-flex flex-wrap gap-2 mb-2">
               {availableSlots.length > 0 ? (
-                availableSlots.map((slot) => (
-                  <button
-                    key={slot}
-                    className={`btn btn-sm ${
-                      selectedSlot === slot
-                        ? "btn-warning"
-                        : "btn-outline-warning"
-                    }`}
-                    onClick={() => handleSlotClick(slot)}
-                  >
-                    {slot}
-                  </button>
-                ))
+                availableSlots.map((slot) => {
+                  const isBooked = bookedSlots.includes(slot);
+                  return (
+                    <button
+                      key={slot}
+                      className={`btn btn-sm ${
+                        selectedSlot === slot
+                          ? "btn-warning"
+                          : isBooked
+                          ? "btn-outline-secondary"
+                          : "btn-outline-warning"
+                      }`}
+                      onClick={() => handleSlotClick(slot)}
+                      disabled={isBooked}
+                      title={isBooked ? "Slot already booked" : ""}
+                    >
+                      {slot}
+                    </button>
+                  );
+                })
               ) : (
-                <p className="text-muted">
-                  No slots available for selected date
-                </p>
+                <p className="text-muted">No slots available for selected date</p>
               )}
             </div>
 
@@ -192,7 +212,6 @@ export const DoctorDescription = () => {
                 />
               </button>
               <span className="ms-2">{isSet ? "Online" : "Offline"}</span>
-
             </div>
 
             <div className="d-flex align-items-center mt-2.5 mb-2.5">
@@ -219,7 +238,7 @@ export const DoctorDescription = () => {
             <button
               className="btn btn-outline-primary w-100"
               onClick={handleBookNow}
-              disabled={!selectedSlot} 
+              disabled={!selectedSlot}
               title={!selectedSlot ? "Please select a slot" : ""}
             >
               BOOK APPOINTMENT

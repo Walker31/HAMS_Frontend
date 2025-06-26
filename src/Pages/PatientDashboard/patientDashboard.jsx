@@ -13,7 +13,7 @@ const PatientDashboard = () => {
   const [collapsed, setCollapsed] = useState(true);
   const [appointments, setAppointments] = useState([]);
   const [history, setHistory] = useState([]);
-  const {logout}=useAuth();
+  const {logout,user}=useAuth();
   const navigate = useNavigate();
 
   const toggleSidebar = () => setCollapsed(!collapsed);

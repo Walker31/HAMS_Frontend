@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { IconButton } from "@mui/material";
-import RefreshIcon from '@mui/icons-material/Refresh';
+import RefreshIcon from "@mui/icons-material/Refresh";
 import {
   OverviewModal,
   RejectModal,
@@ -14,12 +14,12 @@ import {
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const DoctorDashboard = () => {
+  const location = useLocation();
   const [doctor, setDoctor] = useState({});
   const [doctorId, setDoctorId] = useState(null);
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
 
-  // Modal and state management
   const [showOverview, setShowOverview] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
@@ -39,7 +39,8 @@ const DoctorDashboard = () => {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
 
-    const idFromRoute = location.state?.doctor?.doctorId || location.state?.doctorId;
+    const idFromRoute =
+      location.state?.doctor?.doctorId || location.state?.doctorId;
     const idFromStorage = localStorage.getItem("doctorId");
     const finalDoctorId = idFromRoute || idFromStorage;
 
@@ -63,13 +64,12 @@ const DoctorDashboard = () => {
   }, [location.state]);
 
   const fetchAppointments = useCallback(async () => {
-    const doctorId = doctor?.doctorId;
-    if (!doctorId) return;
+    if (!doctor?.doctorId) return;
 
     try {
       const today = new Date().toISOString().split("T")[0];
-      const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${user.id}`;
-      const prevURL = `${base_url}/appointments/previous?doctorId=${user.id}`;
+      const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${doctor.doctorId}`;
+      const prevURL = `${base_url}/appointments/previous?doctorId=${doctor.doctorId}`;
 
       const [todayRes, prevRes] = await Promise.all([
         axios.get(todayURL),
@@ -87,8 +87,12 @@ const DoctorDashboard = () => {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  // Appointment status update
-  const updateAppointmentStatus = async (apptId, status, reason = "", prescriptionText = "") => {
+  const updateAppointmentStatus = async (
+    appointmentId,
+    status,
+    reason = "",
+    prescriptionText = ""
+  ) => {
     try {
       const url = `${base_url}/appointments/update-status/${appointmentId}`;
       const payload = {
@@ -97,11 +101,7 @@ const DoctorDashboard = () => {
         prescription: prescriptionText,
       };
 
-      console.log("PUT Request to:", url);
-      console.log("Payload:", JSON.stringify(payload, null, 2));
-
       await axios.put(url, payload);
-      console.log(response);
     } catch (err) {
       console.error("Failed to update status:", err);
     }
@@ -153,9 +153,8 @@ const DoctorDashboard = () => {
 
   const handleSavePrescription = async () => {
     const appt = todayAppointments[prescriptionIndex];
-    const appointmentId = appt.appId;
     try {
-      await updateAppointmentStatus(appointmentId, "Completed", "", currentPrescription);
+      await updateAppointmentStatus(appt.appointmentId, "Completed", "", currentPrescription);
       moveToPrevious(prescriptionIndex, "Completed", "", currentPrescription);
       setShowPrescriptionModal(false);
       setCurrentPrescription("");
@@ -165,14 +164,11 @@ const DoctorDashboard = () => {
     }
   };
 
-  const handleOverviewClick = () => {
-    setDescription(doctor?.overview || "");
-    setShowOverview(true);
-  };
-
   const handleSaveDescription = async () => {
     try {
-      await axios.put(`${base_url}/doctors/update/${doctor.doctorId}`, { overview: description });
+      await axios.put(`${base_url}/doctors/update/${doctor.doctorId}`, {
+        overview: description,
+      });
       setDoctor((prev) => ({ ...prev, overview: description }));
       setShowOverview(false);
     } catch (err) {
@@ -201,17 +197,20 @@ const DoctorDashboard = () => {
             </Card>
           </Col>
         </Row>
+
         <Row>
           <Col md={6}>
             <div className="d-flex justify-content-between align-items-center mb-2">
               <h5 className="text-primary mb-0">Today's Appointments</h5>
-              <IconButton size="sm" onClick={fetchAppointments}><RefreshIcon/></IconButton>
+              <IconButton size="sm" onClick={fetchAppointments}>
+                <RefreshIcon />
+              </IconButton>
             </div>
             {todayAppointments.length === 0 ? (
               <p>No appointments for today.</p>
             ) : (
               todayAppointments.map((appt, idx) => (
-                <Card key={appt.appId || idx} className="mb-3 shadow-sm">
+                <Card key={appt.appointmentId || idx} className="mb-3 shadow-sm">
                   <Card.Body className="d-flex justify-content-between">
                     <div>
                       <div><strong>Name:</strong> {appt.name}</div>
@@ -228,6 +227,7 @@ const DoctorDashboard = () => {
               ))
             )}
           </Col>
+
           <Col md={6}>
             <h5 className="text-primary">Previous Appointments</h5>
             {previousAppointments.map((appt, idx) => (
@@ -259,7 +259,7 @@ const DoctorDashboard = () => {
       <OverviewModal
         show={showOverview}
         onClose={() => setShowOverview(false)}
-        description={description}
+        description={doctor?.overview || ""}
         setDescription={setDescription}
         onSave={handleSaveDescription}
       />

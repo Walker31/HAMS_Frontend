@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import defImage from "/default.avif";
 import LibraryBooksSharpIcon from '@mui/icons-material/LibraryBooksSharp';
-
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import InsightsIcon from '@mui/icons-material/Insights';
@@ -10,11 +9,22 @@ import LogoutIcon from '@mui/icons-material/Logout';
 const Sidebar = ({ doctor, sidebarCollapsed, setSidebarCollapsed, handleOverviewClick, handleLogout }) => {
   const navigate = useNavigate();
 
+  const handleNavigation = (label, path, action) => {
+    if (action) {
+      action(); // Open modal (Overview)
+    } else if (path === "/dashboard/slots") {
+      // Navigate to slots with doctorId in state
+      navigate(path, { state: { doctorId: doctor?.doctorId } });
+    } else {
+      navigate(path); // Regular navigation
+    }
+  };
+
   const navItems = [
     { label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
     { label: "Appointments", icon: <LibraryBooksSharpIcon />, path: "/dashboard/appointments" },
     { label: "Slots", icon: <CalendarTodayIcon />, path: "/dashboard/slots" },
-    { label: "Overview", icon: <InsightsIcon />, action: handleOverviewClick },
+    { label: "Overview", icon: <InsightsIcon />, action: handleOverviewClick }, // triggers modal
   ];
 
   return (
@@ -23,7 +33,7 @@ const Sidebar = ({ doctor, sidebarCollapsed, setSidebarCollapsed, handleOverview
         h-screen
         ${sidebarCollapsed ? "w-0 overflow-hidden" : "w-64"}
       `}
-      style={{ minHeight: "100vh" }} // fallback for non-Tailwind environments
+      style={{ minHeight: "100vh" }}
     >
       {!sidebarCollapsed && (
         <>
@@ -42,15 +52,15 @@ const Sidebar = ({ doctor, sidebarCollapsed, setSidebarCollapsed, handleOverview
             {navItems.map(({ label, icon, path, action }) => (
               <div
                 key={label}
-                className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-800 text-white transition-all"
-                onClick={() => (path ? navigate(path) : action())}
+                className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-800 text-white transition-all cursor-pointer"
+                onClick={() => handleNavigation(label, path, action)}
               >
                 {icon}
                 <span>{label}</span>
               </div>
             ))}
             <div
-              className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-800 text-yellow-400 transition-all"
+              className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-800 text-yellow-400 transition-all cursor-pointer"
               onClick={handleLogout}
             >
               <LogoutIcon />

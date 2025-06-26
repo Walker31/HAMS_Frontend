@@ -4,19 +4,14 @@ import 'react-calendar/dist/Calendar.css';
 import { Form, Button, Badge, Card } from 'react-bootstrap';
 import { generateTimeSlots } from './Slotgenerator';
 import axios from 'axios';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const CalendarWithSlots = () => {
   const location = useLocation();
-
-  // ✅ Robust doctorId extraction
-  const doctorId =
-    location.state?.doctor?.doctorId ||
-    location.state?.doctorId ||
-    localStorage.getItem("doctorId");
-
+  const navigate = useNavigate();
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
+  const [doctorId, setDoctorId] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [interval, setInterval] = useState(15);
   const [slots, setSlots] = useState([]);
@@ -24,22 +19,23 @@ const CalendarWithSlots = () => {
   const [savedSlots, setSavedSlots] = useState({});
   const [bookedSlots, setBookedSlots] = useState([]);
 
-  const formatLocalDate = (dateObj) => {
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
-    const day = String(dateObj.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
   useEffect(() => {
-    if (!doctorId) {
+    const idFromRoute = location.state?.doctor?.doctorId || location.state?.doctorId;
+    const idFromStorage = localStorage.getItem("doctorId");
+    const finalDoctorId = idFromRoute || idFromStorage;
+
+    if (!finalDoctorId) {
       console.error("Doctor ID not found in location or localStorage.");
+      alert("Doctor ID missing. Please go back and try again.");
+      navigate(-1);
       return;
     }
 
+    setDoctorId(finalDoctorId);
+
     const fetchSavedSlots = async () => {
       try {
-        const res = await axios.get(`${base_url}/doctors/${doctorId}/slots`);
+        const res = await axios.get(`${base_url}/doctors/${finalDoctorId}/slots`);
         if (res.status === 200) {
           setSavedSlots(res.data.availableSlots || {});
         }
@@ -49,7 +45,7 @@ const CalendarWithSlots = () => {
     };
 
     fetchSavedSlots();
-  }, [doctorId]);
+  }, [location.state]);
 
   const fetchBookedSlots = async (dateKey) => {
     try {
@@ -60,6 +56,13 @@ const CalendarWithSlots = () => {
     } catch (error) {
       console.error("Error fetching booked slots:", error.response?.data || error.message);
     }
+  };
+
+  const formatLocalDate = (dateObj) => {
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+    const day = String(dateObj.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
   };
 
   const handleDateChange = (date) => {
@@ -185,8 +188,7 @@ const CalendarWithSlots = () => {
               {Object.entries(savedSlots).map(([date, slots]) => (
                 <Card key={date} className="mb-2 border-0 shadow-sm">
                   <Card.Body>
-                    <strong>{date}</strong>:{" "}
-                    {slots.map((s, i) => (
+                    <strong>{date}</strong>: {slots.map((s, i) => (
                       <Badge bg="info" text="dark" className="me-2 mb-2 p-2" key={i}>
                         {s}
                       </Badge>
