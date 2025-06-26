@@ -15,14 +15,12 @@ export const DoctorDescription = () => {
   const location = useLocation();
   const { doctor, hname, reason } = location.state || {};
   const rawPatientId = localStorage.getItem("patientId");
-  const patientId = rawPatientId && rawPatientId !== "undefined" ? rawPatientId : "HAMS_ADMIN";
+  const patientId =
+    rawPatientId && rawPatientId !== "undefined" ? rawPatientId : "HAMS_ADMIN";
 
-
-  // ✅ Extract reliable doctorId
   const doctorId =
     doctor?.doctorId || doctor?._id || location.state?.doctorId || null;
 
-  // ✅ Fetch doctor profile
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
@@ -37,7 +35,6 @@ export const DoctorDescription = () => {
     if (doctorId) fetchDoctor();
   }, [doctorId]);
 
-  // ✅ Fetch available slots for selected date
   useEffect(() => {
     const fetchSlots = async () => {
       if (!selectedDate || !doctorId) return;
@@ -79,14 +76,16 @@ export const DoctorDescription = () => {
         slotNumber: selectedSlot,
         reason: reason || "General Checkup",
         payStatus: isOn ? "Paid" : "Unpaid",
-        MeetLink: "Link",
-        consultStatus: isSet ? "Online" : "Offline",
+        consultStatus: isSet ? "Online" : "Offline", // ✅ Important field
       };
+
+      console.log("Sending payload:", payload); // 🔍 Debug
 
       const response = await axios.post(
         "http://localhost:3000/appointments/book",
         payload
       );
+
       if (response.status === 201) {
         alert("Appointment booked successfully!");
         navigate("/dashboard");
@@ -174,19 +173,23 @@ export const DoctorDescription = () => {
 
             <div className="d-flex align-items-center mt-2.5 mb-2.5">
               <p className="m-0 pr-5">Mode of Consulting :</p>
-              <div
-                onClick={() => setIsSet((prev) => !prev)}
-                className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer ${
-                  isSet ? "bg-success" : "bg-secondary"
-                }`}
-                style={{ minWidth: "40px" }}
-              >
-                <div
-                  className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
-                    isSet ? "translate-x-6" : ""
-                  }`}
-                ></div>
+              <div className="form-check form-switch">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="consultSwitch"
+                  checked={isSet}
+                  onChange={() => setIsSet(!isSet)}
+                />
+                <label
+                  className="form-check-label text-white"
+                  htmlFor="consultSwitch"
+                >
+                  {isSet ? "Online" : "Offline"}
+                </label>
               </div>
+
               <span className="ms-2">{isSet ? "Online" : "Offline"}</span>
             </div>
 
