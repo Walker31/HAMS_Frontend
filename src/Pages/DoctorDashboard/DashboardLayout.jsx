@@ -8,7 +8,7 @@ import { useAuth } from "../../contexts/AuthContext";
 
 const DashboardLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [doctor, setDoctor] = useState(null);
+  const [doctor, setDoctor] = useState({});
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -25,6 +25,7 @@ const DashboardLayout = () => {
         headers: { Authorization: `Bearer ${newToken}` },
       });
         setDoctor(res.data.doctor);
+        console.log(doctor)
       } catch (error) {
         console.error("Error fetching doctor profile:", error);
       }

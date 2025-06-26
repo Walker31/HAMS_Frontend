@@ -8,19 +8,22 @@ import HistoryList from "./components/historyList";
 import { useAuth } from "../../contexts/AuthContext";
 import JitsiMeetModal from "../../Meeting/JitsiMeetModal";
 
+const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 const PatientDashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [history, setHistory] = useState([]);
   const [jitsiRoom, setJitsiRoom] = useState("");
   const [showJitsi, setShowJitsi] = useState(false);
+
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   const toggleSidebar = () => setCollapsed(!collapsed);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    logout?.(); // call logout if it's available in the AuthContext
     navigate("/", { replace: true });
     alert("Logged out successfully");
   };
@@ -39,12 +42,22 @@ const PatientDashboard = () => {
     setShowJitsi(false);
   };
 
+  const fetchDoctorDetails = async (doctorId) => {
+    try {
+      const res = await axios.get(`${base_url}/doctors/${doctorId}`);
+      return res.data?.name || "Unknown Doctor";
+    } catch (err) {
+      console.error("Failed to fetch doctor details", err);
+      return "Unknown Doctor";
+    }
+  };
+
   const fetchAppointments = useCallback(async () => {
     if (!user?.id) return;
 
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`http://localhost:3000/appointments/patient`, {
+      const res = await axios.get(`${base_url}/appointments/patient`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -75,7 +88,7 @@ const PatientDashboard = () => {
     try {
       const token = localStorage.getItem("token");
       await axios.put(
-        `http://localhost:3000/appointments/cancel`,
+        `${base_url}/appointments/cancel`,
         { appointmentId },
         { headers: { Authorization: `Bearer ${token}` } }
       );

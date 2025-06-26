@@ -8,6 +8,7 @@ export const createDoctor = async (doctorData,login) => {
   const res = await axios.post(`${base_url}/doctors/signup`, doctorData,  {
   headers: { withCredentials: true,
 }});
+  login(res.data.token);
   return res.data;
 };
 
@@ -24,6 +25,7 @@ export const createPatient = async (patientData,login) => {
   const res = await axios.post(`${base_url}/patients/signup`, patientData, {
     withCredentials: true,
   });
+  login(res.data.token);
   return res.data;
 };
 
@@ -31,6 +33,7 @@ export const createHospital = async (hospitalData,login) => {
   const res = await axios.post(`${base_url}/hospitals/signup`, hospitalData, {
     withCredentials: true,
   });
+  login(res.data.token);
   return res.data;
 };
 
@@ -38,5 +41,6 @@ export const loginHospital = async (hospitalData) => {
   const res = await axios.post(`${base_url}/hospitals/login`, hospitalData, {
     withCredentials: true,
   });
+  login(res.data.token);
   return res.data;
 };
