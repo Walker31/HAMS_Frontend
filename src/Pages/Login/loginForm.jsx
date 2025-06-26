@@ -39,20 +39,9 @@ export default function LoginForm({
               onChange={handleChange}
             />
         </div>     
-        <div className="flex justify-between items-center">
-          <FormControlLabel
-            control={
-              <Checkbox
-                name="remember"
-                checked={formData.remember || false}
-                onChange={handleChange}
-                color="primary"
-              />
-            }
-            label="Remember me"
-          />
+        <div className="flex justify-end items-center">
           <Button variant="text" size="small" className="text-blue-600 normal-case">
-            Forgot Password?
+           <div className="text-xs">Forgot Password?</div>
           </Button>
         </div>
 
