@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./components/sidebar";
@@ -13,7 +13,7 @@ const PatientDashboard = () => {
   const [collapsed, setCollapsed] = useState(true);
   const [appointments, setAppointments] = useState([]);
   const [history, setHistory] = useState([]);
-  const {logout}=useAuth();
+  const {logout,user}=useAuth();
   const navigate = useNavigate();
 
   const toggleSidebar = () => setCollapsed(!collapsed);
@@ -27,7 +27,7 @@ const PatientDashboard = () => {
 
   const fetchDoctorDetails = async (doctorId) => {
     try {
-      const res = await axios.get(`http://localhost:3000/doctors/${doctorId}`);
+      const res = await axios.get(`${base_url}/doctors/${doctorId}`);
       return res.data?.name || "Unknown Doctor";
     } catch {
       return "Unknown Doctor";
