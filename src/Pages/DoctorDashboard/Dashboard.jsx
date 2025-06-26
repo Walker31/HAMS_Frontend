@@ -3,6 +3,7 @@ import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
 import DoctorProfileCard from './components/DoctorProfileCard';
 import dp from '../../assets/dp.jpg';
+import VideocamIcon from '@mui/icons-material/Videocam';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
@@ -17,6 +18,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line, Doughnut } from "react-chartjs-2";
+import IconButton from "@mui/material/IconButton";
 // import your modals if needed
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
@@ -241,9 +243,10 @@ const DoctorDashboard = () => {
   console.log(doctor)
 
   return (
+    <div>
     <div className="flex flex-col lg:flex-row rounded-2xl">
 
-      <div className="bg-[#fafbfc] w-full lg:w-3/4 min-h-screen p-8">
+      <div className="bg-[#fafbfc] w-full lg:w-3/4 p-8">
       {/* Header */}
       <div className="flex justify-between items-center mb-6">
         <div className="text-3xl font-bold text-gray-900">Dashboard</div>
@@ -352,20 +355,28 @@ const DoctorDashboard = () => {
         </div>
       </div>
 
-      {/* Today's Appointments Table */}
+      
+    </div>
+    <div className="w-full lg:w-1/4 mt-6 lg:mt-0">
+      <DoctorProfileCard doctor={doctor} />
+    </div>
+      
+    </div>
+    {/* Today's Appointments Table */}
       <div className="bg-white rounded-xl shadow border border-gray-100 p-6 overflow-x-auto">
         <div className="text-xl font-semibold text-gray-900 mb-4">Today's Appointments</div>
         {/* Table Header */}
-        <div className="grid min-w-[600px] grid-cols-5 gap-4 text-gray-500 text-sm font-medium py-2 border-b">
-          <div>PATIENT</div>
+        <div className="grid min-w-[600px] grid-cols-6 gap-4 text-gray-500 text-sm font-medium py-2 border-b">
+          <div >PATIENT</div>
           <div>REASON</div>
           <div>DATE</div>
           <div>TIME</div>
-          <div>ACTION</div>
+          <div>MEET LINK</div>
+          <div className="text-center">ACTION</div>
         </div>
         {/* Appointment Rows */}
         {todayAppointments.map((appt, i) => (
-          <div key={i} className="grid min-w-[600px] grid-cols-5 gap-4 items-center py-3 border-b">
+          <div key={i} className="grid min-w-[600px] grid-cols-6 gap-4 items-center py-3 border-b">
             <div className="flex items-center gap-2 text-gray-800">
               <img src={appt.avatar || dp} alt={appt.name} className="w-8 h-8 rounded-full" />
               {appt.patientId}
@@ -373,44 +384,44 @@ const DoctorDashboard = () => {
             <div className="text-gray-700">{appt.reason}</div>
             <div className="text-gray-700">{appt.date}</div>
             <div className="text-gray-700">{appt.slotNumber}</div>
-            <div className="gap-2 flex">
-              <span
-                className={`text-xs font-semibold px-4 py-1 rounded-full ${
-                  appt.status === 'active'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-200 text-gray-500'
-                }`}
+            {appt.consultStatus === "Online" && appt.MeetLink && (
+                <IconButton
+                  component="a"
+                  href={appt.MeetLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{
+                    px: 2,bgcolor: 'blue.400',borderRadius: 2,transition: 'background-color 0.3s',width: 'max-content','&:hover': {bgcolor: 'blue.800'}
+                  }}
+                >
+                  <VideocamIcon className="mx-2 text-blue-600" />
+                </IconButton>
+              )}
+            <div className="flex items-center gap-2">
+              <button
+                className=" px-2 rounded bg-green-500 text-white hover:bg-green-600 transition"
+                onClick={() => handleStatusChange(i, "Done")}
               >
                 Done
-              </span>
-              <span
-                className={`text-xs font-semibold px-4 py-1 rounded-full ${
-                  appt.status === 'active'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-200 text-gray-500'
-                }`}
+              </button>
+              <button
+                className="px-2 rounded bg-red-500 text-white hover:bg-red-600 transition"
+                onClick={() => handleStatusChange(i, "Rejected")}
               >
                 Cancel
-              </span>
-              <span
-                className={`text-xs font-semibold px-4 py-1 rounded-full ${
-                  appt.status === 'active'
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-gray-200 text-gray-500'
-                }`}
+              </button>
+              <button
+                className="px-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition"
+                onClick={() => handleStatusChange(i, "Rescheduled")}
               >
-                Reshedule
-              </span>
+                Reschedule
+              </button>
+              
             </div>
           </div>
         ))}
       </div>
-    </div>
-    <div className="w-full lg:w-1/4 mt-6 lg:mt-0">
-      <DoctorProfileCard doctor={doctor} />
-    </div>
-      
-    </div>
+       </div>
   );
 };
 
