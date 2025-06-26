@@ -20,12 +20,14 @@ const DoctorProfileCard = ({ doctor }) => {
         time: "14:00 - 15:00",
         },
     ];
-
+console.log(doctor)
   return (
     <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm border border-gray-200">
       {/* Profile */}
       <div className="flex flex-col items-center mb-6">
-        <img src={doctor.photo || dp} alt="Doctor" className="rounded-full w-20 h-20 border-2 border-gray-300" />
+        {doctor.photo?.url && (
+            <img src={doctor.photo.url} alt="Doctor" className="rounded-full w-20 h-20 border-2 border-gray-300" />
+          )}
         <div className="mt-4 text-lg font-bold text-gray-900">{doctor.name}</div>
         <div className="text-sm text-gray-500">{doctor.specialty}</div>
       </div>

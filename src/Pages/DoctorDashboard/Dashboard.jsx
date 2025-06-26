@@ -238,6 +238,7 @@ const DoctorDashboard = () => {
       alert("Failed to save overview");
     }
   };
+  console.log(doctor)
 
   return (
     <div className="flex flex-col lg:flex-row rounded-2xl">
