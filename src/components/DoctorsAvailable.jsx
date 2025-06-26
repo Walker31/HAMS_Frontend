@@ -66,7 +66,7 @@ const DoctorsAvailable = () => {
             <div className="col-md-4 mb-4" key={doc.doctorId || doc._id}>
               <div className="card p-3 shadow-sm h-100">
                 <img
-                  src={doc.photo || "/default.avif"}
+                  src={doc.photo.url || "/default.avif"}
                   className="card-img-top rounded"
                   alt={doc.name}
                   style={{ height: "200px", objectFit: "cover" }}
