@@ -72,7 +72,7 @@ export const DoctorDescription = () => {
         date: selectedDate,
         patientId,
         doctorId: doctorId || "dummy-doctor-id",
-        clinicId: hname?.hosp || "Unknown Clinic",
+        hospitalId: hname?.hosp || "Unknown Clinic",
         slotNumber: selectedSlot,
         reason: reason || "General Checkup",
         payStatus: isOn ? "Paid" : "Unpaid",

@@ -2,7 +2,7 @@ import { FaFilePrescription, FaCalendarAlt, FaSignOutAlt, FaBars } from "react-i
 import SidebarItem from "./sidebarItem";
 
 const Sidebar = ({ collapsed, toggleSidebar, handleLogout }) => (
-  <div className={`h-full ${collapsed ? "w-20" : "w-64"} bg-white shadow-md flex flex-col py-6 transition-all duration-300`}>
+  <div className={` ${collapsed ? "w-20" : "w-64"} bg-white shadow-md flex flex-col py-6 transition-all duration-300`}>
     <button onClick={toggleSidebar} className="mb-6 self-center">
       <FaBars size={24} />
     </button>
