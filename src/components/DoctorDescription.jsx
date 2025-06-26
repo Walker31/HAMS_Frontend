@@ -9,26 +9,23 @@ export const DoctorDescription = () => {
   const [isOn, setIsOn] = useState(false);
   const [isSet, setIsSet] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
-  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   const [doctorDetails, setDoctorDetails] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
   const { doctor, hname, reason } = location.state || {};
   const rawPatientId = localStorage.getItem("patientId");
-  const patientId = rawPatientId && rawPatientId !== "undefined" ? rawPatientId : "HAMS_ADMIN";
+  const patientId =
+    rawPatientId && rawPatientId !== "undefined" ? rawPatientId : "HAMS_ADMIN";
 
-
-  // ✅ Extract reliable doctorId
   const doctorId =
     doctor?.doctorId || doctor?._id || location.state?.doctorId || null;
 
-  // ✅ Fetch doctor profile
   useEffect(() => {
     const fetchDoctor = async () => {
       try {
         const res = await axios.get(
-          `${base_url}/doctors/${doctorId}/profile`
+          `http://localhost:3000/doctors/${doctorId}/profile`
         );
         setDoctorDetails(res.data.doctor);
       } catch (error) {
@@ -38,13 +35,12 @@ export const DoctorDescription = () => {
     if (doctorId) fetchDoctor();
   }, [doctorId]);
 
-  // ✅ Fetch available slots for selected date
   useEffect(() => {
     const fetchSlots = async () => {
       if (!selectedDate || !doctorId) return;
       try {
         const res = await axios.get(
-          `${base_url}/doctors/${doctorId}/slots`
+          `http://localhost:3000/doctors/${doctorId}/slots`
         );
         const allSlots = res.data?.availableSlots || {};
         const dateKey = new Date(selectedDate).toISOString().split("T")[0];
@@ -76,18 +72,20 @@ export const DoctorDescription = () => {
         date: selectedDate,
         patientId,
         doctorId: doctorId || "dummy-doctor-id",
-        clinicId: hname?.hosp || "Unknown Clinic",
+        hospitalId: hname?.hosp || "Unknown Clinic",
         slotNumber: selectedSlot,
         reason: reason || "General Checkup",
         payStatus: isOn ? "Paid" : "Unpaid",
-        MeetLink: "Link",
-        consultStatus: isSet ? "Online" : "Offline",
+        consultStatus: isSet ? "Online" : "Offline", // ✅ Important field
       };
 
+      console.log("Sending payload:", payload); // 🔍 Debug
+
       const response = await axios.post(
-        `${base_url}/appointments/book`,
+        "http://localhost:3000/appointments/book",
         payload
       );
+
       if (response.status === 201) {
         alert("Appointment booked successfully!");
         navigate("/dashboard");
@@ -105,7 +103,7 @@ export const DoctorDescription = () => {
         <div className="col-md-8">
           <div className="d-flex align-items-start gap-4">
             <img
-              src={doctorDetails?.photo || "/default.avif"}
+              src={doctorDetails?.photo || "/default-doctor.jpg"}
               alt="Doctor"
               className="rounded-full"
               style={{ width: "200px", height: "200px", objectFit: "cover" }}
@@ -175,52 +173,47 @@ export const DoctorDescription = () => {
 
             <div className="d-flex align-items-center mt-2.5 mb-2.5">
               <p className="m-0 pr-5">Mode of Consulting :</p>
-              <button
-                type="button"
-                role="switch"
-                aria-pressed={isSet}
-                onClick={() => setIsSet((prev) => !prev)}
-                className={`relative inline-flex h-6 w-12 items-center !rounded-full transition-colors duration-300 focus:outline-none ${
-                  isSet ? "bg-success" : "bg-secondary"
-                }`}
-                style={{ minWidth: "48px" }}
-              >
-                <span
-                  className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-300 ${
-                    isSet ? "translate-x-6" : "translate-x-1"
-                  }`}
+              <div className="form-check form-switch">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  id="consultSwitch"
+                  checked={isSet}
+                  onChange={() => setIsSet(!isSet)}
                 />
-              </button>
-              <span className="ms-2">{isSet ? "Online" : "Offline"}</span>
+                <label
+                  className="form-check-label text-white"
+                  htmlFor="consultSwitch"
+                >
+                  {isSet ? "Online" : "Offline"}
+                </label>
+              </div>
 
+              <span className="ms-2">{isSet ? "Online" : "Offline"}</span>
             </div>
 
             <div className="d-flex align-items-center mt-2.5 mb-2.5">
               <p className="m-0 pr-5">Payment done :</p>
-              <button
-                type="button"
-                role="switch"
-                aria-pressed={isOn}
+              <div
                 onClick={() => setIsOn((prev) => !prev)}
-                className={`relative inline-flex h-6 w-12 items-center !rounded-full transition-colors duration-300 focus:outline-none ${
+                className={`w-10 h-5 flex items-center rounded-full p-1 cursor-pointer ${
                   isOn ? "bg-success" : "bg-secondary"
                 }`}
-                style={{ minWidth: "48px" }}
+                style={{ minWidth: "40px" }}
               >
-                <span
-                  className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform duration-300 ${
-                    isOn ? "translate-x-6" : "translate-x-1"
+                <div
+                  className={`bg-white w-5 h-5 rounded-full shadow-md transform duration-300 ease-in-out ${
+                    isOn ? "translate-x-6" : ""
                   }`}
-                />
-              </button>
+                ></div>
+              </div>
               <span className="ms-2">{isOn ? "Paid" : "Unpaid"}</span>
             </div>
 
             <button
               className="btn btn-outline-primary w-100"
               onClick={handleBookNow}
-              disabled={!selectedSlot} 
-              title={!selectedSlot ? "Please select a slot" : ""}
             >
               BOOK APPOINTMENT
             </button>

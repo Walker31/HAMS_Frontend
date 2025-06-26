@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "./components/sidebar";
@@ -6,49 +6,66 @@ import DashboardHeader from "./components/header";
 import AppointmentList from "./components/appointmentList";
 import HistoryList from "./components/historyList";
 import { useAuth } from "../../contexts/AuthContext";
+import JitsiMeetModal from "../../Meeting/JitsiMeetModal";
 
+const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const PatientDashboard = () => {
-  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed, setCollapsed] = useState(false);
   const [appointments, setAppointments] = useState([]);
   const [history, setHistory] = useState([]);
-  const {logout}=useAuth();
+  const [jitsiRoom, setJitsiRoom] = useState("");
+  const [showJitsi, setShowJitsi] = useState(false);
+
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   const toggleSidebar = () => setCollapsed(!collapsed);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    logout();
+    logout?.();
     navigate("/", { replace: true });
     alert("Logged out successfully");
   };
 
-  const fetchDoctorDetails = async (doctorId) => {
-    try {
-      const res = await axios.get(`http://localhost:3000/doctors/${doctorId}`);
-      return res.data?.name || "Unknown Doctor";
-    } catch {
-      return "Unknown Doctor";
+  const handleOpenJitsi = (meetLink) => {
+    const roomName = meetLink?.split("https://meet.jit.si/")[1];
+    if (!roomName || roomName === "Link") {
+      alert("Invalid or missing Meet link for this appointment.");
+      return;
     }
-  }
+    setJitsiRoom(roomName);
+    setShowJitsi(true);
+  };
+
+  const handleCloseJitsi = () => {
+    setShowJitsi(false);
+  };
 
   const fetchAppointments = useCallback(async () => {
     if (!user?.id) return;
-    const today = new Date().toISOString().split("T")[0];
 
     try {
-      const todayURL = `${base_url}/appointments/pending/${today}/patient?patientId=${user.id}`;
-      const prevURL = `${base_url}/appointments/previous?patientId=${user.id}`;
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${base_url}/appointments/patient`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      const [todayRes, prevRes] = await Promise.all([
-        axios.get(todayURL),
-        axios.get(prevURL),
-      ]);
+      const todayStr = new Date().toISOString().split("T")[0];
 
-      setAppointments(todayRes.data || []);
-      setHistory(prevRes.data || []);
+      const upcoming = res.data.filter((a) => {
+        const apptDate = new Date(a.date).toISOString().split("T")[0];
+        return apptDate === todayStr && a.appStatus === "Pending";
+      });
+
+      const past = res.data.filter((a) => {
+        const apptDate = new Date(a.date).toISOString().split("T")[0];
+        return apptDate < todayStr && ["Completed", "Rejected", "Rescheduled"].includes(a.appStatus);
+      });
+
+      setAppointments(upcoming);
+      setHistory(past);
     } catch (err) {
       console.error("Error fetching appointments:", err);
     }
@@ -60,7 +77,12 @@ const PatientDashboard = () => {
 
   const handleCancel = async (appointmentId) => {
     try {
-      await axios.put(`${base_url}/appointments/cancel`, { appointmentId });
+      const token = localStorage.getItem("token");
+      await axios.put(
+        `${base_url}/appointments/cancel`,
+        { appointmentId },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
       alert("Appointment Cancelled");
       fetchAppointments();
     } catch (err) {
@@ -69,14 +91,38 @@ const PatientDashboard = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-orange-50">
-      <DashboardHeader />
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar collapsed={collapsed} toggleSidebar={toggleSidebar} handleLogout={handleLogout} />
-        <main className="flex-1 p-6 overflow-y-auto">
-          <AppointmentList appointments={appointments} onCancel={handleCancel} />
-          <HistoryList history={history} />
-        </main>
+    <div className="flex bg-[#FFF1F4] min-h-screen overflow-hidden">
+      <Sidebar
+        collapsed={collapsed}
+        toggleSidebar={toggleSidebar}
+        handleLogout={handleLogout}
+      />
+      <div className="flex flex-col flex-1 overflow-y-auto p-6 space-y-6">
+        <DashboardHeader name={user?.name || "Patient"} />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <AppointmentList
+              appointments={appointments}
+              onCancel={handleCancel}
+              handleOpenJitsi={handleOpenJitsi}
+            />
+            <HistoryList history={history} />
+          </div>
+          <div className="bg-white rounded-2xl p-6 shadow-md">
+            <h3 className="text-lg font-bold mb-4">Welcome back</h3>
+            <div className="text-sm text-gray-600">
+              <p><strong>Name:</strong> {user?.name || "N/A"}</p>
+              <p><strong>Age:</strong> {user?.age || "N/A"}</p>
+              <p><strong>Weight:</strong> {user?.weight || "N/A"}</p>
+              <p><strong>Height:</strong> {user?.height || "N/A"}</p>
+            </div>
+          </div>
+        </div>
+        <JitsiMeetModal
+          show={showJitsi}
+          onHide={handleCloseJitsi}
+          roomName={jitsiRoom}
+        />
       </div>
     </div>
   );

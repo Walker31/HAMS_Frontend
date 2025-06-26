@@ -7,6 +7,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import RegisterForm from "../Pages/Login/registerForm";
 import dp from '../assets/dp.jpg';
 import FloatingBar from "./FloatingBar";
+import { useAuth } from '../contexts/AuthContext';
 import { useFloatingBarStore } from '../store/floatingBarStore';
 
 
@@ -22,6 +23,7 @@ function classNames(...classes) {
 }
 
 const Navbar = ({ location, setLocation }) => {
+  const {user} = useAuth();
   const [selected, setSelected] = useState("Health");
   const [open, setOpen] = useState(false);
   const [showRegister, setShowRegister] = useState(false);
@@ -85,16 +87,27 @@ const Navbar = ({ location, setLocation }) => {
 
           {/* Auth / Avatar */}
           {isLoggedIn ? (
-            <div
-              className="rounded-full h-10 w-10 bg-gray-800 overflow-hidden flex items-center justify-center cursor-pointer"
-              onClick={toggle}
-            >
+
+            <div className="flex gap-2 items-center cursor-pointer" onClick={toggle}>
+              <div
+              className="rounded-full h-10 w-10 bg-gray-800 overflow-hidden flex items-center justify-center"
+              
+            > 
               <img
                 src={dp}
                 alt="User profile"
                 className="object-cover h-full w-full"
               />
             </div>
+            <div className="flex flex-col items-start">
+              <div className="text-lg font-semibold text-gray-900">{user.name}</div>
+              <div className="text-sm font-medium text-gray-500 tracking-wide">
+                {user.role.toUpperCase()}
+              </div>
+            </div>
+
+            </div>
+           
           ) : (
             <div
               className="rounded-full bg-[#10217D] hover:bg-[#1a2bb8] transition cursor-pointer"
