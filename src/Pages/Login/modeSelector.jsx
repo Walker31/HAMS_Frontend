@@ -78,7 +78,7 @@ export default function ModeSelector({ handleSubmit }) {
             {/* Patient */}
             <button
               onClick={() => handleSubmit(null, null, mode, "patient")}
-              className="w-full py-3 rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition duration-300 shadow-sm"
+              className="w-full rounded-md py-3 font-semibold bg-blue-600 text-white hover:bg-blue-700 transition duration-300 shadow-sm"
             >
               Patient
             </button>

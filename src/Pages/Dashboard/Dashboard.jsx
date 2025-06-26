@@ -4,7 +4,6 @@ import axios from "axios";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { IconButton } from "@mui/material";
 import RefreshIcon from '@mui/icons-material/Refresh';
-import axios from "axios";
 import {
   OverviewModal,
   RejectModal,
@@ -69,12 +68,14 @@ const DoctorDashboard = () => {
 
     try {
       const today = new Date().toISOString().split("T")[0];
+      const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${user.id}`;
+      const prevURL = `${base_url}/appointments/previous?doctorId=${user.id}`;
+
       const [todayRes, prevRes] = await Promise.all([
         axios.get(todayURL),
         axios.get(prevURL),
       ]);
 
-      console.log("Fetched today's appointments:", todayRes.data);
       setTodayAppointments(todayRes.data || []);
       setPreviousAppointments(prevRes.data || []);
     } catch (err) {
@@ -89,11 +90,18 @@ const DoctorDashboard = () => {
   // Appointment status update
   const updateAppointmentStatus = async (apptId, status, reason = "", prescriptionText = "") => {
     try {
-      await axios.put(`${base_url}/appointments/update-status/${appointmentId}`, {
+      const url = `${base_url}/appointments/update-status/${appointmentId}`;
+      const payload = {
         appStatus: status,
         rejectionReason: reason,
-        prescription,
-      });
+        prescription: prescriptionText,
+      };
+
+      console.log("PUT Request to:", url);
+      console.log("Payload:", JSON.stringify(payload, null, 2));
+
+      await axios.put(url, payload);
+      console.log(response);
     } catch (err) {
       console.error("Failed to update status:", err);
     }

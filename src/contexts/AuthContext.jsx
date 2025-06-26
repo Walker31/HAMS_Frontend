@@ -66,7 +66,6 @@ export function AuthProvider({ children }) {
     login,
     logout,
   };
-  console.log(value);
 
   if (loading) return <div>Loading... Please wait</div>;
 
