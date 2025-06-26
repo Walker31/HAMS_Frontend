@@ -86,6 +86,7 @@ export default function DoctorRegisterForm({
             </div>
 
             <input
+              name="photo"
               type="file"
               accept="image/*"
               onChange={handleFileChange}
