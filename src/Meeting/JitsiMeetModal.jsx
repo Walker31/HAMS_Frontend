@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Modal, Button } from "react-bootstrap";
 
 const JitsiMeetModal = ({ show, onHide, roomName }) => {

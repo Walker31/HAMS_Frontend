@@ -29,14 +29,13 @@ const DoctorsAvailable = () => {
         setDoctors(res.data || []);
         setError("");
       })
-      .catch((err) => {
+      .catch(() => {
         setError("Failed to fetch doctors. Please try again.");
         setDoctors([]);
       })
       .finally(() => setLoading(false));
   }, [base_url]);
 
-  // Filter only by specialization
   const filteredDoctors = useMemo(() => {
     if (!specialization) return doctors;
     return doctors.filter(
@@ -63,10 +62,10 @@ const DoctorsAvailable = () => {
       {!loading && !error && (
         <div className="row">
           {filteredDoctors.map((doc) => (
-            <div className="col-md-4 mb-4" key={doc.doctorId || doc._id}>
+            <div className="col-md-4 mb-4" key={doc._id}>
               <div className="card p-3 shadow-sm h-100">
                 <img
-                  src={doc.photo || "/default.avif"}
+                  src={doc.photo?.url || "/default.avif"}
                   className="card-img-top rounded"
                   alt={doc.name}
                   style={{ height: "200px", objectFit: "cover" }}
@@ -83,7 +82,12 @@ const DoctorsAvailable = () => {
                         `/${(hname || "hospital").split(" ")[0]}/doctors-available/DoctorDescription`,
                         {
                           state: {
-                            doctor: doc,
+                            doctor: {
+                              doctorId: doc._id,
+                              name: doc.name,
+                              photo: doc.photo,
+                              specialization: doc.specialization,
+                            },
                             hname: { hosp: hname },
                             reason: reason || "General Checkup",
                           },

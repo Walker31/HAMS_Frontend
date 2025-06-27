@@ -2,37 +2,62 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 
-export const DoctorDescription = () => {
+const DoctorDescription = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedSlot, setSelectedSlot] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const [isOn, setIsOn] = useState(false);
   const [isSet, setIsSet] = useState(false);
   const [availableSlots, setAvailableSlots] = useState([]);
+  const [bookedSlots, setBookedSlots] = useState([]);
   const [doctorDetails, setDoctorDetails] = useState(null);
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { doctor, hname, reason } = location.state || {};
+  const { state } = location;
+  const { hname, reason } = state || {};
+
+  // Extract doctor object safely
+  const doctor = state?.doctor;
+  const doctorId =
+    doctor?.doctorId ||
+    doctor?._id ||
+    state?.doctorId ||
+    localStorage.getItem("doctorId");
+
   const rawPatientId = localStorage.getItem("patientId");
   const patientId =
     rawPatientId && rawPatientId !== "undefined" ? rawPatientId : "HAMS_ADMIN";
 
-  const doctorId =
-    doctor?.doctorId || doctor?._id || location.state?.doctorId || null;
+  const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
+  useEffect(() => {
+    if (doctorId) {
+      localStorage.setItem("doctorId", doctorId);
+    }
+  }, [doctorId]);
+
+  useEffect(() => {
+    console.log("DoctorDescription → doctorId:", doctorId);
+    console.log("DoctorDescription → location.state:", state);
+  }, []);
 
   useEffect(() => {
     const fetchDoctor = async () => {
+      if (!doctorId) {
+        console.warn("❌ Invalid or missing doctor ID");
+        return;
+      }
+
       try {
-        const res = await axios.get(
-          `http://localhost:3000/doctors/${doctorId}/profile`
-        );
+        const res = await axios.get(`${base_url}/doctors/${doctorId}/profile`);
         setDoctorDetails(res.data.doctor);
       } catch (error) {
         console.error("Error fetching doctor details:", error);
       }
     };
-    if (doctorId) fetchDoctor();
+
+    fetchDoctor();
   }, [doctorId]);
 
   useEffect(() => {
@@ -40,9 +65,7 @@ export const DoctorDescription = () => {
       if (!selectedDate || !doctorId) return;
 
       try {
-        const res = await axios.get(
-          `http://localhost:3000/doctors/${doctorId}/slots`
-        );
+        const res = await axios.get(`${base_url}/doctors/${doctorId}/slots`);
         const allSlots = res.data?.availableSlots || {};
         const dateKey = new Date(selectedDate).toISOString().split("T")[0];
         const slotsForDate = allSlots[dateKey] || [];
@@ -60,7 +83,9 @@ export const DoctorDescription = () => {
 
       try {
         const res = await axios.get(
-          `${base_url}/doctors/${doctorId}/booked-slots?date=${encodeURIComponent(dateKey)}`
+          `${base_url}/doctors/${doctorId}/booked-slots?date=${encodeURIComponent(
+            dateKey
+          )}`
         );
         setBookedSlots(res.data.bookedSlots || []);
       } catch (error) {
@@ -98,13 +123,13 @@ export const DoctorDescription = () => {
         slotNumber: selectedSlot,
         reason: reason || "General Checkup",
         payStatus: isOn ? "Paid" : "Unpaid",
-        consultStatus: isSet ? "Online" : "Offline", // ✅ Important field
+        consultStatus: isSet ? "Online" : "Offline",
       };
 
-      console.log("Sending payload:", payload); // 🔍 Debug
+      console.log("Sending payload:", payload);
 
       const response = await axios.post(
-        "http://localhost:3000/appointments/book",
+        `${base_url}/appointments/book`,
         payload
       );
 
@@ -114,7 +139,9 @@ export const DoctorDescription = () => {
       }
     } catch (error) {
       if (error.response?.status === 409) {
-        alert("This slot has already been booked by another patient. Please choose another slot.");
+        alert(
+          "This slot has already been booked by another patient. Please choose another slot."
+        );
       } else {
         alert("Failed to book appointment. Please try again.");
       }
@@ -129,7 +156,7 @@ export const DoctorDescription = () => {
         <div className="col-md-8">
           <div className="d-flex align-items-start gap-4">
             <img
-              src={doctorDetails?.photo || "/default-doctor.jpg"}
+              src={doctorDetails?.photo?.url || "/default-doctor.jpg"}
               alt="Doctor"
               className="rounded-full"
               style={{ width: "200px", height: "200px", objectFit: "cover" }}
@@ -198,7 +225,9 @@ export const DoctorDescription = () => {
                   );
                 })
               ) : (
-                <p className="text-muted">No slots available for selected date</p>
+                <p className="text-muted">
+                  No slots available for selected date
+                </p>
               )}
             </div>
 
@@ -220,7 +249,6 @@ export const DoctorDescription = () => {
                   {isSet ? "Online" : "Offline"}
                 </label>
               </div>
-
               <span className="ms-2">{isSet ? "Online" : "Offline"}</span>
             </div>
 

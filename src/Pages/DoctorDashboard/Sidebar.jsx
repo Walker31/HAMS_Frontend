@@ -1,19 +1,33 @@
 import { useNavigate } from "react-router-dom";
-import defImage from "/default.avif";
+import { useState, useEffect } from "react";
 import LibraryBooksSharpIcon from '@mui/icons-material/LibraryBooksSharp';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import InsightsIcon from '@mui/icons-material/Insights';
 import LogoutIcon from '@mui/icons-material/Logout';
+//import defImage from "../../assets/default-profile.jpg"; // Make sure this path is correct
+import defImage from "/default.avif";
 
 const Sidebar = ({
   doctor,
   sidebarCollapsed,
   setSidebarCollapsed,
   handleOverviewClick,
-  handleLogout
+  handleLogout,
 }) => {
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const effectiveCollapse = isMobile || sidebarCollapsed;
 
   const navItems = [
     { label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
@@ -29,10 +43,7 @@ const Sidebar = ({
         return;
       }
 
-     
       localStorage.setItem("doctorId", doctor._id);
-
-      
       navigate("/dashboard/slots", { state: { doctorId: doctor._id } });
     } else if (path) {
       navigate(path);
@@ -43,10 +54,9 @@ const Sidebar = ({
 
   return (
     <div
-      className={`bg-gray-900 text-white shadow-md transition-all duration-300 ease-in-out 
-        h-screen flex flex-col
-        ${sidebarCollapsed ? "w-24" : "w-64"}
-      `}
+      className={`bg-gray-900 text-white shadow-md transition-all duration-300 ease-in-out h-screen flex flex-col ${
+        effectiveCollapse ? "w-24" : "w-64"
+      }`}
     >
       <div className="p-4 text-center border-b border-gray-800">
         {!sidebarCollapsed && (
@@ -59,6 +69,7 @@ const Sidebar = ({
             <h1 className="text-lg font-bold">{doctor?.name || "Doctor"}</h1>
           </div>
         )}
+        {!effectiveCollapse && <h1 className="text-lg font-bold">Welcome</h1>}
       </div>
 
       <div className="flex flex-col gap-2 p-4">
@@ -69,7 +80,7 @@ const Sidebar = ({
             onClick={() => handleNavigation(label, path, action)}
           >
             <div className="text-xl">{icon}</div>
-            {!sidebarCollapsed && <span>{label}</span>}
+            {!effectiveCollapse && <span>{label}</span>}
           </div>
         ))}
 
@@ -80,7 +91,7 @@ const Sidebar = ({
           <div className="text-xl">
             <LogoutIcon />
           </div>
-          {!sidebarCollapsed && <span>Logout</span>}
+          {!effectiveCollapse && <span>Logout</span>}
         </div>
       </div>
     </div>

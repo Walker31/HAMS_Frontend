@@ -9,6 +9,7 @@ import { useAuth } from "../../contexts/AuthContext";
 import JitsiMeetModal from "../../Meeting/JitsiMeetModal";
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
 const PatientDashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [appointments, setAppointments] = useState([]);
@@ -23,7 +24,7 @@ const PatientDashboard = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    logout?.(); // call logout if it's available in the AuthContext
+    logout?.();
     navigate("/", { replace: true });
     alert("Logged out successfully");
   };
@@ -42,16 +43,6 @@ const PatientDashboard = () => {
     setShowJitsi(false);
   };
 
-  const fetchDoctorDetails = async (doctorId) => {
-    try {
-      const res = await axios.get(`${base_url}/doctors/${doctorId}`);
-      return res.data?.name || "Unknown Doctor";
-    } catch (err) {
-      console.error("Failed to fetch doctor details", err);
-      return "Unknown Doctor";
-    }
-  };
-
   const fetchAppointments = useCallback(async () => {
     if (!user?.id) return;
 
@@ -65,12 +56,12 @@ const PatientDashboard = () => {
 
       const upcoming = res.data.filter((a) => {
         const apptDate = new Date(a.date).toISOString().split("T")[0];
-        return apptDate === todayStr;
+        return apptDate === todayStr && a.appStatus === "Pending";
       });
 
       const past = res.data.filter((a) => {
         const apptDate = new Date(a.date).toISOString().split("T")[0];
-        return apptDate < todayStr;
+        return apptDate < todayStr && ["Completed", "Rejected", "Rescheduled"].includes(a.appStatus);
       });
 
       setAppointments(upcoming);
