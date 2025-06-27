@@ -5,13 +5,13 @@ import { Outlet } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
-import { OverviewModal } from "./DoctorModals";
+import { OverviewModal } from "./DoctorModals"; // ✅ Import modal
 
 const DashboardLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [doctor, setDoctor] = useState({});
-  const [showOverview, setShowOverview] = useState(false);
-  const [overviewText, setOverviewText] = useState("");
+  const [doctor, setDoctor] = useState(null);
+  const [showOverview, setShowOverview] = useState(false); // ✅ For modal
+  const [overviewText, setOverviewText] = useState("");     // ✅ Description editing
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -28,12 +28,6 @@ const DashboardLayout = () => {
           headers: { Authorization: `Bearer ${newToken}` },
         });
         setDoctor(res.data.doctor);
-
-        // Save doctorId and full doctor object
-        if (res.data.doctor?._id) {
-          localStorage.setItem("doctorId", res.data.doctor._id);
-          localStorage.setItem("doctor", JSON.stringify(res.data.doctor));
-        }
       } catch (error) {
         console.error("Error fetching doctor profile:", error);
       }
@@ -51,12 +45,11 @@ const DashboardLayout = () => {
 
   const handleSaveOverview = async () => {
     try {
-      const res = await axios.put(`${base_url}/doctors/update/${doctor._id}`, {
+      const res = await axios.put(`${base_url}/doctors/update/${doctor.doctorId}`, {
         overview: overviewText,
       });
       setDoctor({ ...doctor, overview: overviewText });
       setShowOverview(false);
-      alert("Overview saved successfully");
     } catch (err) {
       console.error("Failed to update overview", err);
       alert("Failed to update overview.");
@@ -65,8 +58,6 @@ const DashboardLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("doctorId");
-    localStorage.removeItem("doctor");
     navigate("/", { replace: true });
     logout();
     alert("Logged out successfully");
@@ -84,7 +75,7 @@ const DashboardLayout = () => {
           sidebarCollapsed={sidebarCollapsed}
           setSidebarCollapsed={setSidebarCollapsed}
           doctor={doctor}
-          handleOverviewClick={handleOverviewClick}
+          handleOverviewClick={handleOverviewClick} // ✅ Working now
           handleLogout={handleLogout}
         />
         <main className="flex-1 overflow-y-auto p-4 bg-gray-100">

@@ -1,15 +1,22 @@
 import { useNavigate } from "react-router-dom";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import LibraryBooksSharpIcon from '@mui/icons-material/LibraryBooksSharp';
-
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import InsightsIcon from '@mui/icons-material/Insights';
 import LogoutIcon from '@mui/icons-material/Logout';
-const Sidebar = ({ sidebarCollapsed, setSidebarCollapsed, handleOverviewClick, handleLogout }) => {
+//import defImage from "../../assets/default-profile.jpg"; // Make sure this path is correct
+import defImage from "/default.avif";
+
+const Sidebar = ({
+  doctor,
+  sidebarCollapsed,
+  setSidebarCollapsed,
+  handleOverviewClick,
+  handleLogout,
+}) => {
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
-
 
   useEffect(() => {
     const handleResize = () => {
@@ -19,8 +26,8 @@ const Sidebar = ({ sidebarCollapsed, setSidebarCollapsed, handleOverviewClick, h
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-    const effectiveCollapse = isMobile || sidebarCollapsed;
 
+  const effectiveCollapse = isMobile || sidebarCollapsed;
 
   const navItems = [
     { label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
@@ -29,18 +36,40 @@ const Sidebar = ({ sidebarCollapsed, setSidebarCollapsed, handleOverviewClick, h
     { label: "Overview", icon: <InsightsIcon />, action: handleOverviewClick },
   ];
 
+  const handleNavigation = (label, path, action) => {
+    if (label === "Slots") {
+      if (!doctor || !doctor._id) {
+        alert("Doctor ID missing from doctor object.");
+        return;
+      }
+
+      localStorage.setItem("doctorId", doctor._id);
+      navigate("/dashboard/slots", { state: { doctorId: doctor._id } });
+    } else if (path) {
+      navigate(path);
+    } else if (action) {
+      action();
+    }
+  };
+
   return (
     <div
-      className={`bg-gray-900 text-white shadow-md transition-all duration-300 ease-in-out 
-        h-screen flex flex-col
-        ${effectiveCollapse ? "w-24" : "w-64"}
-      `}
+      className={`bg-gray-900 text-white shadow-md transition-all duration-300 ease-in-out h-screen flex flex-col ${
+        effectiveCollapse ? "w-24" : "w-64"
+      }`}
     >
-      {/* Optional: Profile or Logo section */}
       <div className="p-4 text-center border-b border-gray-800">
-        {!effectiveCollapse && (
-          <h1 className="text-lg font-bold">Welcome</h1>
+        {!sidebarCollapsed && (
+          <div>
+            <img
+              src={doctor?.photo || defImage}
+              alt="Doctor"
+              className="w-20 h-20 rounded-full mx-auto mb-2"
+            />
+            <h1 className="text-lg font-bold">{doctor?.name || "Doctor"}</h1>
+          </div>
         )}
+        {!effectiveCollapse && <h1 className="text-lg font-bold">Welcome</h1>}
       </div>
 
       <div className="flex flex-col gap-2 p-4">
@@ -48,7 +77,7 @@ const Sidebar = ({ sidebarCollapsed, setSidebarCollapsed, handleOverviewClick, h
           <div
             key={label}
             className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-800 cursor-pointer transition-all"
-            onClick={() => (path ? navigate(path) : action())}
+            onClick={() => handleNavigation(label, path, action)}
           >
             <div className="text-xl">{icon}</div>
             {!effectiveCollapse && <span>{label}</span>}
