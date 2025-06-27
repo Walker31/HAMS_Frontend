@@ -19,7 +19,6 @@ import {
 } from "chart.js";
 import { Line, Doughnut } from "react-chartjs-2";
 import IconButton from "@mui/material/IconButton";
-// import your modals if needed
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
@@ -155,6 +154,7 @@ const DoctorDashboard = () => {
 
     try {
       const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${user.id}`;
+      console.log(todayURL);
       const prevURL = `${base_url}/appointments/previous`;
 
       const [todayRes, prevRes] = await Promise.all([
@@ -283,7 +283,6 @@ const DoctorDashboard = () => {
       alert("Failed to save overview");
     }
   };
-  console.log(doctor);
 
   return (
     <div className="flex flex-col gap-3">
@@ -449,7 +448,7 @@ const DoctorDashboard = () => {
                     alt={appt.name}
                     className="w-8 h-8 rounded-full"
                   />
-                  {appt.patientId}
+                  {appt.patientName}
                 </div>
                 <div className="text-gray-700">{appt.reason}</div>
                 <div className="text-gray-700">{appt.date}</div>

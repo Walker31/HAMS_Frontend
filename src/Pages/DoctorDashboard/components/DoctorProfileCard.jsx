@@ -20,7 +20,6 @@ const DoctorProfileCard = ({ doctor }) => {
         time: "14:00 - 15:00",
         },
     ];
-console.log(doctor)
   return (
     <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm border border-gray-200">
       {/* Profile */}
