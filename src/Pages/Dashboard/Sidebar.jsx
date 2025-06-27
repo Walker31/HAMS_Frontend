@@ -8,31 +8,28 @@ import LogoutIcon from '@mui/icons-material/Logout';
 
 const Sidebar = ({ doctor, sidebarCollapsed, setSidebarCollapsed, handleOverviewClick, handleLogout }) => {
   const navigate = useNavigate();
-
-  const handleNavigation = (label, path, action) => {
-    if (action) {
-      action(); // Open modal (Overview)
-    } else if (path === "/dashboard/slots") {
-      // Navigate to slots with doctorId in state
-      navigate(path, { state: { doctorId: doctor?.doctorId } });
-    } else {
-      navigate(path); // Regular navigation
-    }
-  };
-
+  console.log("Doctor ID in DashboardLayout:", doctor?.id);
   const navItems = [
     { label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
     { label: "Appointments", icon: <LibraryBooksSharpIcon />, path: "/dashboard/appointments" },
-    { label: "Slots", icon: <CalendarTodayIcon />, path: "/dashboard/slots" },
-    { label: "Overview", icon: <InsightsIcon />, action: handleOverviewClick }, // triggers modal
+    {
+      label: "Slots",
+      icon: <CalendarTodayIcon />,
+      action: () => {
+        if (!doctor?.id) {
+          alert("Doctor ID not available.");
+          return;
+        }
+        navigate("/dashboard/slots", { state: { doctorId: doctor.id } });
+      },
+    },
+    { label: "Overview", icon: <InsightsIcon />, action: handleOverviewClick },
   ];
 
   return (
     <div
       className={`bg-gray-900 text-white shadow-md transition-all duration-300 ease-in-out 
-        h-screen
-        ${sidebarCollapsed ? "w-0 overflow-hidden" : "w-64"}
-      `}
+        h-screen ${sidebarCollapsed ? "w-0 overflow-hidden" : "w-64"}`}
       style={{ minHeight: "100vh" }}
     >
       {!sidebarCollapsed && (
@@ -52,15 +49,15 @@ const Sidebar = ({ doctor, sidebarCollapsed, setSidebarCollapsed, handleOverview
             {navItems.map(({ label, icon, path, action }) => (
               <div
                 key={label}
-                className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-800 text-white transition-all cursor-pointer"
-                onClick={() => handleNavigation(label, path, action)}
+                className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-800 text-white transition-all"
+                onClick={() => (path ? navigate(path) : action?.())}
               >
                 {icon}
                 <span>{label}</span>
               </div>
             ))}
             <div
-              className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-800 text-yellow-400 transition-all cursor-pointer"
+              className="flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-800 text-yellow-400 transition-all"
               onClick={handleLogout}
             >
               <LogoutIcon />

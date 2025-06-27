@@ -8,16 +8,17 @@ import DoctorsAvailable from "./components/DoctorsAvailable";
 import DoctorDescription from "./components/DoctorDescription";
 import RegisterForm from "./Pages/Login/registerForm";
 import Confirmation from "./components/Confirmation";
-import DoctorDashboard from "./Pages/Dashboard/Dashboard";
+import DoctorDashboard from "./Pages/DoctorDashboard/Dashboard";
 import PatientDashboard from "./Pages/PatientDashboard/patientDashboard";
 import AboutUs from "./components/Aboutus";
 import FAQs from "./components/FAQs";
 import Services from "./components/Services";
-import CalendarWithSlots from "./Pages/Dashboard/CalendarWithSlots";
-import AppointmentDetails from "./Pages/Dashboard/AppointmentDetails";
-import DashboardLayout from "./Pages/Dashboard/DashboardLayout";
+import CalendarWithSlots from "./Pages/DoctorDashboard/CalendarWithSlots";
+import AppointmentDetails from "./Pages/DoctorDashboard/AppointmentDetails";
+import DashboardLayout from "./Pages/DoctorDashboard/DashboardLayout";
 import RoleBasedRoute from "./RoleBasedRoute";
 import { getCityFromCoords } from "./utils/locationUtils";
+import Unauthorized from './components/Unauthorized';
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -94,6 +95,7 @@ const App = () => {
           <Route path="/aboutUs" element={<AboutUs />} />
           <Route path="/faqs" element={<FAQs />} />
           <Route path="/services" element={<Services />} />
+          <Route path="/unauthorize" element={<Unauthorized />} />
         </Route>
 
         {/* Entry route - decide between doctor or patient */}

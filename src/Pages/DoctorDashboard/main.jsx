@@ -4,12 +4,19 @@ import axios from "axios";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { IconButton } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
+=======
+import axios from "axios";
+import { useAuth } from "../../contexts/AuthContext";
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
 import {
   OverviewModal,
   RejectModal,
   PrescriptionModal,
   ViewPrescriptionModal,
 } from "./DoctorModals";
+
+import JitsiMeetModal from "../../Meeting/JitsiMeetModal";
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
@@ -33,12 +40,34 @@ const DoctorDashboard = () => {
   const [viewedPrescription, setViewedPrescription] = useState("");
   const [viewedPatientName, setViewedPatientName] = useState("");
 
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
+=======
+  const [jitsiRoom, setJitsiRoom] = useState("");
+  const [showJitsi, setShowJitsi] = useState(false);
+
+ const handleOpenJitsi = (meetLink) => {
+  const roomName = meetLink?.split("https://meet.jit.si/")[1];
+  if (!roomName || roomName === "Link") {
+    alert("Invalid or missing Meet link for this appointment.");
+    return;
+  }
+  setJitsiRoom(roomName);
+  setShowJitsi(true);
+};
+
+
+  const handleCloseJitsi = () => {
+    setShowJitsi(false);
+  };
+
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
 
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
     const idFromRoute =
       location.state?.doctor?.doctorId || location.state?.doctorId;
     const idFromStorage = localStorage.getItem("doctorId");
@@ -63,6 +92,8 @@ const DoctorDashboard = () => {
     fetchDoctor();
   }, [location.state]);
 
+=======
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
   const fetchAppointments = useCallback(async () => {
     if (!doctor?.doctorId) return;
 
@@ -71,11 +102,14 @@ const DoctorDashboard = () => {
       const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${doctor.doctorId}`;
       const prevURL = `${base_url}/appointments/previous?doctorId=${doctor.doctorId}`;
 
+      console.log("Requesting:", todayURL);
+
       const [todayRes, prevRes] = await Promise.all([
         axios.get(todayURL),
         axios.get(prevURL),
       ]);
 
+      console.log("Fetched today's appointments:", todayRes.data);
       setTodayAppointments(todayRes.data || []);
       setPreviousAppointments(prevRes.data || []);
     } catch (err) {
@@ -94,6 +128,7 @@ const DoctorDashboard = () => {
     prescriptionText = ""
   ) => {
     try {
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
       const url = `${base_url}/appointments/update-status/${appointmentId}`;
       const payload = {
         appStatus: status,
@@ -102,6 +137,16 @@ const DoctorDashboard = () => {
       };
 
       await axios.put(url, payload);
+=======
+      await axios.put(
+        `${base_url}/appointments/update-status/${appointmentId}`,
+        {
+          appStatus: status,
+          rejectionReason: reason,
+          prescription: prescriptionText,
+        }
+      );
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
     } catch (err) {
       console.error("Failed to update status:", err);
     }
@@ -144,7 +189,11 @@ const DoctorDashboard = () => {
       return;
     }
     const appt = todayAppointments[currentIndex];
-    await updateAppointmentStatus(appt.appointmentId, "Rejected", rejectionReason);
+    await updateAppointmentStatus(
+      appt.appointmentId,
+      "Rejected",
+      rejectionReason
+    );
     moveToPrevious(currentIndex, "Rejected", rejectionReason);
     setShowRejectModal(false);
     setRejectionReason("");
@@ -154,7 +203,16 @@ const DoctorDashboard = () => {
   const handleSavePrescription = async () => {
     const appt = todayAppointments[prescriptionIndex];
     try {
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
       await updateAppointmentStatus(appt.appointmentId, "Completed", "", currentPrescription);
+=======
+      await updateAppointmentStatus(
+        appointmentId,
+        "Completed",
+        "",
+        currentPrescription
+      );
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
       moveToPrevious(prescriptionIndex, "Completed", "", currentPrescription);
       setShowPrescriptionModal(false);
       setCurrentPrescription("");
@@ -166,7 +224,11 @@ const DoctorDashboard = () => {
 
   const handleSaveDescription = async () => {
     try {
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
       await axios.put(`${base_url}/doctors/update/${doctor.doctorId}`, {
+=======
+      await axios.put(`${base_url}/doctors/update/${user.id}`, {
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
         overview: description,
       });
       setDoctor((prev) => ({ ...prev, overview: description }));
@@ -184,7 +246,13 @@ const DoctorDashboard = () => {
             <Card className="text-center shadow-sm">
               <Card.Body>
                 <Card.Title>Total Patients</Card.Title>
-                <h4>{previousAppointments.filter((a) => a.appStatus === "Completed").length}</h4>
+                <h4>
+                  {
+                    previousAppointments.filter(
+                      (a) => a.appStatus === "Completed"
+                    ).length
+                  }
+                </h4>
               </Card.Body>
             </Card>
           </Col>
@@ -210,17 +278,62 @@ const DoctorDashboard = () => {
               <p>No appointments for today.</p>
             ) : (
               todayAppointments.map((appt, idx) => (
-                <Card key={appt.appointmentId || idx} className="mb-3 shadow-sm">
+                <Card
+                  key={appt.appointmentId || idx}
+                  className="mb-3 shadow-sm"
+                >
                   <Card.Body className="d-flex justify-content-between">
                     <div>
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
                       <div><strong>Name:</strong> {appt.name}</div>
                       <div><strong>Date:</strong> {appt.date}</div>
                       <div><strong>Slot:</strong> {appt.slotNumber}</div>
+=======
+                      <div>
+                        <strong>Patient ID:</strong> {appt.patientId}
+                      </div>
+                      <div>
+                        <strong>Date:</strong> {appt.date}
+                      </div>
+                      <div>
+                        <strong>Slot:</strong> {appt.slotNumber}
+                      </div>
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
                     </div>
                     <div>
-                      <Button className="me-2" size="sm" variant="success" onClick={() => handleStatusChange(idx, "Done")}>Done</Button>
-                      <Button className="me-2" size="sm" variant="danger" onClick={() => handleStatusChange(idx, "Rejected")}>Reject</Button>
-                      <Button size="sm" variant="warning" onClick={() => handleStatusChange(idx, "Rescheduled")}>Reschedule</Button>
+                      <div className="pb-2 ">
+                        <Button
+                          className="me-2"
+                          size="sm"
+                          variant="success"
+                          onClick={() => handleStatusChange(idx, "Done")}
+                        >
+                          Done
+                        </Button>
+                        <Button
+                          className="me-2"
+                          size="sm"
+                          variant="danger"
+                          onClick={() => handleStatusChange(idx, "Rejected")}
+                        >
+                          Reject
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="warning"
+                          onClick={() => handleStatusChange(idx, "Rescheduled")}
+                        >
+                          Reschedule
+                        </Button>
+                      </div>
+                      <div className="pl-32">
+                        <button
+                          className="sm pl-1.5 pr-1.5 bg-blue-500 rounded-1 pt-0.5 pb-0.5 "
+                          onClick={() => handleOpenJitsi(appt.MeetLink)}
+                        >
+                          Join Meet
+                        </button>
+                      </div>
                     </div>
                   </Card.Body>
                 </Card>
@@ -231,22 +344,43 @@ const DoctorDashboard = () => {
           <Col md={6}>
             <h5 className="text-primary">Previous Appointments</h5>
             {previousAppointments.map((appt, idx) => (
-              <Card key={idx} className="mb-3 border-start border-4 border-primary shadow-sm">
+              <Card
+                key={idx}
+                className="mb-3 border-start border-4 border-primary shadow-sm"
+              >
                 <Card.Body>
-                  <p><strong>Patient ID:</strong> {appt.patientId}</p>
-                  <p><strong>Date:</strong> {appt.date}</p>
-                  <p><strong>Slot:</strong> {appt.slotNumber}</p>
+                  <p>
+                    <strong>Patient ID:</strong> {appt.patientId}
+                  </p>
+                  <p>
+                    <strong>Date:</strong> {appt.date}
+                  </p>
+                  <p>
+                    <strong>Slot:</strong> {appt.slotNumber}
+                  </p>
                   <p>
                     <strong>Status:</strong>{" "}
-                    <span className={`badge bg-${appt.appStatus === "Completed" ? "success" : appt.appStatus === "Rejected" ? "danger" : "warning"}`}>
+                    <span
+                      className={`badge bg-${
+                        appt.appStatus === "Completed"
+                          ? "success"
+                          : appt.appStatus === "Rejected"
+                          ? "danger"
+                          : "warning"
+                      }`}
+                    >
                       {appt.appStatus}
                     </span>
                   </p>
                   {appt.reasonForReject && (
-                    <p className="text-danger"><strong>Reason:</strong> {appt.reasonForReject}</p>
+                    <p className="text-danger">
+                      <strong>Reason:</strong> {appt.reasonForReject}
+                    </p>
                   )}
                   {appt.prescription && (
-                    <p className="text-success"><strong>Prescription:</strong> {appt.prescription}</p>
+                    <p className="text-success">
+                      <strong>Prescription:</strong> {appt.prescription}
+                    </p>
                   )}
                 </Card.Body>
               </Card>
@@ -283,6 +417,11 @@ const DoctorDashboard = () => {
         onClose={() => setShowViewPrescription(false)}
         name={viewedPatientName}
         prescription={viewedPrescription}
+      />
+      <JitsiMeetModal
+        show={showJitsi}
+        onHide={handleCloseJitsi}
+        roomName={jitsiRoom}
       />
     </Container>
   );
