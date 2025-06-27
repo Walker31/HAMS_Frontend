@@ -7,6 +7,10 @@ import AppointmentList from "./components/appointmentList";
 import HistoryList from "./components/historyList";
 import { useAuth } from "../../contexts/AuthContext";
 import JitsiMeetModal from "../../Meeting/JitsiMeetModal";
+import GreetingCards from "./components/GreetingCards";
+import MedicationList from "./components/MedicationList";
+import RightProfileSidebar from "./components/RightSidebar";
+
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 const PatientDashboard = () => {
@@ -116,15 +120,9 @@ const PatientDashboard = () => {
               handleOpenJitsi={handleOpenJitsi}
             />
             <HistoryList history={history} />
+            <MedicationList/>
           </div>
-          <div className="bg-white rounded-2xl p-6 shadow-md">
-            <h3 className="text-lg font-bold mb-4">Welcome back</h3>
-            <div className="text-sm text-gray-600">
-              <p><strong>Name:</strong> {user?.name || "N/A"}</p>
-              <p><strong>Age:</strong> {user?.age || "N/A"}</p>
-              <p><strong>Weight:</strong> {user?.weight || "N/A"}</p>
-              <p><strong>Height:</strong> {user?.height || "N/A"}</p>
-            </div>
+          <RightProfileSidebar user={user} />
           </div>
         </div>
         <JitsiMeetModal
@@ -133,7 +131,6 @@ const PatientDashboard = () => {
           roomName={jitsiRoom}
         />
       </div>
-    </div>
   );
 };
 
