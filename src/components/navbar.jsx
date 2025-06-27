@@ -102,7 +102,7 @@ const Navbar = ({ location, setLocation }) => {
             <div className="flex flex-col items-start">
               <div className="text-lg font-semibold text-gray-900">{user.name}</div>
               <div className="text-sm font-medium text-gray-500 tracking-wide">
-                {user.role}
+                {user?.role?.toUpperCase() || "USER"}
               </div>
             </div>
 
