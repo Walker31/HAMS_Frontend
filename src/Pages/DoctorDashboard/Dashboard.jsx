@@ -382,13 +382,24 @@ const DoctorDashboard = () => {
               <div className="font-semibold text-gray-900 mb-2">
                 Consultation Mode
               </div>
-              <div className="relative w-full h-full mx-auto">
-                <Doughnut data={doughnutData} options={doughnutOptions} />
+
+              {/* Responsive Doughnut Chart */}
+              <div className="relative w-full max-w-[180px] aspect-square mx-auto">
+                <Doughnut
+                  data={doughnutData}
+                  options={{
+                    ...doughnutOptions,
+                    maintainAspectRatio: false, // critical for responsiveness
+                    responsive: true,
+                  }}
+                />
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-2xl font-bold text-gray-900">258</span>
                   <span className="text-xs text-gray-400">week</span>
                 </div>
               </div>
+
+              {/* Legend */}
               <div className="flex flex-col gap-1 mt-4 text-xs w-full">
                 <div className="flex items-center gap-2">
                   <span className="inline-block w-3 h-3 rounded-full bg-yellow-400"></span>
