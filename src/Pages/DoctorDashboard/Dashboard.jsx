@@ -1,12 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
-import DoctorProfileCard from './components/DoctorProfileCard';
-import dp from '../../assets/dp.jpg';
-import VideocamIcon from '@mui/icons-material/Videocam';
-import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import DoctorProfileCard from "./components/DoctorProfileCard";
+import dp from "../../assets/dp.jpg";
+import VideocamIcon from "@mui/icons-material/Videocam";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
 import {
   Chart as ChartJS,
   LineElement,
@@ -19,11 +19,18 @@ import {
 } from "chart.js";
 import { Line, Doughnut } from "react-chartjs-2";
 import IconButton from "@mui/material/IconButton";
-// import your modals if needed
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
-ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, ArcElement, Tooltip, Legend);
+ChartJS.register(
+  LineElement,
+  PointElement,
+  LinearScale,
+  CategoryScale,
+  ArcElement,
+  Tooltip,
+  Legend
+);
 
 // Line chart data
 const lineData = {
@@ -81,14 +88,31 @@ const doughnutOptions = {
 };
 
 const appointments = [
-  { name: "Kristina Stokes", date: "05/02/2022", time: "09:30", status: "active", avatar: dp },
-  { name: "Alexander Preston", date: "05/02/2022", time: "12:00", status: "inactive", avatar: dp },
-  { name: "Johnathan Mcgee", date: "05/02/2022", time: "16:30", status: "inactive", avatar: dp },
+  {
+    name: "Kristina Stokes",
+    date: "05/02/2022",
+    time: "09:30",
+    status: "active",
+    avatar: dp,
+  },
+  {
+    name: "Alexander Preston",
+    date: "05/02/2022",
+    time: "12:00",
+    status: "inactive",
+    avatar: dp,
+  },
+  {
+    name: "Johnathan Mcgee",
+    date: "05/02/2022",
+    time: "16:30",
+    status: "inactive",
+    avatar: dp,
+  },
 ];
 
-
 const DoctorDashboard = () => {
-  const { user} = useAuth();
+  const { user } = useAuth();
   const [doctor, setDoctor] = useState({});
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
@@ -107,19 +131,19 @@ const DoctorDashboard = () => {
   const [viewedPrescription, setViewedPrescription] = useState("");
   const [viewedPatientName, setViewedPatientName] = useState("");
 
-  const newtoken = localStorage.getItem('token');
+  const newtoken = localStorage.getItem("token");
 
- useEffect(() => {
-  const fetchDoctor = async () => {
-    try {
-      const res = await axios.get(`${base_url}/doctors/profile`, {
-        headers: { Authorization: `Bearer ${newtoken}` },
-      });
-      setDoctor(res.data.doctor);
-    } catch (err) {
-      console.error("Failed to fetch doctor profile", err);
-    }
-  };
+  useEffect(() => {
+    const fetchDoctor = async () => {
+      try {
+        const res = await axios.get(`${base_url}/doctors/profile`, {
+          headers: { Authorization: `Bearer ${newtoken}` },
+        });
+        setDoctor(res.data.doctor);
+      } catch (err) {
+        console.error("Failed to fetch doctor profile", err);
+      }
+    };
     fetchDoctor();
   }, [newtoken]);
 
@@ -130,11 +154,14 @@ const DoctorDashboard = () => {
 
     try {
       const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${user.id}`;
+      console.log(todayURL);
       const prevURL = `${base_url}/appointments/previous`;
 
       const [todayRes, prevRes] = await Promise.all([
         axios.get(todayURL),
-        axios.get(prevURL,{headers: { Authorization: `Bearer ${newtoken}`}}),
+        axios.get(prevURL, {
+          headers: { Authorization: `Bearer ${newtoken}` },
+        }),
       ]);
 
       setTodayAppointments(todayRes.data || []);
@@ -149,7 +176,12 @@ const DoctorDashboard = () => {
   }, [fetchAppointments]);
 
   // Update appointment status
-  const updateAppointmentStatus = async (appointmentId, status, reason = "", prescriptionText = "") => {
+  const updateAppointmentStatus = async (
+    appointmentId,
+    status,
+    reason = "",
+    prescriptionText = ""
+  ) => {
     try {
       const url = `${base_url}/appointments/update-status/${appointmentId}`;
       const payload = {
@@ -204,7 +236,11 @@ const DoctorDashboard = () => {
       return;
     }
     const appt = todayAppointments[currentIndex];
-    await updateAppointmentStatus(appt.appointmentId, "Rejected", rejectionReason);
+    await updateAppointmentStatus(
+      appt.appointmentId,
+      "Rejected",
+      rejectionReason
+    );
     moveToPrevious(currentIndex, "Rejected", rejectionReason);
     setShowRejectModal(false);
     setRejectionReason("");
@@ -216,7 +252,12 @@ const DoctorDashboard = () => {
     const appt = todayAppointments[prescriptionIndex];
     const appointmentId = appt.appointmentId;
     try {
-      await updateAppointmentStatus(appointmentId, "Completed", "", currentPrescription);
+      await updateAppointmentStatus(
+        appointmentId,
+        "Completed",
+        "",
+        currentPrescription
+      );
       moveToPrevious(prescriptionIndex, "Completed", "", currentPrescription);
       setShowPrescriptionModal(false);
       setCurrentPrescription("");
@@ -233,195 +274,235 @@ const DoctorDashboard = () => {
 
   const handleSaveDescription = async () => {
     try {
-      await axios.put(`${base_url}/doctors/update/${user.id}`, { overview: description });
+      await axios.put(`${base_url}/doctors/update/${user.id}`, {
+        overview: description,
+      });
       setDoctor((prev) => ({ ...prev, overview: description }));
       setShowOverview(false);
     } catch (err) {
       alert("Failed to save overview");
     }
   };
-  console.log(doctor)
 
   return (
-    <div>
-    <div className="flex flex-col lg:flex-row rounded-2xl">
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-col lg:flex-row rounded-2xl">
+        <div className="bg-[#fafbfc] w-full lg:w-3/4 p-8">
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="text-3xl font-bold text-gray-900">Dashboard</div>
+          </div>
 
-      <div className="bg-[#fafbfc] w-full lg:w-3/4 p-8">
-      {/* Header */}
-      <div className="flex justify-between items-center mb-6">
-        <div className="text-3xl font-bold text-gray-900">Dashboard</div>
-        <div className="flex gap-4">
-          <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
-            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8" strokeWidth="2" />
-              <path strokeWidth="2" d="M21 21l-4.35-4.35" />
-            </svg>
-          </button>
-          <button className="p-2 rounded-full bg-gray-100 hover:bg-gray-200">
-            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeWidth="2" d="M15 17h5l-1.405-1.405M19 13V7a7 7 0 10-14 0v6l-1.405 1.405A2.032 2.032 0 004 19h16a2.032 2.032 0 00.405-2.595L19 17z" />
-            </svg>
-          </button>
-        </div>
-      </div>
+          {/* Stat Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div className="bg-white rounded-xl p-4 shadow border border-gray-100">
+              <div className="flex items-center justify-between text-gray-500 text-sm">
+                <div className="flex items-center gap-2">
+                  <CalendarMonthIcon className="text-green-500" />
+                  Appointments
+                </div>
+                <span className="text-green-600 text-xs">+2.5%</span>
+              </div>
+              <div className="mt-2 text-2xl font-bold text-gray-800">28</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow border border-gray-100">
+              <div className="flex items-center justify-between text-gray-500 text-sm">
+                <div className="flex items-center gap-2">
+                  <span role="img" aria-label="money">
+                    💰
+                  </span>
+                  Revenue
+                </div>
+                <span className="text-red-600 text-xs">-1%</span>
+              </div>
+              <div className="mt-2 text-2xl font-bold text-gray-800">$982</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow border border-gray-100">
+              <div className="flex items-center justify-between text-gray-500 text-sm">
+                <div className="flex items-center gap-2">
+                  <PeopleAltIcon className="text-green-500" />
+                  Total Patients
+                </div>
+                <span className="text-red-600 text-xs">-1.8%</span>
+              </div>
+              <div className="mt-2 text-2xl font-bold text-gray-800">258</div>
+            </div>
+            <div className="bg-white rounded-xl p-4 shadow border border-gray-100">
+              <div className="flex items-center justify-between text-gray-500 text-sm">
+                <div className="flex items-center gap-2">
+                  <PersonAddAltIcon className="text-green-500" />
+                  New Patients
+                </div>
+                <span className="text-green-600 text-xs">+3.7%</span>
+              </div>
+              <div className="mt-2 text-2xl font-bold text-gray-800">32</div>
+            </div>
+          </div>
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white rounded-xl p-4 shadow border border-gray-100">
-          <div className="flex items-center justify-between text-gray-500 text-sm">
-            <div className="flex items-center gap-2">
-              <CalendarMonthIcon className="text-green-500" />
-              Appointments
+          {/* Chart + Gender */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
+            {/* Line Chart */}
+            <div className="lg:col-span-4 bg-white rounded-xl shadow border border-gray-100 p-6">
+              <div className="flex items-center justify-between mb-2">
+                <div className="font-semibold text-gray-900">Appointments</div>
+                <div className="flex gap-4 text-sm text-gray-500">
+                  <button className="font-semibold text-green-600 underline">
+                    Week
+                  </button>
+                  <button>Day</button>
+                  <button>Month</button>
+                  <button>Year</button>
+                  <button>
+                    <svg
+                      className="w-4 h-4 inline"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <rect
+                        x="3"
+                        y="4"
+                        width="18"
+                        height="18"
+                        rx="2"
+                        strokeWidth="2"
+                      />
+                      <path strokeWidth="2" d="M16 2v4M8 2v4M3 10h18" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div className="h-48">
+                <Line data={lineData} options={lineOptions} />
+              </div>
             </div>
-            <span className="text-green-600 text-xs">+2.5%</span>
-          </div>
-          <div className="mt-2 text-2xl font-bold text-gray-800">28</div>
-        </div>
-        <div className="bg-white rounded-xl p-4 shadow border border-gray-100">
-          <div className="flex items-center justify-between text-gray-500 text-sm">
-            <div className="flex items-center gap-2">
-              <span role="img" aria-label="money">💰</span>
-              Revenue
-            </div>
-            <span className="text-red-600 text-xs">-1%</span>
-          </div>
-          <div className="mt-2 text-2xl font-bold text-gray-800">$982</div>
-        </div>
-        <div className="bg-white rounded-xl p-4 shadow border border-gray-100">
-          <div className="flex items-center justify-between text-gray-500 text-sm">
-            <div className="flex items-center gap-2">
-              <PeopleAltIcon className="text-green-500" />
-              Total Patients
-            </div>
-            <span className="text-red-600 text-xs">-1.8%</span>
-          </div>
-          <div className="mt-2 text-2xl font-bold text-gray-800">258</div>
-        </div>
-        <div className="bg-white rounded-xl p-4 shadow border border-gray-100">
-          <div className="flex items-center justify-between text-gray-500 text-sm">
-            <div className="flex items-center gap-2">
-              <PersonAddAltIcon className="text-green-500" />
-              New Patients
-            </div>
-            <span className="text-green-600 text-xs">+3.7%</span>
-          </div>
-          <div className="mt-2 text-2xl font-bold text-gray-800">32</div>
-        </div>
-      </div>
+            {/* Doughnut Chart */}
+            <div className="lg:col-span-1 mt-4 lg:mt-0 bg-white rounded-xl shadow border border-gray-100 p-6 flex flex-col items-center">
+              <div className="font-semibold text-gray-900 mb-2">
+                Consultation Mode
+              </div>
 
-      {/* Chart + Gender */}
-     <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 mb-6">
-        {/* Line Chart */}
-        <div className="lg:col-span-4 bg-white rounded-xl shadow border border-gray-100 p-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="font-semibold text-gray-900">Appointments</div>
-            <div className="flex gap-4 text-sm text-gray-500">
-              <button className="font-semibold text-green-600 underline">Week</button>
-              <button>Day</button>
-              <button>Month</button>
-              <button>Year</button>
-              <button>
-                <svg className="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <rect x="3" y="4" width="18" height="18" rx="2" strokeWidth="2" />
-                  <path strokeWidth="2" d="M16 2v4M8 2v4M3 10h18" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div className="h-48">
-            <Line data={lineData} options={lineOptions} />
-          </div>
-        </div>
-        {/* Doughnut Chart */}
-        <div className="lg:col-span-1 mt-4 lg:mt-0 bg-white rounded-xl shadow border border-gray-100 p-6 flex flex-col items-center">
-          <div className="font-semibold text-gray-900 mb-2">Consultation Mode</div>
-          <div className="relative w-36 h-36 mx-auto">
-            <Doughnut data={doughnutData} options={doughnutOptions} />
-            <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className="text-2xl font-bold text-gray-900">258</span>
-              <span className="text-xs text-gray-400">week</span>
-            </div>
-          </div>
-          <div className="flex flex-col gap-1 mt-4 text-xs w-full">
-            <div className="flex items-center gap-2">
-              <span className="inline-block w-3 h-3 rounded-full bg-yellow-400"></span>
-              Offline <span className="ml-2 text-gray-500">32%</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="inline-block w-3 h-3 rounded-full bg-blue-500"></span>
-              Online <span className="ml-2 text-gray-500">68%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      
-    </div>
-    <div className="w-full lg:w-1/4 mt-6 lg:mt-0">
-      <DoctorProfileCard doctor={doctor} />
-    </div>
-      
-    </div>
-    {/* Today's Appointments Table */}
-      <div className="bg-white rounded-xl shadow border border-gray-100 p-6 overflow-x-auto">
-        <div className="text-xl font-semibold text-gray-900 mb-4">Today's Appointments</div>
-        {/* Table Header */}
-        <div className="grid min-w-[600px] grid-cols-6 gap-4 text-gray-500 text-sm font-medium py-2 border-b">
-          <div >PATIENT</div>
-          <div>REASON</div>
-          <div>DATE</div>
-          <div>TIME</div>
-          <div>MEET LINK</div>
-          <div className="text-center">ACTION</div>
-        </div>
-        {/* Appointment Rows */}
-        {todayAppointments.map((appt, i) => (
-          <div key={i} className="grid min-w-[600px] grid-cols-6 gap-4 items-center py-3 border-b">
-            <div className="flex items-center gap-2 text-gray-800">
-              <img src={appt?.avatar || dp} alt={appt.name} className="w-8 h-8 rounded-full" />
-              {appt.patientId}
-            </div>
-            <div className="text-gray-700">{appt.reason}</div>
-            <div className="text-gray-700">{appt.date}</div>
-            <div className="text-gray-700">{appt.slotNumber}</div>
-            {appt.consultStatus === "Online" && appt.MeetLink && (
-                <IconButton
-                  component="a"
-                  href={appt.MeetLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  sx={{
-                    px: 2,bgcolor: 'blue.400',borderRadius: 2,transition: 'background-color 0.3s',width: 'max-content','&:hover': {bgcolor: 'blue.800'}
+              {/* Responsive Doughnut Chart */}
+              <div className="relative w-full max-w-[180px] aspect-square mx-auto">
+                <Doughnut
+                  data={doughnutData}
+                  options={{
+                    ...doughnutOptions,
+                    maintainAspectRatio: false, // critical for responsiveness
+                    responsive: true,
                   }}
-                >
-                  <VideocamIcon className="mx-2 text-blue-600" />
-                </IconButton>
-              )}
-            <div className="flex items-center gap-2">
-              <button
-                className=" px-2 rounded bg-green-500 text-white hover:bg-green-600 transition"
-                onClick={() => handleStatusChange(i, "Done")}
-              >
-                Done
-              </button>
-              <button
-                className="px-2 rounded bg-red-500 text-white hover:bg-red-600 transition"
-                onClick={() => handleStatusChange(i, "Rejected")}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition"
-                onClick={() => handleStatusChange(i, "Rescheduled")}
-              >
-                Reschedule
-              </button>
-              
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-2xl font-bold text-gray-900">258</span>
+                  <span className="text-xs text-gray-400">week</span>
+                </div>
+              </div>
+
+              {/* Legend */}
+              <div className="flex flex-col gap-1 mt-4 text-xs w-full">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-3 h-3 rounded-full bg-yellow-400"></span>
+                  Offline <span className="ml-2 text-gray-500">32%</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-3 h-3 rounded-full bg-blue-500"></span>
+                  Online <span className="ml-2 text-gray-500">68%</span>
+                </div>
+              </div>
             </div>
           </div>
-        ))}
+        </div>
+        <div className="w-full lg:w-1/4 mt-6 lg:mt-0">
+          <DoctorProfileCard doctor={doctor} />
+        </div>
       </div>
-       </div>
+      {/* Today's Appointments Table */}
+      <div className="bg-white rounded-xl shadow border border-gray-100 p-6 overflow-x-auto">
+        <div className="text-xl font-semibold text-gray-900 mb-4">
+          Today's Appointments
+        </div>
+
+        {todayAppointments.length === 0 ? (
+          <div>No Appointments for Today.</div>
+        ) : (
+          <>
+            {/* Table Header */}
+            <div className="grid min-w-[600px] grid-cols-6 gap-4 text-gray-500 text-sm font-medium py-2 border-b">
+              <div>PATIENT</div>
+              <div>REASON</div>
+              <div>DATE</div>
+              <div>TIME</div>
+              <div>MEET LINK</div>
+              <div className="text-center">ACTION</div>
+            </div>
+
+            {/* Appointment Rows */}
+            {todayAppointments.map((appt, i) => (
+              <div
+                key={i}
+                className="grid min-w-[600px] grid-cols-6 gap-4 items-center py-3 border-b"
+              >
+                <div className="flex items-center gap-2 text-gray-800">
+                  <img
+                    src={appt?.avatar || dp}
+                    alt={appt.name}
+                    className="w-8 h-8 rounded-full"
+                  />
+                  {appt.patientName}
+                </div>
+                <div className="text-gray-700">{appt.reason}</div>
+                <div className="text-gray-700">{appt.date}</div>
+                <div className="text-gray-700">{appt.slotNumber}</div>
+
+                <div>
+                  {appt.consultStatus === "Online" && appt.MeetLink ? (
+                    <IconButton
+                      component="a"
+                      href={appt.MeetLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      sx={{
+                        px: 2,
+                        bgcolor: "blue.400",
+                        borderRadius: 2,
+                        transition: "background-color 0.3s",
+                        width: "max-content",
+                        "&:hover": { bgcolor: "blue.800" },
+                      }}
+                    >
+                      <VideocamIcon className="mx-2 text-blue-600" />
+                    </IconButton>
+                  ) : (
+                    <span className="text-gray-400">N/A</span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    className="px-2 rounded bg-green-500 text-white hover:bg-green-600 transition"
+                    onClick={() => handleStatusChange(i, "Done")}
+                  >
+                    Done
+                  </button>
+                  <button
+                    className="px-2 rounded bg-red-500 text-white hover:bg-red-600 transition"
+                    onClick={() => handleStatusChange(i, "Rejected")}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    className="px-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition"
+                    onClick={() => handleStatusChange(i, "Rescheduled")}
+                  >
+                    Reschedule
+                  </button>
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 

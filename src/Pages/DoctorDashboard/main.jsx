@@ -1,9 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { IconButton } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
+=======
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
 import {
   OverviewModal,
   RejectModal,
@@ -16,8 +21,9 @@ import JitsiMeetModal from "../../Meeting/JitsiMeetModal";
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const DoctorDashboard = () => {
-  const { user } = useAuth();
+  const location = useLocation();
   const [doctor, setDoctor] = useState({});
+  const [doctorId, setDoctorId] = useState(null);
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
 
@@ -34,6 +40,8 @@ const DoctorDashboard = () => {
   const [viewedPrescription, setViewedPrescription] = useState("");
   const [viewedPatientName, setViewedPatientName] = useState("");
 
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
+=======
   const [jitsiRoom, setJitsiRoom] = useState("");
   const [showJitsi, setShowJitsi] = useState(false);
 
@@ -52,20 +60,47 @@ const DoctorDashboard = () => {
     setShowJitsi(false);
   };
 
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
-  }, []);
 
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
+    const idFromRoute =
+      location.state?.doctor?.doctorId || location.state?.doctorId;
+    const idFromStorage = localStorage.getItem("doctorId");
+    const finalDoctorId = idFromRoute || idFromStorage;
+
+    if (!finalDoctorId) return;
+
+    setDoctorId(finalDoctorId);
+
+    const fetchDoctor = async () => {
+      try {
+        const res = await axios.get(`${base_url}/doctors/public/${finalDoctorId}`);
+        if (res.status === 200) {
+          setDoctor(res.data.doctor);
+          localStorage.setItem("doctorId", res.data.doctor.doctorId);
+        }
+      } catch (err) {
+        console.error("Failed to fetch doctor profile:", err);
+      }
+    };
+
+    fetchDoctor();
+  }, [location.state]);
+
+=======
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
   const fetchAppointments = useCallback(async () => {
-    if (!user?.id) return;
-    const today = new Date().toISOString().split("T")[0];
+    if (!doctor?.doctorId) return;
 
     try {
-      const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${user.id}`;
-      const prevURL = `${base_url}/appointments/previous?doctorId=${user.id}`;
+      const today = new Date().toISOString().split("T")[0];
+      const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${doctor.doctorId}`;
+      const prevURL = `${base_url}/appointments/previous?doctorId=${doctor.doctorId}`;
 
       console.log("Requesting:", todayURL);
 
@@ -80,7 +115,7 @@ const DoctorDashboard = () => {
     } catch (err) {
       console.error("Error fetching appointments:", err);
     }
-  }, [user?.id]);
+  }, [doctor]);
 
   useEffect(() => {
     fetchAppointments();
@@ -93,6 +128,16 @@ const DoctorDashboard = () => {
     prescriptionText = ""
   ) => {
     try {
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
+      const url = `${base_url}/appointments/update-status/${appointmentId}`;
+      const payload = {
+        appStatus: status,
+        rejectionReason: reason,
+        prescription: prescriptionText,
+      };
+
+      await axios.put(url, payload);
+=======
       await axios.put(
         `${base_url}/appointments/update-status/${appointmentId}`,
         {
@@ -101,6 +146,7 @@ const DoctorDashboard = () => {
           prescription: prescriptionText,
         }
       );
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
     } catch (err) {
       console.error("Failed to update status:", err);
     }
@@ -125,7 +171,6 @@ const DoctorDashboard = () => {
 
   const handleStatusChange = (index, status) => {
     setCurrentIndex(index);
-
     if (status === "Done") {
       setPrescriptionIndex(index);
       setShowPrescriptionModal(true);
@@ -157,14 +202,17 @@ const DoctorDashboard = () => {
 
   const handleSavePrescription = async () => {
     const appt = todayAppointments[prescriptionIndex];
-    const appointmentId = appt.appointmentId;
     try {
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
+      await updateAppointmentStatus(appt.appointmentId, "Completed", "", currentPrescription);
+=======
       await updateAppointmentStatus(
         appointmentId,
         "Completed",
         "",
         currentPrescription
       );
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
       moveToPrevious(prescriptionIndex, "Completed", "", currentPrescription);
       setShowPrescriptionModal(false);
       setCurrentPrescription("");
@@ -174,14 +222,13 @@ const DoctorDashboard = () => {
     }
   };
 
-  const handleOverviewClick = () => {
-    setDescription(doctor?.overview || "");
-    setShowOverview(true);
-  };
-
   const handleSaveDescription = async () => {
     try {
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
+      await axios.put(`${base_url}/doctors/update/${doctor.doctorId}`, {
+=======
       await axios.put(`${base_url}/doctors/update/${user.id}`, {
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
         overview: description,
       });
       setDoctor((prev) => ({ ...prev, overview: description }));
@@ -218,6 +265,7 @@ const DoctorDashboard = () => {
             </Card>
           </Col>
         </Row>
+
         <Row>
           <Col md={6}>
             <div className="d-flex justify-content-between align-items-center mb-2">
@@ -236,6 +284,11 @@ const DoctorDashboard = () => {
                 >
                   <Card.Body className="d-flex justify-content-between">
                     <div>
+<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
+                      <div><strong>Name:</strong> {appt.name}</div>
+                      <div><strong>Date:</strong> {appt.date}</div>
+                      <div><strong>Slot:</strong> {appt.slotNumber}</div>
+=======
                       <div>
                         <strong>Patient ID:</strong> {appt.patientId}
                       </div>
@@ -245,6 +298,7 @@ const DoctorDashboard = () => {
                       <div>
                         <strong>Slot:</strong> {appt.slotNumber}
                       </div>
+>>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
                     </div>
                     <div>
                       <div className="pb-2 ">
@@ -286,6 +340,7 @@ const DoctorDashboard = () => {
               ))
             )}
           </Col>
+
           <Col md={6}>
             <h5 className="text-primary">Previous Appointments</h5>
             {previousAppointments.map((appt, idx) => (
@@ -338,7 +393,7 @@ const DoctorDashboard = () => {
       <OverviewModal
         show={showOverview}
         onClose={() => setShowOverview(false)}
-        description={description}
+        description={doctor?.overview || ""}
         setDescription={setDescription}
         onSave={handleSaveDescription}
       />

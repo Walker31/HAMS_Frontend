@@ -20,27 +20,21 @@ const CalendarWithSlots = () => {
   const [bookedSlots, setBookedSlots] = useState([]);
 
   useEffect(() => {
-    const routeDoctorId = location?.state?.doctorId || location?.state?.doctor?._id;
-    const storageDoctorId = localStorage.getItem("doctorId");
-    const finalDoctorId = routeDoctorId || storageDoctorId;
+    const idFromRoute = location.state?.doctorId;
 
-    console.log("Route doctorId:", routeDoctorId);
-    console.log("Storage doctorId:", storageDoctorId);
-    console.log("Final doctorId:", finalDoctorId);
-
-    if (!finalDoctorId) {
+    if (!idFromRoute) {
+      console.log(idFromRoute)
+      console.error("Doctor ID not found in location state.");
       alert("Doctor ID missing. Please go back and try again.");
       navigate(-1);
       return;
     }
 
-    setDoctorId(finalDoctorId);
+    setDoctorId(idFromRoute);
 
     const fetchSavedSlots = async () => {
       try {
-        const url = `${base_url}/doctors/${finalDoctorId}/slots`;
-        console.log("Fetching saved slots from:", url);
-        const res = await axios.get(url);
+        const res = await axios.get(`${base_url}/doctors/${idFromRoute}/slots`);
         if (res.status === 200) {
           setSavedSlots(res.data.availableSlots || {});
         }
@@ -50,7 +44,7 @@ const CalendarWithSlots = () => {
     };
 
     fetchSavedSlots();
-  }, [location]);
+  }, [location.state]);
 
   const fetchBookedSlots = async (dateKey) => {
     try {
