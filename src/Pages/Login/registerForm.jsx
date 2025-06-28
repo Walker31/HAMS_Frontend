@@ -51,6 +51,7 @@ export default function RegisterForm() {
     try {
       if (mode === "Login") {
         const loginData = data || formData;
+        console.log(data)
         const res = await loginHandler(loginData, role, login);
         if (res?.token) {
           navigate("dashboard");

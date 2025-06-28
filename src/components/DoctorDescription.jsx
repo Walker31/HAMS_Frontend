@@ -42,6 +42,7 @@ export const DoctorDescription = () => {
         const res = await axios.get(
           `http://localhost:3000/doctors/${doctorId}/slots`
         );
+        console.log(res)
         const allSlots = res.data?.availableSlots || {};
         const dateKey = new Date(selectedDate).toISOString().split("T")[0];
         const slotsForDate = allSlots[dateKey] || [];
