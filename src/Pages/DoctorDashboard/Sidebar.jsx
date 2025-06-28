@@ -5,7 +5,6 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import InsightsIcon from '@mui/icons-material/Insights';
 import LogoutIcon from '@mui/icons-material/Logout';
-//import defImage from "../../assets/default-profile.jpg"; // Make sure this path is correct
 import defImage from "/default.avif";
 
 const Sidebar = ({
@@ -38,13 +37,11 @@ const Sidebar = ({
 
   const handleNavigation = (label, path, action) => {
     if (label === "Slots") {
-      if (!doctor || !doctor._id) {
+      if (!doctor || !doctor.doctorId) {
         alert("Doctor ID missing from doctor object.");
         return;
       }
-
-      localStorage.setItem("doctorId", doctor._id);
-      navigate("/dashboard/slots", { state: { doctorId: doctor._id } });
+      navigate("/dashboard/slots", { state: { doctorId: doctor.doctorId } });
     } else if (path) {
       navigate(path);
     } else if (action) {

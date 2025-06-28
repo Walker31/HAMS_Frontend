@@ -4,11 +4,6 @@ import axios from "axios";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { IconButton } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
-<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
-=======
-import axios from "axios";
-import { useAuth } from "../../contexts/AuthContext";
->>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
 import {
   OverviewModal,
   RejectModal,
@@ -40,34 +35,29 @@ const DoctorDashboard = () => {
   const [viewedPrescription, setViewedPrescription] = useState("");
   const [viewedPatientName, setViewedPatientName] = useState("");
 
-<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
-=======
   const [jitsiRoom, setJitsiRoom] = useState("");
   const [showJitsi, setShowJitsi] = useState(false);
 
- const handleOpenJitsi = (meetLink) => {
-  const roomName = meetLink?.split("https://meet.jit.si/")[1];
-  if (!roomName || roomName === "Link") {
-    alert("Invalid or missing Meet link for this appointment.");
-    return;
-  }
-  setJitsiRoom(roomName);
-  setShowJitsi(true);
-};
-
+  const handleOpenJitsi = (meetLink) => {
+    const roomName = meetLink?.split("https://meet.jit.si/")[1];
+    if (!roomName || roomName === "Link") {
+      alert("Invalid or missing Meet link for this appointment.");
+      return;
+    }
+    setJitsiRoom(roomName);
+    setShowJitsi(true);
+  };
 
   const handleCloseJitsi = () => {
     setShowJitsi(false);
   };
 
->>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
 
-<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
     const idFromRoute =
       location.state?.doctor?.doctorId || location.state?.doctorId;
     const idFromStorage = localStorage.getItem("doctorId");
@@ -92,8 +82,6 @@ const DoctorDashboard = () => {
     fetchDoctor();
   }, [location.state]);
 
-=======
->>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
   const fetchAppointments = useCallback(async () => {
     if (!doctor?.doctorId) return;
 
@@ -128,16 +116,6 @@ const DoctorDashboard = () => {
     prescriptionText = ""
   ) => {
     try {
-<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
-      const url = `${base_url}/appointments/update-status/${appointmentId}`;
-      const payload = {
-        appStatus: status,
-        rejectionReason: reason,
-        prescription: prescriptionText,
-      };
-
-      await axios.put(url, payload);
-=======
       await axios.put(
         `${base_url}/appointments/update-status/${appointmentId}`,
         {
@@ -146,7 +124,6 @@ const DoctorDashboard = () => {
           prescription: prescriptionText,
         }
       );
->>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
     } catch (err) {
       console.error("Failed to update status:", err);
     }
@@ -203,16 +180,12 @@ const DoctorDashboard = () => {
   const handleSavePrescription = async () => {
     const appt = todayAppointments[prescriptionIndex];
     try {
-<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
-      await updateAppointmentStatus(appt.appointmentId, "Completed", "", currentPrescription);
-=======
       await updateAppointmentStatus(
-        appointmentId,
+        appt.appointmentId,
         "Completed",
         "",
         currentPrescription
       );
->>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
       moveToPrevious(prescriptionIndex, "Completed", "", currentPrescription);
       setShowPrescriptionModal(false);
       setCurrentPrescription("");
@@ -224,11 +197,7 @@ const DoctorDashboard = () => {
 
   const handleSaveDescription = async () => {
     try {
-<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
       await axios.put(`${base_url}/doctors/update/${doctor.doctorId}`, {
-=======
-      await axios.put(`${base_url}/doctors/update/${user.id}`, {
->>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
         overview: description,
       });
       setDoctor((prev) => ({ ...prev, overview: description }));
@@ -284,21 +253,9 @@ const DoctorDashboard = () => {
                 >
                   <Card.Body className="d-flex justify-content-between">
                     <div>
-<<<<<<< HEAD:src/Pages/Dashboard/Dashboard.jsx
                       <div><strong>Name:</strong> {appt.name}</div>
                       <div><strong>Date:</strong> {appt.date}</div>
                       <div><strong>Slot:</strong> {appt.slotNumber}</div>
-=======
-                      <div>
-                        <strong>Patient ID:</strong> {appt.patientId}
-                      </div>
-                      <div>
-                        <strong>Date:</strong> {appt.date}
-                      </div>
-                      <div>
-                        <strong>Slot:</strong> {appt.slotNumber}
-                      </div>
->>>>>>> bce9d6c9e3e56d173b9031b15f09ffcaabceb0fe:src/Pages/DoctorDashboard/main.jsx
                     </div>
                     <div>
                       <div className="pb-2 ">
