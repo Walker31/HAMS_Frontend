@@ -1,20 +1,27 @@
 import { createHospital } from "../apiControllers/userAPI";
 
-export default async function hospitalHandler(formData,login) {
+export default async function hospitalHandler(formData, login) {
+  const lat = formData.location?.latitude || localStorage.getItem("latitude");
+  const lon = formData.location?.longitude || localStorage.getItem("longitude");
   const formatData = {
     hospitalName: formData.hospitalName,
     phone: formData.phone,
     email: formData.email,
     password: formData.password,
-    RegId:formData.RegId,
+    RegId: formData.RegId,
     location: {
-      coordinates: [formData.location.latitude, formData.location.longitude], // [longitude, latitude]
+      coordinates:[parseFloat(lat),parseFloat(lon)],
     },
+    addressLine: formData.addressLine,
+    city: formData.city,
+    state: formData.state,
+    pincode: formData.pincode,
   };
-  console.log(formatData);
-  try {
 
-    const response = await createHospital(formatData,login);
+  console.log("Sending hospital registration data:", formatData);
+
+  try {
+    const response = await createHospital(formatData, login);
     console.log("Hospital registered successfully:", response);
     alert("Hospital registration successful!");
   } catch (error) {
