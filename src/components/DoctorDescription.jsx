@@ -101,8 +101,7 @@ export const DoctorDescription = () => {
       consultStatus: isSet ? "Online" : "Offline",
     };
 
-      console.log("Sending payload:", payload); // 🔍 Debug
-
+    try {
       const response = await axios.post(
         `${base_url}/appointments/book`,
         payload,

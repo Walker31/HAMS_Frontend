@@ -1,4 +1,3 @@
-// components/PatientDashboard.jsx
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -112,17 +111,9 @@ const PatientDashboard = () => {
         />
       </main>
 
-      {/* Jitsi Modal */}
-      <JitsiMeetModal
-        roomName={jitsiRoom}
-        isOpen={showJitsi}
-        onClose={handleCloseJitsi}
-      />
+      <JitsiMeetModal roomName={jitsiRoom} isOpen={showJitsi} onClose={handleCloseJitsi} />
     </div>
   );
 };
 
 export default PatientDashboard;
-
-
- 
