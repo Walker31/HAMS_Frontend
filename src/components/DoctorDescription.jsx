@@ -66,7 +66,7 @@ export const DoctorDescription = () => {
       navigate("/login");
       return;
     }
-
+    
     try {
       const payload = {
         date: selectedDate,
@@ -76,10 +76,10 @@ export const DoctorDescription = () => {
         slotNumber: selectedSlot,
         reason: reason || "General Checkup",
         payStatus: isOn ? "Paid" : "Unpaid",
-        consultStatus: isSet ? "Online" : "Offline", // ✅ Important field
+        consultStatus: isSet ? "Online" : "Offline",
       };
 
-      console.log("Sending payload:", payload); // 🔍 Debug
+      console.log("Sending payload:", payload);
 
       const response = await axios.post(
         "http://localhost:3000/appointments/book",
@@ -103,7 +103,7 @@ export const DoctorDescription = () => {
         <div className="col-md-8">
           <div className="d-flex align-items-start gap-4">
             <img
-              src={doctorDetails?.photo || "/default-doctor.jpg"}
+              src={doctorDetails?.photo?.url || "/default-doctor.jpg"}
               alt="Doctor"
               className="rounded-full"
               style={{ width: "200px", height: "200px", objectFit: "cover" }}

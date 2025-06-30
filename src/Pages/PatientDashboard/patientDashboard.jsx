@@ -1,18 +1,21 @@
-import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import Sidebar from "./components/sidebar";
-import DashboardHeader from "./components/header";
-import AppointmentList from "./components/appointmentList";
-import HistoryList from "./components/historyList";
+// components/PatientDashboard.jsx
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import AppointmentBanner from './components/appointmentBanner';
+import HealthReport from './components/HealthReports';
+import HeartRateGraph from './components/HeartRateGraph';
+import RecentAppointments from './components/RecentAppointments';
+
 import { useAuth } from "../../contexts/AuthContext";
 import JitsiMeetModal from "../../Meeting/JitsiMeetModal";
-import GreetingCards from "./components/GreetingCards";
-import MedicationList from "./components/MedicationList";
-import RightProfileSidebar from "./components/RightSidebar";
-
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
 const PatientDashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [appointments, setAppointments] = useState([]);
@@ -23,11 +26,11 @@ const PatientDashboard = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const toggleSidebar = () => setCollapsed(!collapsed);
+  const toggleSidebar = () => setCollapsed((prev) => !prev);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    logout?.(); // call logout if it's available in the AuthContext
+    logout?.();
     navigate("/", { replace: true });
     alert("Logged out successfully");
   };
@@ -46,16 +49,6 @@ const PatientDashboard = () => {
     setShowJitsi(false);
   };
 
-  const fetchDoctorDetails = async (doctorId) => {
-    try {
-      const res = await axios.get(`${base_url}/doctors/${doctorId}`);
-      return res.data?.name || "Unknown Doctor";
-    } catch (err) {
-      console.error("Failed to fetch doctor details", err);
-      return "Unknown Doctor";
-    }
-  };
-
   const fetchAppointments = useCallback(async () => {
     if (!user?.id) return;
 
@@ -69,12 +62,12 @@ const PatientDashboard = () => {
 
       const upcoming = res.data.filter((a) => {
         const apptDate = new Date(a.date).toISOString().split("T")[0];
-        return apptDate === todayStr;
+        return apptDate === todayStr && a.appStatus === "Pending";
       });
 
       const past = res.data.filter((a) => {
         const apptDate = new Date(a.date).toISOString().split("T")[0];
-        return apptDate < todayStr;
+        return apptDate < todayStr && ["Completed", "Rejected", "Rescheduled"].includes(a.appStatus);
       });
 
       setAppointments(upcoming);
@@ -104,34 +97,32 @@ const PatientDashboard = () => {
   };
 
   return (
-    <div className="flex bg-[#FFF1F4] min-h-screen overflow-hidden">
-      <Sidebar
-        collapsed={collapsed}
-        toggleSidebar={toggleSidebar}
-        handleLogout={handleLogout}
-      />
-      <div className="flex flex-col flex-1 overflow-y-auto p-6 space-y-6">
-        <DashboardHeader name={user?.name || "Patient"} />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <AppointmentList
-              appointments={appointments}
-              onCancel={handleCancel}
-              handleOpenJitsi={handleOpenJitsi}
-            />
-            <HistoryList history={history} />
-            <MedicationList/>
-          </div>
-          <RightProfileSidebar user={user} />
-          </div>
-        </div>
-        <JitsiMeetModal
-          show={showJitsi}
-          onHide={handleCloseJitsi}
-          roomName={jitsiRoom}
+    <div className="flex bg-gray-100 min-h-screen">
+      <Sidebar collapsed={collapsed} toggleSidebar={toggleSidebar} handleLogout={handleLogout} />
+
+      <main className="flex-1 p-6">
+        <Header />
+        <AppointmentBanner />
+        <HealthReport />
+        <HeartRateGraph />
+        <RecentAppointments
+          appointments={appointments}
+          onCancel={handleCancel}
+          handleOpenJitsi={handleOpenJitsi}
         />
-      </div>
+      </main>
+
+      {/* Jitsi Modal */}
+      <JitsiMeetModal
+        roomName={jitsiRoom}
+        isOpen={showJitsi}
+        onClose={handleCloseJitsi}
+      />
+    </div>
   );
 };
 
 export default PatientDashboard;
+
+
+ 

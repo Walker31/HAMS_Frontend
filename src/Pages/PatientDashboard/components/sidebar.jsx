@@ -1,50 +1,50 @@
-import { FaFilePrescription, FaCalendarAlt, FaSignOutAlt, FaBars } from "react-icons/fa";
-import SidebarItem from "./sidebarItem";
-import { useState } from "react";
+import React from 'react';
+import { useNavigate } from 'react-router-dom'; // ✅ import navigate
+import { FaBars, FaCalendarAlt, FaHeartbeat } from 'react-icons/fa';
+import { MdMessage, MdPayment, MdAssignment, MdLogout, MdSettings } from 'react-icons/md';
+import { BsFileMedical } from 'react-icons/bs';
 
-const Sidebar = ({ collapsed, toggleSidebar, handleLogout }) => {
-  const [active, setActive] = useState("Appointments");
+const Sidebar = ({ collapsed, toggleSidebar }) => {
+  const navigate = useNavigate();
 
-  const handleItemClick = (label) => setActive(label);
+  const handleLogout = () => {
+    navigate('/'); 
+  };
 
   return (
-    <div
-      className={`${
-        collapsed ? "w-20" : "w-64"
-      } bg-[#FFF1F4] shadow-md flex flex-col py-6 transition-all duration-300 min-h-screen`}
-    >
-      <button onClick={toggleSidebar} className="mb-6 self-center text-gray-500 hover:text-pink-500">
-        <FaBars size={24} />
+    <aside className={`bg-white shadow-md flex flex-col transition-all duration-300 ${collapsed ? 'w-20' : 'w-64'} p-4`}>
+      <button onClick={toggleSidebar} className="self-end mb-4 text-gray-500">
+        <FaBars />
       </button>
 
-      <div className="flex flex-col items-center space-y-4 flex-1 w-full px-2">
-        <SidebarItem
-          icon={<FaCalendarAlt size={18} />}
-          label="Appointments"
-          collapsed={collapsed}
-          active={active === "Appointments"}
-          onClick={() => handleItemClick("Appointments")}
-        />
-        <SidebarItem
-          icon={<FaFilePrescription size={18} />}
-          label="Prescriptions"
-          collapsed={collapsed}
-          active={active === "Prescriptions"}
-          onClick={() => handleItemClick("Prescriptions")}
-        />
-      </div>
+      <h2 className={`text-2xl font-bold text-cyan-600 mb-6 transition-opacity duration-300 ${collapsed ? 'opacity-0 hidden' : 'opacity-100'}`}>
+        HAMS
+      </h2>
 
-      <div className="px-4 mt-auto">
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-4 text-gray-500 hover:text-red-500 transition-colors"
-        >
-          <FaSignOutAlt size={20} />
-          {!collapsed && <span className="font-medium">Logout</span>}
-        </button>
+      <nav className="flex flex-col space-y-4">
+        <SidebarItem icon={<FaCalendarAlt />} label="Dashboard" collapsed={collapsed} />
+        <SidebarItem icon={<FaHeartbeat />} label="Appointments" collapsed={collapsed} />
+        <SidebarItem icon={<BsFileMedical />} label="Medical Records" collapsed={collapsed} />
+        <SidebarItem icon={<MdAssignment />} label="Prescriptions" collapsed={collapsed} />
+        <SidebarItem icon={<MdPayment />} label="Billing & Payments" collapsed={collapsed} />
+        <SidebarItem icon={<MdMessage />} label="Messages" collapsed={collapsed} />
+      </nav>
+
+      <div className="mt-auto space-y-2">
+        <SidebarItem icon={<MdSettings />} label="Settings" collapsed={collapsed} />
+        <div onClick={handleLogout} className="cursor-pointer">
+          <SidebarItem icon={<MdLogout />} label="Logout" collapsed={collapsed} />
+        </div>
       </div>
-    </div>
+    </aside>
   );
 };
+
+const SidebarItem = ({ icon, label, collapsed }) => (
+  <div className="flex items-center space-x-3 text-gray-700 text-sm font-medium">
+    {icon}
+    {!collapsed && <span>{label}</span>}
+  </div>
+);
 
 export default Sidebar;

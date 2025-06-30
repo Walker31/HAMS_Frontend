@@ -75,7 +75,7 @@ const TopDoc = () => {
             >
               <div className="w-full h-36 overflow-hidden rounded-lg mb-4">
                 <img
-                  src={d.photo || "/default.avif"}
+                  src={d.photo.url || "/default.avif"}
                   alt={`${d.name} photo`}
                   loading="lazy"
                   className="w-full h-full object-cover"
