@@ -15,6 +15,7 @@ import FAQs from "./components/FAQs";
 import Services from "./components/Services";
 import CalendarWithSlots from "./Pages/DoctorDashboard/CalendarWithSlots";
 import AppointmentDetails from "./Pages/DoctorDashboard/AppointmentDetails";
+import EditProfile from "./Pages/DoctorDashboard/EditProfile"
 import DashboardLayout from "./Pages/DoctorDashboard/DashboardLayout";
 import RoleBasedRoute from "./RoleBasedRoute";
 import { getCityFromCoords } from "./utils/locationUtils";
@@ -122,6 +123,7 @@ const App = () => {
           <Route path="home" element={<DoctorDashboard />} />
           <Route path="appointments" element={<AppointmentDetails />} />
           <Route path="slots" element={<CalendarWithSlots />} />
+          <Route path="editProfile" element={<EditProfile />} />
           <Route path="*" element={<div>Page Not Found</div>} />
         </Route>
       </Routes>

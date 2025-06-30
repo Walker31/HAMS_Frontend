@@ -32,8 +32,9 @@ const DashboardLayout = () => {
         console.error("Error fetching doctor profile:", error);
       }
     };
-
+    
     fetchDoctor();
+    
   }, []);
 
   const handleOverviewClick = () => {

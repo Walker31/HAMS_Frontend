@@ -25,11 +25,10 @@ export const DoctorDescription = () => {
   // Extract doctor info safely
   const state = location.state || {};
   const doctor = state.doctor || null;
-  const doctorId =
-    doctor?.doctorId ||
-    state?.doctorId
+  const doctorId = doctor?.doctorId || state?.doctorId;
 
   const reason = state?.reason || "General Checkup";
+  console.log("doctorDetails:", doctorDetails);
 
   // Fetch doctor profile
   useEffect(() => {
@@ -67,7 +66,9 @@ export const DoctorDescription = () => {
       const dateKey = new Date(selectedDate).toISOString().split("T")[0];
       try {
         const res = await axios.get(
-          `${base_url}/doctors/${doctorId}/booked-slots?date=${encodeURIComponent(dateKey)}`
+          `${base_url}/doctors/${doctorId}/booked-slots?date=${encodeURIComponent(
+            dateKey
+          )}`
         );
         setBookedSlots(res.data.bookedSlots || []);
       } catch (error) {
@@ -94,14 +95,15 @@ export const DoctorDescription = () => {
     const payload = {
       date: selectedDate,
       doctorId,
-      hospitalId: doctorDetails?.Hospital || "Own Practice",
+      hospitalId: doctorDetails?.hospitalId || "Own Practice",
       slotNumber: selectedSlot,
       reason: reason,
       payStatus: isOn ? "Paid" : "Unpaid",
       consultStatus: isSet ? "Online" : "Offline",
     };
-
     try {
+      console.log("Sending payload:", payload); // 🔍 Debug
+
       const response = await axios.post(
         `${base_url}/appointments/book`,
         payload,
@@ -191,21 +193,40 @@ export const DoctorDescription = () => {
             <h6 className="fw-bold mb-2">Available Slots:</h6>
             <div className="d-flex flex-wrap gap-2 mb-2">
               {availableSlots.length > 0 ? (
-                availableSlots.map((slot) => (
-                  <button
-                    key={slot}
-                    className={`btn btn-sm ${
-                      selectedSlot === slot
-                        ? "btn-warning"
-                        : "btn-outline-warning"
-                    }`}
-                    onClick={() => setSelectedSlot(slot)}
-                  >
-                    {slot}
-                  </button>
-                ))
+                availableSlots.map((slot) => {
+                  const isBooked = bookedSlots.includes(slot);
+                  const isSelected = selectedSlot === slot;
+
+                  const handleClick = () => {
+                    if (isBooked) {
+                      alert(
+                        "This slot is already booked. Please choose another."
+                      );
+                      return;
+                    }
+                    setSelectedSlot(slot);
+                  };
+
+                  return (
+                    <button
+                      key={slot}
+                      className={`btn btn-sm ${
+                        isBooked
+                          ? "btn-secondary"
+                          : isSelected
+                          ? "btn-warning"
+                          : "btn-outline-warning"
+                      }`}
+                      onClick={handleClick}
+                    >
+                      {slot}
+                    </button>
+                  );
+                })
               ) : (
-                <p className="text-muted">No slots available for selected date</p>
+                <p className="text-muted">
+                  No slots available for selected date
+                </p>
               )}
             </div>
 
@@ -261,7 +282,9 @@ export const DoctorDescription = () => {
               disabled={!selectedSlot}
               title={!selectedSlot ? "Please select a slot" : ""}
             >
-              {isLoggedIn ? "BOOK APPOINTMENT" : "Please Login to book an appointment"}
+              {isLoggedIn
+                ? "BOOK APPOINTMENT"
+                : "Please Login to book an appointment"}
             </button>
           </div>
         </div>

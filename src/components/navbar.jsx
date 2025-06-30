@@ -143,20 +143,10 @@ const Navbar = ({ location, setLocation }) => {
           aria-modal="true"
         >
           <div className="bg-white rounded-2xl w-max max-h-[90vh] flex flex-col shadow-lg overflow-hidden relative overflow-y-auto">
-            
-            {/* Close Button */}
-            <div className="flex justify-end p-3">
-              <IconButton
-                aria-label="Close"
-                onClick={() => setShowRegister(false)}
-              >
-                <CloseIcon />
-              </IconButton>
-            </div>
 
             {/* Registration Form */}
             <div className="flex-1 overflow-y-auto px-6 pb-6 scrollbar-thin">
-              <RegisterForm />
+              <RegisterForm onClose={() => setShowRegister(false)} />
             </div>
           </div>
         </div>

@@ -35,7 +35,7 @@ const DoctorProfileCard = ({ doctor }) => {
       <div className="flex justify-around text-sm text-gray-600 mb-6">
         <div className="text-center">
           <div className="text-gray-500">EXPERIENCE</div>
-          <div className="font-semibold text-gray-800">{doctor.experience}</div>
+          <div className="font-semibold text-gray-800">{doctor.experience} yrs </div>
         </div>
         <div className="text-center">
           <div className="text-gray-500">RATING</div>
