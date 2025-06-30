@@ -4,14 +4,15 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
+import { useParams } from "react-router-dom";
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const AppointmentDetails = () => {
+  const { appointmentId } = useParams();
   const [appointmentData, setAppointmentData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const appointmentId = "iVKWWVu6";
 
   useEffect(() => {
     const fetchAppointmentData = async () => {
@@ -27,8 +28,11 @@ const AppointmentDetails = () => {
         setLoading(false);
       }
     };
-    fetchAppointmentData();
-  }, []);
+    
+    if (appointmentId) {
+      fetchAppointmentData();
+    }
+  }, [appointmentId]);
 
   if (loading) {
     return (
@@ -37,6 +41,7 @@ const AppointmentDetails = () => {
       </div>
     );
   }
+  
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen text-red-500">
@@ -45,8 +50,23 @@ const AppointmentDetails = () => {
     );
   }
 
-  const { appointmentDetails, patientDetails, previousAppointments } =
-    appointmentData;
+  if (!appointmentData) {
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-500">
+        No appointment data found
+      </div>
+    );
+  }
+
+  const { appointmentDetails, patientDetails, previousAppointments } = appointmentData;
+
+  if (!appointmentDetails) {
+    return (
+      <div className="flex items-center justify-center h-screen text-gray-500">
+        Appointment details not found
+      </div>
+    );
+  }
 
   return (
     <>
@@ -229,7 +249,7 @@ const AppointmentDetails = () => {
             </div>
             <hr />
             <div className="px-4 py-2 space-y-6">
-              {previousAppointments.length === 0 ? (
+              {!previousAppointments || previousAppointments.length === 0 ? (
                 <div className="text-center text-gray-600 font-medium py-8">
                   First appointment with the patient
                 </div>

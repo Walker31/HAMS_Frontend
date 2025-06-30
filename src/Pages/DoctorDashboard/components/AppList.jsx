@@ -1,19 +1,24 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../contexts/AuthContext";
 import "./QueuePage.css";
 
+const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
 const QueuePage = () => {
-  const { user } = useAuth(); // no token here
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [doctor, setDoctor] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [time, setTime] = useState(new Date());
   const [showGreeting, setShowGreeting] = useState(false);
 
-  const base_url = "http://localhost:3000";
-
-  // Get token directly from localStorage
   const token = localStorage.getItem("token");
+
+  const handleRowClick = (appointmentId) => {
+    navigate(`/dashboard/appointments/${appointmentId}`);
+  }
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -34,7 +39,6 @@ const QueuePage = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDoctor(res.data.doctor);
-        console.log("Doctor profile:", res.data.doctor); // ✅ confirm doctor.doctorId
       } catch (err) {
         console.error("Failed to fetch doctor profile", err);
       }
@@ -45,7 +49,6 @@ const QueuePage = () => {
 
   useEffect(() => {
     const fetchAppointments = async () => {
-      const today = new Date().toISOString().split("T")[0];
 
       if (!doctor?.doctorId) {
         console.warn("No doctorId found.");
@@ -53,11 +56,10 @@ const QueuePage = () => {
       }
 
       try {
-        const url = `${base_url}/appointments/pending/${today}?doctorId=${doctor.doctorId}`;
-        console.log("Fetching appointments from:", url); // ✅ confirm URL
-        const res = await axios.get(url);
+        const url = `${base_url}/appointments/previous`;
+        const res = await axios.get(url,{headers: { Authorization: `Bearer ${token}` },});
         setAppointments(res.data || []);
-        console.log("Appointments fetched:", res.data); // ✅ confirm data
+        console.log(res.data);
       } catch (err) {
         console.error("Failed to fetch appointments:", err);
       }
@@ -86,7 +88,7 @@ const QueuePage = () => {
   const online = appointments.filter((a) => a.consultStatus === "Online").length;
 
   return (
-    <div className="p-6 font-sans bg-blue-50 min-h-screen">
+    <div className="p-6 font-sans bg-blue-50 h-full">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <h1
           key={showGreeting ? "greeting" : "date"}
@@ -120,28 +122,69 @@ const QueuePage = () => {
         </div>
       </div>
 
-      <table className="w-full border-collapse bg-white shadow rounded-lg overflow-hidden">
-        <thead className="bg-blue-100 text-blue-800 text-left">
+      <div className="overflow-auto max-h-[350px] rounded-lg shadow bg-white">
+      <table className="w-full border-collapse bg-white shadow rounded-lg">
+        <thead className="bg-blue-100 text-blue-800 text-left sticky top-0 z-10">
           <tr>
-            <th className="p-3">Patient ID</th>
+            <th className="p-3">Patient Name</th>
+            <th className="p-3">Date</th>
             <th className="p-3">Slot</th>
+            
             <th className="p-3">Consult Mode</th>
+            <th className="p-3">Payment</th>
             <th className="p-3">Status</th>
             <th className="p-3">Reason</th>
           </tr>
         </thead>
         <tbody>
           {appointments.map((appt, index) => (
-            <tr key={index} className="border-t hover:bg-blue-50">
-              <td className="p-3">{appt.patientName}</td>
-              <td className="p-3">{appt.slotNumber}</td>
-              <td className="p-3">{appt.consultStatus}</td>
-              <td className="p-3">{appt.appStatus}</td>
-              <td className="p-3">{appt.reason}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            <tr
+              key={index}
+              className="border-t transition-colors duration-200 hover:bg-blue-100 cursor-pointer"
+              onClick={() => handleRowClick(appt.appointmentId)}
+            >
+          <td className="p-3">{appt.patientName}</td>
+          <td className="p-3">
+            {new Date(appt.date).toLocaleDateString("en-IN")}
+          </td>
+          <td className="p-3">{appt.slotNumber}</td>
+          
+          <td className="p-3">{appt.consultStatus}</td>
+          <td className="p-3">
+            <span
+              className={`px-2 py-1 text-sm rounded-full ${
+                appt.payStatus === "Paid"
+                  ? "bg-green-100 text-green-800"
+                  : "bg-yellow-100 text-yellow-800"
+              }`}
+            >
+              {appt.payStatus}
+            </span>
+          </td>
+          <td className="p-3">
+            <span
+              className={`px-2 py-1 text-sm rounded-full ${
+                appt.appStatus === "Pending"
+                  ? "bg-blue-100 text-blue-800"
+                  : appt.appStatus === "Rejected"
+                  ? "bg-red-100 text-red-800"
+                  : "bg-green-100 text-green-800"
+              }`}
+            >
+              {appt.appStatus}
+            </span>
+          </td>
+          <td className="p-3" title={appt.reason}>
+            {appt.reason?.length > 20
+              ? `${appt.reason.slice(0, 20)}...`
+              : appt.reason}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+  </div>
+
     </div>
   );
 };
