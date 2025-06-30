@@ -1,6 +1,8 @@
 import Button from "@mui/material/Button";
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 
 const appointmentHistory = [
@@ -15,7 +17,37 @@ const appointmentHistory = [
   { date: "02/06/2024", time: "03:00 PM", reason: "Complaint of Dizziness & Fatigue", status: "done" },
 ];
 
+const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
 const AppointmentDetails = () => {
+  const [appoitnmentData,setAppointmentData] = useState(null);
+  const [loading,setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+
+  useEffect(()=>{
+    const fetchAppointmentData= () =>{
+      try {
+        const response = axios.get(`${base_url}/appointment/details`);
+        setAppointmentData(response.data);
+      } catch (error) {
+        console.error('Error fetching data :',error);
+      }
+      finally {
+        setLoading(false);
+      }
+    }
+    fetchAppointmentData();
+  },[]);
+
+  if(loading) return 
+  if(error) return <div className="p-4 text-red-500">{error}</div>;
+
+  const {
+    appoitnmentDetails,
+    patientDetails,
+    appointmentHistory
+  } = appoitnmentData;
   return (
     <>
       <div className="flex gap-4">
@@ -38,44 +70,44 @@ const AppointmentDetails = () => {
               <div className="flex flex-col gap-4">
                 <div>
                   <div className="text-gray-600">Appointment ID</div>
-                  <div className="font-semibold">434428</div>
+                  <div className="font-semibold">{appointmentDetails.id}</div>
                 </div>
                 <div>
                   <div className="text-gray-600">Doctor Assigned</div>
-                  <div className="font-semibold">Dr. Michael Smith</div>
+                  <div className="font-semibold">{appointmentDetails.doctor}</div>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4">
                 <div>
                   <div className="text-gray-600">Booked On</div>
-                  <div className="font-semibold">27/06/2025</div>
+                  <div className="font-semibold">{appointmentDetails.bookedOn}</div>
                 </div>
                 <div>
                   <div className="text-gray-600">Department</div>
-                  <div className="font-semibold">Dermatology</div>
+                  <div className="font-semibold">{appointmentDetails.department}</div>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4">
                 <div>
                   <div className="text-gray-600">Appointment Date</div>
-                  <div className="font-semibold">03/07/2025</div>
+                  <div className="font-semibold">{appointmentDetails.date}</div>
                 </div>
                 <div>
                   <div className="text-gray-600">Reason for Visit</div>
-                  <div className="font-semibold">High Blood Pressure Checkup</div>
+                  <div className="font-semibold">{appointmentDetails.reason}</div>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4">
                 <div>
                   <div className="text-gray-600">Appointment Time</div>
-                  <div className="font-semibold">6:30 PM</div>
+                  <div className="font-semibold">{appointmentDetails.time}</div>
                 </div>
                 <div>
                   <div className="text-gray-600">Consultation Type</div>
-                  <div className="font-semibold">In-Person</div>
+                  <div className="font-semibold">{appointmentDetails.type}</div>
                 </div>
               </div>
             </div>
@@ -96,40 +128,40 @@ const AppointmentDetails = () => {
               <div className="flex flex-col gap-4">
                 <div>
                   <div className="text-gray-600">First Name</div>
-                  <div className="font-semibold">Aditya</div>
+                  <div className="font-semibold">{patientDetails.firstName}</div>
                 </div>
                 <div>
                   <div className="text-gray-600">Email Address</div>
-                  <div className="font-semibold">aditya@gmail.com</div>
+                  <div className="font-semibold">{patientDetails.email}</div>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4">
                 <div>
                   <div className="text-gray-600">Last Name</div>
-                  <div className="font-semibold">Janga</div>
+                  <div className="font-semibold">{patientDetails.lastName}</div>
                 </div>
                 <div>
                   <div className="text-gray-600">Contact No</div>
-                  <div className="font-semibold">+91 7200148738</div>
+                  <div className="font-semibold">+91 {patientDetails.contact}</div>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4">
                 <div>
                   <div className="text-gray-600">Age</div>
-                  <div className="font-semibold">22</div>
+                  <div className="font-semibold">{patientDetails.age}</div>
                 </div>
                 <div>
                   <div className="text-gray-600">Address</div>
-                  <div className="font-semibold">Avadi, Chennai</div>
+                  <div className="font-semibold">{patientDetails.address}</div>
                 </div>
               </div>
 
               <div className="flex flex-col gap-4">
                 <div>
                   <div className="text-gray-600">Gender</div>
-                  <div className="font-semibold">Male</div>
+                  <div className="font-semibold">{patientDetails.gender}</div>
                 </div>
               </div>
             </div>

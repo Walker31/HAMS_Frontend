@@ -100,6 +100,7 @@ export const DoctorDescription = () => {
       payStatus: isOn ? "Paid" : "Unpaid",
       consultStatus: isSet ? "Online" : "Offline",
     };
+    try {
 
       console.log("Sending payload:", payload); // 🔍 Debug
 
