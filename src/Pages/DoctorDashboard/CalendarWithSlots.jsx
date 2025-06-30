@@ -20,7 +20,7 @@ const CalendarWithSlots = () => {
   const [bookedSlots, setBookedSlots] = useState([]);
 
   useEffect(() => {
-    const routeDoctorId = location?.state?.doctorId || location?.state?.doctor?._id;
+    const routeDoctorId = location?.state?.doctorId || location?.state?.doctor?.doctorId;
     const storageDoctorId = localStorage.getItem("doctorId");
     const finalDoctorId = routeDoctorId || storageDoctorId;
 

@@ -40,16 +40,15 @@ const DoctorDashboard = () => {
   const [jitsiRoom, setJitsiRoom] = useState("");
   const [showJitsi, setShowJitsi] = useState(false);
 
- const handleOpenJitsi = (meetLink) => {
-  const roomName = meetLink?.split("https://meet.jit.si/")[1];
-  if (!roomName || roomName === "Link") {
-    alert("Invalid or missing Meet link for this appointment.");
-    return;
-  }
-  setJitsiRoom(roomName);
-  setShowJitsi(true);
-};
-
+  const handleOpenJitsi = (meetLink) => {
+    const roomName = meetLink?.split("https://meet.jit.si/")[1];
+    if (!roomName || roomName === "Link") {
+      alert("Invalid or missing Meet link for this appointment.");
+      return;
+    }
+    setJitsiRoom(roomName);
+    setShowJitsi(true);
+  };
 
   const handleCloseJitsi = () => {
     setShowJitsi(false);
@@ -60,6 +59,30 @@ const DoctorDashboard = () => {
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
+
+    const idFromRoute =
+      location.state?.doctor?.doctorId || location.state?.doctorId;
+    const idFromStorage = localStorage.getItem("doctorId");
+    const finalDoctorId = idFromRoute || idFromStorage;
+
+    if (!finalDoctorId) return;
+
+    setDoctorId(finalDoctorId);
+
+    const fetchDoctor = async () => {
+      try {
+        const res = await axios.get(`${base_url}/doctors/public/${finalDoctorId}`);
+        if (res.status === 200) {
+          setDoctor(res.data.doctor);
+          localStorage.setItem("doctorId", res.data.doctor.doctorId);
+        }
+      } catch (err) {
+        console.error("Failed to fetch doctor profile:", err);
+      }
+    };
+
+    fetchDoctor();
+  }, [location.state]);
 
   const fetchAppointments = useCallback(async () => {
     if (!doctor?.doctorId) return;
@@ -160,7 +183,7 @@ const DoctorDashboard = () => {
     const appt = todayAppointments[prescriptionIndex];
     try {
       await updateAppointmentStatus(
-        appointmentId,
+        appt.appointmentId,
         "Completed",
         "",
         currentPrescription
@@ -176,7 +199,7 @@ const DoctorDashboard = () => {
 
   const handleSaveDescription = async () => {
     try {
-      await axios.put(`${base_url}/doctors/update/${user.id}`, {
+      await axios.put(`${base_url}/doctors/update/${doctor.doctorId}`, {
         overview: description,
       });
       setDoctor((prev) => ({ ...prev, overview: description }));
@@ -232,15 +255,9 @@ const DoctorDashboard = () => {
                 >
                   <Card.Body className="d-flex justify-content-between">
                     <div>
-                      <div>
-                        <strong>Patient ID:</strong> {appt.patientId}
-                      </div>
-                      <div>
-                        <strong>Date:</strong> {appt.date}
-                      </div>
-                      <div>
-                        <strong>Slot:</strong> {appt.slotNumber}
-                      </div>
+                      <div><strong>Name:</strong> {appt.name}</div>
+                      <div><strong>Date:</strong> {appt.date}</div>
+                      <div><strong>Slot:</strong> {appt.slotNumber}</div>
                     </div>
                     <div>
                       <div className="pb-2 ">
@@ -367,6 +384,6 @@ const DoctorDashboard = () => {
       />
     </Container>
   );
-});
-}
+};
+
 export default DoctorDashboard;

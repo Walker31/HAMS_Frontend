@@ -40,13 +40,11 @@ const Sidebar = ({
 
   const handleNavigation = (label, path, action) => {
     if (label === "Slots") {
-      if (!doctor || !doctor._id) {
+      if (!doctor || !doctor.doctorId) {
         alert("Doctor ID missing from doctor object.");
         return;
       }
-
-      localStorage.setItem("doctorId", doctor._id);
-      navigate("/dashboard/slots", { state: { doctorId: doctor._id } });
+      navigate("/dashboard/slots", { state: { doctorId: doctor.doctorId } });
     } else if (path) {
       navigate(path);
     } else if (action) {

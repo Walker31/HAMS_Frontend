@@ -28,12 +28,6 @@ const DashboardLayout = () => {
           headers: { Authorization: `Bearer ${newToken}` },
         });
         setDoctor(res.data.doctor);
-
-        // Save doctorId and full doctor object
-        if (res.data.doctor?._id) {
-          localStorage.setItem("doctorId", res.data.doctor._id);
-          localStorage.setItem("doctor", JSON.stringify(res.data.doctor));
-        }
       } catch (error) {
         console.error("Error fetching doctor profile:", error);
       }
@@ -52,7 +46,7 @@ const DashboardLayout = () => {
 
   const handleSaveOverview = async () => {
     try {
-      const res = await axios.put(`${base_url}/doctors/update/${doctor._id}`, {
+      const res = await axios.put(`${base_url}/doctors/update/${doctor.doctorId}`, {
         overview: overviewText,
       });
       setDoctor({ ...doctor, overview: overviewText });
@@ -66,8 +60,6 @@ const DashboardLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    localStorage.removeItem("doctorId");
-    localStorage.removeItem("doctor");
     navigate("/", { replace: true });
     logout();
     alert("Logged out successfully");

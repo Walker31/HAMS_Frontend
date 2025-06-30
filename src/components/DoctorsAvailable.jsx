@@ -82,12 +82,7 @@ const DoctorsAvailable = () => {
                         `/${(hname || "hospital").split(" ")[0]}/doctors-available/DoctorDescription`,
                         {
                           state: {
-                            doctor: {
-                              doctorId: doc._id,
-                              name: doc.name,
-                              photo: doc.photo,
-                              specialization: doc.specialization,
-                            },
+                            doctor: { ...doc, doctorId: doc.doctorId },
                             hname: { hosp: hname },
                             reason: reason || "General Checkup",
                           },
