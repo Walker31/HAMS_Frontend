@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import { FaBell } from 'react-icons/fa';
 import axios from 'axios';
+const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
+
 
 const Header = () => {
   const [name, setName] = useState('');
@@ -9,7 +11,7 @@ const Header = () => {
   useEffect(() => {
     const fetchUserName = async () => {
       try {
-        const response = await axios.get('/api/patient/profile');
+        const response = await axios.get(`${base_url}/patient/profile`);
         setName(response.data.name);
       } catch (error) {
         console.error('Failed to fetch patient name:', error);
