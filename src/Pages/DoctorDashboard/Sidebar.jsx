@@ -5,6 +5,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import InsightsIcon from '@mui/icons-material/Insights';
 import LogoutIcon from '@mui/icons-material/Logout';
+import EditIcon from '@mui/icons-material/Edit';
 //import defImage from "../../assets/default-profile.jpg"; // Make sure this path is correct
 import defImage from "/default.avif";
 
@@ -34,6 +35,7 @@ const Sidebar = ({
     { label: "Appointments", icon: <LibraryBooksSharpIcon />, path: "/dashboard/appointments" },
     { label: "Slots", icon: <CalendarTodayIcon />, path: "/dashboard/slots" },
     { label: "Overview", icon: <InsightsIcon />, action: handleOverviewClick },
+    { label: "EditProfile", icon: <EditIcon />, path: "/dashboard/editProfile"}
   ];
 
   const handleNavigation = (label, path, action) => {
@@ -62,7 +64,7 @@ const Sidebar = ({
         {!sidebarCollapsed && (
           <div>
             <img
-              src={doctor?.photo || defImage}
+              src={doctor?.photo?.url || defImage}
               alt="Doctor"
               className="w-20 h-20 rounded-full mx-auto mb-2"
             />

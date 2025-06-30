@@ -102,7 +102,7 @@ export default function RegisterForm() {
         for (let [key, value] of formPayLoad.entries()) {
           console.log(`${key}:`, value);
         }
-
+        console.log(formPayLoad)
         await doctorHandler(formPayLoad, login);
       } else if (userType === "hospital") {
         const lat = localStorage.getItem("latitude");
