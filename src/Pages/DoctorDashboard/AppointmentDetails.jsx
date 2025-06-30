@@ -3,70 +3,14 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
-const appointmentHistory = [
-  {
-    date: "03/02/2025",
-    time: "06:30 PM",
-    reason: "High Blood Pressure Checkup",
-    status: "upcoming",
-  },
-  {
-    date: "04/01/2025",
-    time: "03:30 PM",
-    reason: "Routine Checkup",
-    status: "done",
-  },
-  {
-    date: "10/12/2024",
-    time: "12:30 PM",
-    reason: "Follow-up for Diabetes & Hypertension",
-    status: "done",
-  },
-  {
-    date: "19/11/2024",
-    time: "05:30 PM",
-    reason: "Medication Review & Side Effects",
-    status: "done",
-  },
-  {
-    date: "12/10/2024",
-    time: "11:00 AM",
-    reason: "High Cholesterol Check",
-    status: "done",
-  },
-  {
-    date: "05/09/2024",
-    time: "04:30 PM",
-    reason: "Dizziness & Fatigue",
-    status: "done",
-  },
-  {
-    date: "06/08/2024",
-    time: "02:00 PM",
-    reason: "Flu & Fever Consultation",
-    status: "done",
-  },
-  {
-    date: "08/07/2024",
-    time: "12:00 PM",
-    reason: "Routine Checkup",
-    status: "done",
-  },
-  {
-    date: "02/06/2024",
-    time: "03:00 PM",
-    reason: "Complaint of Dizziness & Fatigue",
-    status: "done",
-  },
-];
+import CircularProgress from "@mui/material/CircularProgress";
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const AppointmentDetails = () => {
   const [appointmentData, setAppointmentData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState("");
   const appointmentId = "iVKWWVu6";
 
   useEffect(() => {
@@ -78,6 +22,7 @@ const AppointmentDetails = () => {
         setAppointmentData(response.data);
       } catch (error) {
         console.error("Error fetching data :", error);
+        setError("Error fetching appointment data");
       } finally {
         setLoading(false);
       }
@@ -85,8 +30,20 @@ const AppointmentDetails = () => {
     fetchAppointmentData();
   }, []);
 
-  if (loading) return;
-  if (error) return <div className="p-4 text-red-500">{error}</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <CircularProgress />
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen text-red-500">
+        {error}
+      </div>
+    );
+  }
 
   const { appointmentDetails, patientDetails, previousAppointments } =
     appointmentData;
@@ -102,9 +59,21 @@ const AppointmentDetails = () => {
               <div className="text-lg font-semibold">Appointment Details</div>
               <div className="flex items-center gap-2">
                 <span className="text-sm text-gray-700">Status</span>
-                <span className="px-3 py-1 rounded-full bg-yellow-300 text-gray-700 text-sm font-medium">
-                  Upcoming
-                </span>
+                {appointmentDetails?.status && (
+                  <span
+                    className={`px-2 py-1 rounded text-white ${
+                      appointmentDetails.status === "Upcoming"
+                        ? "bg-blue-500"
+                        : appointmentDetails.status === "Completed"
+                        ? "bg-green-500"
+                        : appointmentDetails.status === "Rejected"
+                        ? "bg-red-500"
+                        : "bg-gray-400"
+                    }`}
+                  >
+                    {appointmentDetails.status}
+                  </span>
+                )}
               </div>
             </div>
             <hr />
@@ -177,52 +146,77 @@ const AppointmentDetails = () => {
 
           {/* Patient Details Box */}
           <div className="border rounded-xl shadow-sm bg-white">
-            <div className="flex justify-between items-center pt-3 px-3">
-              <div className="text-lg font-semibold">Patient Details</div>
-            </div>
-            <hr />
-            <div className="flex justify-between p-4 text-sm">
-              <div className="flex flex-col gap-4">
-                <div>
-                  <div className="text-gray-600">Name</div>
-                  <div className="font-semibold">{patientDetails.name}</div>
-                </div>
-                <div>
-                  <div className="text-gray-600">Email Address</div>
-                  <div className="font-semibold">{patientDetails.email}</div>
-                </div>
+            {!patientDetails ? (
+              <div className="text-center p-4 text-gray-500">
+                Patient information not available.
               </div>
-
-              <div className="flex flex-col gap-4">
-                <div>
-                  <div className="text-gray-600">Gender</div>
-                  <div className="font-semibold">{patientDetails.gender}</div>
+            ) : (
+              <>
+                <div className="flex justify-between items-center pt-3 px-3">
+                  <div className="text-lg font-semibold">Patient Details</div>
                 </div>
-                <div>
-                  <div className="text-gray-600">Contact No</div>
-                  <div className="font-semibold">
-                    +91 {patientDetails.contact}
+                <hr />
+                <div className="flex justify-between p-4 text-sm">
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      <div className="text-gray-600">Name</div>
+                      <div className="font-semibold">{patientDetails.name}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-600">Email Address</div>
+                      <div className="font-semibold">
+                        {patientDetails.email}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      <div className="text-gray-600">Gender</div>
+                      <div className="font-semibold">
+                        {patientDetails.gender}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-gray-600">Contact No</div>
+                      <div className="font-semibold">
+                        +91 {patientDetails.contact}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-4">
+                    <div>
+                      <div className="text-gray-600">Age</div>
+                      <div className="font-semibold">{patientDetails.age}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-600">Address</div>
+                      <div className="font-semibold">
+                        {patientDetails.address}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="flex flex-col gap-4">
-                <div>
-                  <div className="text-gray-600">Age</div>
-                  <div className="font-semibold">{patientDetails.age}</div>
-                </div>
-                <div>
-                  <div className="text-gray-600">Address</div>
-                  <div className="font-semibold">{patientDetails.address}</div>
-                </div>
-              </div>
-            </div>
+              </>
+            )}
+            ;
           </div>
 
           {/* Placeholder for future section */}
-          <div className="border rounded-xl shadow-sm bg-white h-40 flex items-center justify-center text-gray-400">
+          <div className="border rounded-xl shadow-sm bg-white h-40 flex flex-col items-center justify-center text-gray-400">
             {/* Empty for now */}
-            <span>Additional Information</span>
+            <h3 className="text-lg font-semibold mb-2">
+              Additional Information
+            </h3>
+            {appointmentDetails?.notes ? (
+              <p className="text-gray-700">{appointmentDetails.prescription}</p>
+            ) : (
+              <p className="text-gray-400 italic">
+                No Prescription available for this appointment.
+              </p>
+            )}
+            {/* Similarly, add remarks or prescriptions if available */}
           </div>
         </div>
 
@@ -294,9 +288,6 @@ const AppointmentDetails = () => {
                   </div>
                 ))
               )}
-              <div className="text-sm text-blue-500 font-medium text-center mt-2 cursor-pointer">
-                +View More
-              </div>
             </div>
           </div>
         </div>
