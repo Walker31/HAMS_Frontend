@@ -12,7 +12,7 @@ const Toggle = ({ role, onRoleChange }) => {
       >
         <div
           className={`bg-green-700 w-5 h-5 rounded-full shadow-md transform transition-transform ${
-            isPatient ? "translate-x-0" : "translate-x-6"
+            isPatient ? "translate-x-0" : "translate-x-5"
           }`}
         ></div>
       </div>

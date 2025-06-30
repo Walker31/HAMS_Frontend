@@ -33,7 +33,6 @@ export const createHospital = async (hospitalData,login) => {
   const res = await axios.post(`${base_url}/hospitals/signup`, hospitalData, {
     withCredentials: true,
   });
-  login(res.data.token);
   return res.data;
 };
 

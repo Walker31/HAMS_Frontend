@@ -1,4 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
+import { useLocation } from "react-router-dom";
+import axios from "axios";
 import { Container, Row, Col, Card, Button } from "react-bootstrap";
 import { IconButton } from "@mui/material";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -16,8 +18,9 @@ import JitsiMeetModal from "../../Meeting/JitsiMeetModal";
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const DoctorDashboard = () => {
-  const { user } = useAuth();
+  const location = useLocation();
   const [doctor, setDoctor] = useState({});
+  const [doctorId, setDoctorId] = useState(null);
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
 
@@ -37,16 +40,15 @@ const DoctorDashboard = () => {
   const [jitsiRoom, setJitsiRoom] = useState("");
   const [showJitsi, setShowJitsi] = useState(false);
 
- const handleOpenJitsi = (meetLink) => {
-  const roomName = meetLink?.split("https://meet.jit.si/")[1];
-  if (!roomName || roomName === "Link") {
-    alert("Invalid or missing Meet link for this appointment.");
-    return;
-  }
-  setJitsiRoom(roomName);
-  setShowJitsi(true);
-};
-
+  const handleOpenJitsi = (meetLink) => {
+    const roomName = meetLink?.split("https://meet.jit.si/")[1];
+    if (!roomName || roomName === "Link") {
+      alert("Invalid or missing Meet link for this appointment.");
+      return;
+    }
+    setJitsiRoom(roomName);
+    setShowJitsi(true);
+  };
 
   const handleCloseJitsi = () => {
     setShowJitsi(false);
@@ -57,15 +59,38 @@ const DoctorDashboard = () => {
     if (token) {
       axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
-  }, []);
+
+    const idFromRoute =
+      location.state?.doctor?.doctorId || location.state?.doctorId;
+    const idFromStorage = localStorage.getItem("doctorId");
+    const finalDoctorId = idFromRoute || idFromStorage;
+
+    if (!finalDoctorId) return;
+
+    setDoctorId(finalDoctorId);
+
+    const fetchDoctor = async () => {
+      try {
+        const res = await axios.get(`${base_url}/doctors/public/${finalDoctorId}`);
+        if (res.status === 200) {
+          setDoctor(res.data.doctor);
+          localStorage.setItem("doctorId", res.data.doctor.doctorId);
+        }
+      } catch (err) {
+        console.error("Failed to fetch doctor profile:", err);
+      }
+    };
+
+    fetchDoctor();
+  }, [location.state]);
 
   const fetchAppointments = useCallback(async () => {
-    if (!user?.id) return;
-    const today = new Date().toISOString().split("T")[0];
+    if (!doctor?.doctorId) return;
 
     try {
-      const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${user.id}`;
-      const prevURL = `${base_url}/appointments/previous?doctorId=${user.id}`;
+      const today = new Date().toISOString().split("T")[0];
+      const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${doctor.doctorId}`;
+      const prevURL = `${base_url}/appointments/previous?doctorId=${doctor.doctorId}`;
 
       console.log("Requesting:", todayURL);
 
@@ -80,7 +105,7 @@ const DoctorDashboard = () => {
     } catch (err) {
       console.error("Error fetching appointments:", err);
     }
-  }, [user?.id]);
+  }, [doctor]);
 
   useEffect(() => {
     fetchAppointments();
@@ -125,7 +150,6 @@ const DoctorDashboard = () => {
 
   const handleStatusChange = (index, status) => {
     setCurrentIndex(index);
-
     if (status === "Done") {
       setPrescriptionIndex(index);
       setShowPrescriptionModal(true);
@@ -157,10 +181,9 @@ const DoctorDashboard = () => {
 
   const handleSavePrescription = async () => {
     const appt = todayAppointments[prescriptionIndex];
-    const appointmentId = appt.appointmentId;
     try {
       await updateAppointmentStatus(
-        appointmentId,
+        appt.appointmentId,
         "Completed",
         "",
         currentPrescription
@@ -174,14 +197,9 @@ const DoctorDashboard = () => {
     }
   };
 
-  const handleOverviewClick = () => {
-    setDescription(doctor?.overview || "");
-    setShowOverview(true);
-  };
-
   const handleSaveDescription = async () => {
     try {
-      await axios.put(`${base_url}/doctors/update/${user.id}`, {
+      await axios.put(`${base_url}/doctors/update/${doctor.doctorId}`, {
         overview: description,
       });
       setDoctor((prev) => ({ ...prev, overview: description }));
@@ -218,6 +236,7 @@ const DoctorDashboard = () => {
             </Card>
           </Col>
         </Row>
+
         <Row>
           <Col md={6}>
             <div className="d-flex justify-content-between align-items-center mb-2">
@@ -236,15 +255,9 @@ const DoctorDashboard = () => {
                 >
                   <Card.Body className="d-flex justify-content-between">
                     <div>
-                      <div>
-                        <strong>Patient ID:</strong> {appt.patientId}
-                      </div>
-                      <div>
-                        <strong>Date:</strong> {appt.date}
-                      </div>
-                      <div>
-                        <strong>Slot:</strong> {appt.slotNumber}
-                      </div>
+                      <div><strong>Name:</strong> {appt.name}</div>
+                      <div><strong>Date:</strong> {appt.date}</div>
+                      <div><strong>Slot:</strong> {appt.slotNumber}</div>
                     </div>
                     <div>
                       <div className="pb-2 ">
@@ -286,6 +299,7 @@ const DoctorDashboard = () => {
               ))
             )}
           </Col>
+
           <Col md={6}>
             <h5 className="text-primary">Previous Appointments</h5>
             {previousAppointments.map((appt, idx) => (
@@ -338,7 +352,7 @@ const DoctorDashboard = () => {
       <OverviewModal
         show={showOverview}
         onClose={() => setShowOverview(false)}
-        description={description}
+        description={doctor?.overview || ""}
         setDescription={setDescription}
         onSave={handleSaveDescription}
       />

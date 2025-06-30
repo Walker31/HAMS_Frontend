@@ -5,13 +5,13 @@ import { Outlet } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
-import { OverviewModal } from "./DoctorModals";
+import { OverviewModal } from "./DoctorModals"; // ✅ Import modal
 
 const DashboardLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [doctor, setDoctor] = useState({});
-  const [showOverview, setShowOverview] = useState(false);
-  const [overviewText, setOverviewText] = useState("");
+  const [doctor, setDoctor] = useState(null);
+  const [showOverview, setShowOverview] = useState(false); // ✅ For modal
+  const [overviewText, setOverviewText] = useState("");     // ✅ Description editing
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -32,9 +32,8 @@ const DashboardLayout = () => {
         console.error("Error fetching doctor profile:", error);
       }
     };
-    
+
     fetchDoctor();
-    
   }, []);
 
   const handleOverviewClick = () => {
@@ -51,7 +50,6 @@ const DashboardLayout = () => {
       });
       setDoctor({ ...doctor, overview: overviewText });
       setShowOverview(false);
-      alert("Overview saved successfully");
     } catch (err) {
       console.error("Failed to update overview", err);
       alert("Failed to update overview.");
@@ -77,7 +75,7 @@ const DashboardLayout = () => {
           sidebarCollapsed={sidebarCollapsed}
           setSidebarCollapsed={setSidebarCollapsed}
           doctor={doctor}
-          handleOverviewClick={handleOverviewClick}
+          handleOverviewClick={handleOverviewClick} // ✅ Working now
           handleLogout={handleLogout}
         />
         <main className="flex-1 overflow-y-auto p-4 bg-gray-100">

@@ -7,8 +7,10 @@ import loginHandler from "../../handlers/loginHandler.js";
 import patientHandler from "../../handlers/patientHandler";
 import doctorHandler from "../../handlers/doctorHandler";
 import hospitalHandler from "../../handlers/hospitalHandler.js";
+import { ArrowBack, Close } from "@mui/icons-material";
 import { useAuth } from "../../contexts/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
+import { IconButton } from "@mui/material";
 
 function getCurrentLocation() {
   return new Promise((resolve, reject) => {
@@ -28,21 +30,31 @@ function getCurrentLocation() {
   });
 }
 
-export default function RegisterForm() {
+export default function RegisterForm({ onClose }) {
   const [userType, setUserType] = useState(null);
   const [formData, setFormData] = useState({});
   const [isLogin, setIsLogin] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  const resetForm = () => {
+    setUserType(null);
+    setIsLogin(false);
+    setFormData({});
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleBack = () => {
-    setUserType(null);
-    setIsLogin(true);
-    setFormData({});
+    if (
+      Object.keys(formData).length > 0 &&
+      !window.confirm("Discard entered information?")
+    )
+      return;
+    resetForm();
   };
 
   const handleSubmit = async (e, data, mode, role) => {
@@ -51,18 +63,11 @@ export default function RegisterForm() {
     try {
       if (mode === "Login") {
         const loginData = data || formData;
+        console.log(data)
         const res = await loginHandler(loginData, role, login);
-        if (res?.token) {
-          navigate("dashboard");
-        }
+        if (res?.token) navigate("dashboard");
       } else if (mode === "SignUp") {
-        if (role === "patient") {
-          setUserType("patient");
-        } else if (role === "doctor") {
-          setUserType("doctor");
-        } else if (role === "hospital") {
-          setUserType("hospital");
-        }
+        setUserType(role);
       }
     } catch (err) {
       console.error("Error:", err);
@@ -75,11 +80,10 @@ export default function RegisterForm() {
 
     try {
       if (userType === "patient") {
-        console.log("Submitting patient data:", formData);
         await patientHandler(formData, login);
+        onClose?.();
       } else if (userType === "doctor") {
         const { latitude, longitude } = await getCurrentLocation();
-        console.log(formData);
         const formPayLoad = new FormData();
         Object.entries(formData).forEach(([key, value]) => {
           if (key !== "photo") {
@@ -101,8 +105,9 @@ export default function RegisterForm() {
         for (let [key, value] of formPayLoad.entries()) {
           console.log(`${key}:`, value);
         }
-
+        console.log(formPayLoad)
         await doctorHandler(formPayLoad, login);
+        onClose?.();
       } else if (userType === "hospital") {
         const lat = localStorage.getItem("latitude");
         const lon = localStorage.getItem("longitude");
@@ -113,11 +118,9 @@ export default function RegisterForm() {
             longitude: lon,
           },
         };
-        console.log("handle register");
-        console.log(formattedData);
         await hospitalHandler(formattedData, login);
+        onClose?.();
       }
-      alert("Registration successful!");
     } catch (err) {
       console.error("Registration failed:", err);
       alert("Registration failed. Please try again.");
@@ -125,14 +128,28 @@ export default function RegisterForm() {
   };
 
   return (
-    <div className="w-full max-w-[500px] h-full max-h-[750px] flex flex-col overflow-y-auto	rounded-lg items-center space-y-2 scrollbar-hide">
+    <div className="w-full h-full max-h-[750px] flex flex-col overflow-y-auto	rounded-lg items-center space-y-2 scrollbar-hide">
+      <div className="flex w-full mt-4 justify-between">
+        {(userType || isLogin) && (
+          <IconButton onClick={handleBack} aria-label="Back">
+            <ArrowBack />
+          </IconButton>
+        )}
+        {onClose && (
+          <div className="flex self-end">
+            <IconButton aria-label="Close" onClick={onClose}>
+              <Close />
+            </IconButton>
+          </div>
+        )}
+      </div>
+
       {!userType && !isLogin && <ModeSelector handleSubmit={handleSubmit} />}
       {userType === "doctor" && (
         <DoctorRegisterForm
           formData={formData}
           handleChange={handleChange}
           handleRegisterSubmit={handleRegisterSubmit}
-          handleBack={handleBack}
         />
       )}
       {userType === "patient" && (
@@ -140,7 +157,6 @@ export default function RegisterForm() {
           formData={formData}
           handleChange={handleChange}
           handleRegisterSubmit={handleRegisterSubmit}
-          handleBack={handleBack}
         />
       )}
       {userType === "hospital" && !isLogin && (
@@ -148,7 +164,6 @@ export default function RegisterForm() {
           formData={formData}
           handleChange={handleChange}
           handleRegisterSubmit={handleRegisterSubmit}
-          handleBack={handleBack}
         />
       )}
     </div>

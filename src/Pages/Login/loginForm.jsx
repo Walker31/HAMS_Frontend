@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  TextField,
-  Button,
-  FormControlLabel,
-  Checkbox,
-} from "@mui/material";
+import { TextField, Button, FormControlLabel, Checkbox } from "@mui/material";
 import PasswordField from "../../components/passwordField";
 import Toggle from "./toggle";
 export default function LoginForm({
@@ -18,7 +13,7 @@ export default function LoginForm({
   const toggleRole = (newRole) => {
     setRole(newRole);
     handleRoleChange(newRole);
-    localStorage.setItem('role',newRole);
+    localStorage.setItem("role", newRole);
   };
 
   return (
@@ -34,21 +29,25 @@ export default function LoginForm({
             onChange={handleChange}
             fullWidth
             required
-          /><PasswordField
-              value={formData.password || ""}
-              onChange={handleChange}
-            />
-        </div>     
+          />
+          <PasswordField
+            value={formData.password || ""}
+            onChange={handleChange}
+          />
+        </div>
         <div className="flex justify-end items-center">
-          <Button variant="text" size="small" className="text-blue-600 normal-case">
-           <div className="text-xs">Forgot Password?</div>
+          <Button
+            variant="text"
+            size="small"
+            className="text-blue-600 normal-case"
+          >
+            <div className="text-xs">Forgot Password?</div>
           </Button>
         </div>
 
-
         {/* Toggle */}
         <Toggle role={role} onRoleChange={toggleRole} />
-        
+
         <Button
           type="submit"
           variant="contained"
@@ -58,8 +57,6 @@ export default function LoginForm({
           Log In
         </Button>
       </form>
-
-      
     </div>
   );
 }

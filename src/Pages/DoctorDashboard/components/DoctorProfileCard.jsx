@@ -20,7 +20,6 @@ const DoctorProfileCard = ({ doctor }) => {
         time: "14:00 - 15:00",
         },
     ];
-console.log(doctor)
   return (
     <div className="bg-white p-6 rounded-2xl shadow-lg w-full max-w-sm border border-gray-200">
       {/* Profile */}
@@ -36,7 +35,7 @@ console.log(doctor)
       <div className="flex justify-around text-sm text-gray-600 mb-6">
         <div className="text-center">
           <div className="text-gray-500">EXPERIENCE</div>
-          <div className="font-semibold text-gray-800">{doctor.experience}</div>
+          <div className="font-semibold text-gray-800">{doctor.experience} yrs </div>
         </div>
         <div className="text-center">
           <div className="text-gray-500">RATING</div>
