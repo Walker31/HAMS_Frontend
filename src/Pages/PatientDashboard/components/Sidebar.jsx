@@ -1,13 +1,15 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom'; // ✅ import navigate
 import { FaBars, FaCalendarAlt, FaHeartbeat } from 'react-icons/fa';
 import { MdMessage, MdPayment, MdAssignment, MdLogout, MdSettings } from 'react-icons/md';
 import { BsFileMedical } from 'react-icons/bs';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const Sidebar = ({ collapsed, toggleSidebar }) => {
+  const {logout} = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
+    logout();
     navigate('/'); 
   };
 
