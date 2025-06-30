@@ -26,10 +26,7 @@ export const DoctorDescription = () => {
   const state = location.state || {};
   const doctor = state.doctor || null;
   const doctorId = doctor?.doctorId || state?.doctorId;
-
   const reason = state?.reason || "General Checkup";
-  console.log("doctorDetails:", doctorDetails);
-
   // Fetch doctor profile
   useEffect(() => {
     if (!doctorId) return;
@@ -95,15 +92,13 @@ export const DoctorDescription = () => {
     const payload = {
       date: selectedDate,
       doctorId,
-      hospitalId: doctorDetails?.hospitalId || "Own Practice",
+      Hospital: doctorDetails?.Hospital || "Own Practice",
       slotNumber: selectedSlot,
       reason: reason,
       payStatus: isOn ? "Paid" : "Unpaid",
       consultStatus: isSet ? "Online" : "Offline",
     };
     try {
-      console.log("Sending payload:", payload); // 🔍 Debug
-
       const response = await axios.post(
         `${base_url}/appointments/book`,
         payload,
