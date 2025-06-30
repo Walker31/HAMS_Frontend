@@ -1,10 +1,16 @@
-import { useState, useEffect, useCallback } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import Sidebar from "./components/sidebar";
-import DashboardHeader from "./components/header";
-import AppointmentList from "./components/appointmentList";
-import HistoryList from "./components/historyList";
+// components/PatientDashboard.jsx
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+import Sidebar from './components/Sidebar';
+import Header from './components/Header';
+import AppointmentBanner from './components/appointmentBanner';
+import HealthReport from './components/HealthReports';
+import HeartRateGraph from './components/HeartRateGraph';
+import RecentAppointments from './components/RecentAppointments';
+
 import { useAuth } from "../../contexts/AuthContext";
 import JitsiMeetModal from "../../Meeting/JitsiMeetModal";
 
@@ -20,7 +26,7 @@ const PatientDashboard = () => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
 
-  const toggleSidebar = () => setCollapsed(!collapsed);
+  const toggleSidebar = () => setCollapsed((prev) => !prev);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -91,41 +97,32 @@ const PatientDashboard = () => {
   };
 
   return (
-    <div className="flex bg-[#FFF1F4] min-h-screen overflow-hidden">
-      <Sidebar
-        collapsed={collapsed}
-        toggleSidebar={toggleSidebar}
-        handleLogout={handleLogout}
-      />
-      <div className="flex flex-col flex-1 overflow-y-auto p-6 space-y-6">
-        <DashboardHeader name={user?.name || "Patient"} />
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            <AppointmentList
-              appointments={appointments}
-              onCancel={handleCancel}
-              handleOpenJitsi={handleOpenJitsi}
-            />
-            <HistoryList history={history} />
-          </div>
-          <div className="bg-white rounded-2xl p-6 shadow-md">
-            <h3 className="text-lg font-bold mb-4">Welcome back</h3>
-            <div className="text-sm text-gray-600">
-              <p><strong>Name:</strong> {user?.name || "N/A"}</p>
-              <p><strong>Age:</strong> {user?.age || "N/A"}</p>
-              <p><strong>Weight:</strong> {user?.weight || "N/A"}</p>
-              <p><strong>Height:</strong> {user?.height || "N/A"}</p>
-            </div>
-          </div>
-        </div>
-        <JitsiMeetModal
-          show={showJitsi}
-          onHide={handleCloseJitsi}
-          roomName={jitsiRoom}
+    <div className="flex bg-gray-100 min-h-screen">
+      <Sidebar collapsed={collapsed} toggleSidebar={toggleSidebar} handleLogout={handleLogout} />
+
+      <main className="flex-1 p-6">
+        <Header />
+        <AppointmentBanner />
+        <HealthReport />
+        <HeartRateGraph />
+        <RecentAppointments
+          appointments={appointments}
+          onCancel={handleCancel}
+          handleOpenJitsi={handleOpenJitsi}
         />
-      </div>
+      </main>
+
+      {/* Jitsi Modal */}
+      <JitsiMeetModal
+        roomName={jitsiRoom}
+        isOpen={showJitsi}
+        onClose={handleCloseJitsi}
+      />
     </div>
   );
 };
 
 export default PatientDashboard;
+
+
+ 

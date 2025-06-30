@@ -1,10 +1,5 @@
 const sampleFeedbacks = [
   {
-    name: 'Aditya',
-    review: 'I found my life partner in this app',
-    photo: 'aditya.png',
-  },
-  {
     name: 'Shrudeep',
     review: 'Fast appointment scheduling and clear follow-up reminders kept me informed every step of the way.',
     photo: 'shru.jpg',
