@@ -19,6 +19,15 @@ import {
 } from "chart.js";
 import { Line, Doughnut } from "react-chartjs-2";
 import IconButton from "@mui/material/IconButton";
+import RefreshIcon from "@mui/icons-material/Refresh";
+
+import {
+  OverviewModal,
+  RejectModal,
+  PrescriptionModal,
+  ViewPrescriptionModal,
+} from "./DoctorModals";
+import JitsiMeetModal from "../../Meeting/JitsiMeetModal";
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
@@ -32,7 +41,6 @@ ChartJS.register(
   Legend
 );
 
-// Line chart data
 const lineData = {
   labels: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
   datasets: [
@@ -68,7 +76,6 @@ const lineOptions = {
   maintainAspectRatio: false,
 };
 
-// Doughnut chart data
 const doughnutData = {
   labels: ["Male", "Female"],
   datasets: [
@@ -87,30 +94,6 @@ const doughnutOptions = {
   },
 };
 
-const appointments = [
-  {
-    name: "Kristina Stokes",
-    date: "05/02/2022",
-    time: "09:30",
-    status: "active",
-    avatar: dp,
-  },
-  {
-    name: "Alexander Preston",
-    date: "05/02/2022",
-    time: "12:00",
-    status: "inactive",
-    avatar: dp,
-  },
-  {
-    name: "Johnathan Mcgee",
-    date: "05/02/2022",
-    time: "16:30",
-    status: "inactive",
-    avatar: dp,
-  },
-];
-
 const DoctorDashboard = () => {
   const { user } = useAuth();
   const [doctor, setDoctor] = useState({});
@@ -123,6 +106,7 @@ const DoctorDashboard = () => {
   const [showPrescriptionModal, setShowPrescriptionModal] = useState(false);
   const [showViewPrescription, setShowViewPrescription] = useState(false);
 
+  // Modal form states
   const [rejectionReason, setRejectionReason] = useState("");
   const [description, setDescription] = useState("");
   const [currentIndex, setCurrentIndex] = useState(null);
@@ -130,6 +114,10 @@ const DoctorDashboard = () => {
   const [currentPrescription, setCurrentPrescription] = useState("");
   const [viewedPrescription, setViewedPrescription] = useState("");
   const [viewedPatientName, setViewedPatientName] = useState("");
+
+  // Jitsi modal
+  const [jitsiRoom, setJitsiRoom] = useState("");
+  const [showJitsi, setShowJitsi] = useState(false);
 
   const newtoken = localStorage.getItem("token");
 
@@ -147,24 +135,17 @@ const DoctorDashboard = () => {
     fetchDoctor();
   }, [newtoken]);
 
-  // Fetch appointments
+  // Fetch both today's and previous appointments
   const fetchAppointments = useCallback(async () => {
-    console.log(user);
     if (!user?.id) return;
     const today = new Date().toISOString().split("T")[0];
-
     try {
       const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${user.id}`;
-      console.log(todayURL);
-      const prevURL = `${base_url}/appointments/previous`;
-
+      const prevURL = `${base_url}/appointments/previous?doctorId=${user.id}`;
       const [todayRes, prevRes] = await Promise.all([
         axios.get(todayURL),
-        axios.get(prevURL, {
-          headers: { Authorization: `Bearer ${newtoken}` },
-        }),
+        axios.get(prevURL),
       ]);
-
       setTodayAppointments(todayRes.data || []);
       setPreviousAppointments(prevRes.data || []);
     } catch (err) {
@@ -176,7 +157,7 @@ const DoctorDashboard = () => {
     fetchAppointments();
   }, [fetchAppointments]);
 
-  // Update appointment status
+  // Update appointment status in backend
   const updateAppointmentStatus = async (
     appointmentId,
     status,
@@ -190,15 +171,13 @@ const DoctorDashboard = () => {
         rejectionReason: reason,
         prescription: prescriptionText,
       };
-      console.log("PUT Request to:", url);
-      console.log("Payload:", JSON.stringify(payload, null, 2));
-      const response = await axios.put(url, payload);
-      console.log("Response:", response.data);
+      await axios.put(url, payload);
     } catch (err) {
       console.error("Failed to update status:", err);
     }
   };
 
+  // Move appointment from today to previous
   const moveToPrevious = (index, status, reason = "", prescription = "") => {
     const appt = todayAppointments[index];
     const updatedToday = [...todayAppointments];
@@ -210,15 +189,22 @@ const DoctorDashboard = () => {
       {
         ...appt,
         appStatus: status,
-        rejectionReason: reason,
+        reasonForReject: reason,
         prescription,
       },
     ]);
   };
 
+  // Remove from today's appointments (for reschedule/reject/done)
+  const removeFromTodayAppointments = (index) => {
+    const updatedToday = [...todayAppointments];
+    updatedToday.splice(index, 1);
+    setTodayAppointments(updatedToday);
+  };
+
+  // Handle appointment status change
   const handleStatusChange = (index, status) => {
     setCurrentIndex(index);
-
     if (status === "Done") {
       setPrescriptionIndex(index);
       setShowPrescriptionModal(true);
@@ -231,51 +217,53 @@ const DoctorDashboard = () => {
     }
   };
 
+  // Confirm rejection
   const handleRejectConfirm = async () => {
     if (!rejectionReason.trim()) {
       alert("Please provide a reason.");
       return;
     }
     const appt = todayAppointments[currentIndex];
-    await updateAppointmentStatus(
-      appt.appointmentId,
-      "Rejected",
-      rejectionReason
-    );
+    await updateAppointmentStatus(appt.appointmentId, "Rejected", rejectionReason);
     moveToPrevious(currentIndex, "Rejected", rejectionReason);
     setShowRejectModal(false);
     setRejectionReason("");
     setCurrentIndex(null);
   };
-  console.log(todayAppointments);
 
+  // Save prescription and complete appointment
   const handleSavePrescription = async () => {
     const appt = todayAppointments[prescriptionIndex];
-    const appointmentId = appt.appointmentId;
-    try {
-      await updateAppointmentStatus(
-        appointmentId,
-        "Completed",
-        "",
-        currentPrescription
-      );
-      moveToPrevious(prescriptionIndex, "Completed", "", currentPrescription);
-      setShowPrescriptionModal(false);
-      setCurrentPrescription("");
-      setPrescriptionIndex(null);
-    } catch (err) {
-      console.error("Error saving prescription:", err);
+    await updateAppointmentStatus(appt.appointmentId, "Completed", "", currentPrescription);
+    moveToPrevious(prescriptionIndex, "Completed", "", currentPrescription);
+    setShowPrescriptionModal(false);
+    setCurrentPrescription("");
+    setPrescriptionIndex(null);
+  };
+
+  // View prescription (for previous appointments)
+  const handleViewPrescription = (name, prescription) => {
+    setViewedPatientName(name);
+    setViewedPrescription(prescription);
+    setShowViewPrescription(true);
+  };
+
+  // Jitsi Meet logic
+  const handleOpenJitsi = (meetLink) => {
+    const roomName = meetLink?.split("https://meet.jit.si/")[1];
+    if (!roomName || roomName === "Link") {
+      alert("Invalid or missing Meet link for this appointment.");
+      return;
     }
+    setJitsiRoom(roomName);
+    setShowJitsi(true);
   };
+  const handleCloseJitsi = () => setShowJitsi(false);
 
-  const handleOverviewClick = () => {
-    setDescription(doctor?.overview || "");
-    setShowOverview(true);
-  };
-
+  // Save doctor's overview/description
   const handleSaveDescription = async () => {
     try {
-      await axios.put(`${base_url}/doctors/update/${user.id}`, {
+      await axios.put(`${base_url}/doctors/update/${doctor.doctorId}`, {
         overview: description,
       });
       setDoctor((prev) => ({ ...prev, overview: description }));
@@ -292,6 +280,12 @@ const DoctorDashboard = () => {
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <div className="text-3xl font-bold text-gray-900">Dashboard</div>
+            <button
+              className="text-blue-500 underline"
+              onClick={() => setShowOverview(true)}
+            >
+              Edit Overview
+            </button>
           </div>
 
           {/* Stat Cards */}
@@ -304,7 +298,7 @@ const DoctorDashboard = () => {
                 </div>
                 <span className="text-green-600 text-xs">+2.5%</span>
               </div>
-              <div className="mt-2 text-2xl font-bold text-gray-800">28</div>
+              <div className="mt-2 text-2xl font-bold text-gray-800">{todayAppointments.length}</div>
             </div>
             <div className="bg-white rounded-xl p-4 shadow border border-gray-100">
               <div className="flex items-center justify-between text-gray-500 text-sm">
@@ -326,7 +320,9 @@ const DoctorDashboard = () => {
                 </div>
                 <span className="text-red-600 text-xs">-1.8%</span>
               </div>
-              <div className="mt-2 text-2xl font-bold text-gray-800">258</div>
+              <div className="mt-2 text-2xl font-bold text-gray-800">
+                {previousAppointments.filter((a) => a.appStatus === "Completed").length}
+              </div>
             </div>
             <div className="bg-white rounded-xl p-4 shadow border border-gray-100">
               <div className="flex items-center justify-between text-gray-500 text-sm">
@@ -382,23 +378,22 @@ const DoctorDashboard = () => {
               <div className="font-semibold text-gray-900 mb-2">
                 Consultation Mode
               </div>
-
-              {/* Responsive Doughnut Chart */}
               <div className="relative w-full max-w-[180px] aspect-square mx-auto">
                 <Doughnut
                   data={doughnutData}
                   options={{
                     ...doughnutOptions,
-                    maintainAspectRatio: false, // critical for responsiveness
+                    maintainAspectRatio: false,
                     responsive: true,
                   }}
                 />
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-2xl font-bold text-gray-900">258</span>
+                  <span className="text-2xl font-bold text-gray-900">
+                    {previousAppointments.length + todayAppointments.length}
+                  </span>
                   <span className="text-xs text-gray-400">week</span>
                 </div>
               </div>
-
               {/* Legend */}
               <div className="flex flex-col gap-1 mt-4 text-xs w-full">
                 <div className="flex items-center gap-2">
@@ -419,10 +414,14 @@ const DoctorDashboard = () => {
       </div>
       {/* Today's Appointments Table */}
       <div className="bg-white rounded-xl shadow border border-gray-100 p-6 overflow-x-auto">
-        <div className="text-xl font-semibold text-gray-900 mb-4">
-          Today's Appointments
+        <div className="flex items-center justify-between mb-4">
+          <div className="text-xl font-semibold text-gray-900">
+            Today's Appointments
+          </div>
+          <IconButton size="small" onClick={fetchAppointments}>
+            <RefreshIcon />
+          </IconButton>
         </div>
-
         {todayAppointments.length === 0 ? (
           <div>No Appointments for Today.</div>
         ) : (
@@ -436,7 +435,6 @@ const DoctorDashboard = () => {
               <div>MEET LINK</div>
               <div className="text-center">ACTION</div>
             </div>
-
             {/* Appointment Rows */}
             {todayAppointments.map((appt, i) => (
               <div
@@ -454,30 +452,19 @@ const DoctorDashboard = () => {
                 <div className="text-gray-700">{appt.reason}</div>
                 <div className="text-gray-700">{appt.date}</div>
                 <div className="text-gray-700">{appt.slotNumber}</div>
-
                 <div>
                   {appt.consultStatus === "Online" && appt.MeetLink ? (
-                    <IconButton
-                      component="a"
-                      href={appt.MeetLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      sx={{
-                        px: 2,
-                        bgcolor: "blue.400",
-                        borderRadius: 2,
-                        transition: "background-color 0.3s",
-                        width: "max-content",
-                        "&:hover": { bgcolor: "blue.800" },
-                      }}
+                    <button
+                      className="sm pl-1.5 pr-1.5 bg-blue-500 rounded-1 pt-0.5 pb-0.5 text-white"
+                      onClick={() => handleOpenJitsi(appt.MeetLink)}
                     >
-                      <VideocamIcon className="mx-2 text-blue-600" />
-                    </IconButton>
+                      <VideocamIcon className="mx-2 text-white" />
+                      Join Meet
+                    </button>
                   ) : (
                     <span className="text-gray-400">N/A</span>
                   )}
                 </div>
-
                 <div className="flex items-center gap-2">
                   <button
                     className="px-2 rounded bg-green-500 text-white hover:bg-green-600 transition"
@@ -503,6 +490,102 @@ const DoctorDashboard = () => {
           </>
         )}
       </div>
+      {/* Previous Appointments */}
+      <div className="bg-white rounded-xl shadow border border-gray-100 p-6 mt-6">
+        <div className="text-xl font-semibold text-gray-900 mb-4">
+          Previous Appointments
+        </div>
+        {previousAppointments.length === 0 ? (
+          <div>No Previous Appointments.</div>
+        ) : (
+          previousAppointments.map((appt, idx) => (
+            <div
+              key={idx}
+              className="mb-3 border-l-4 pl-4 border-blue-500 shadow-sm bg-gray-50 rounded py-2"
+            >
+              <div className="flex flex-wrap gap-4 items-center justify-between">
+                <div>
+                  <div>
+                    <strong>Patient ID:</strong> {appt.patientId}
+                  </div>
+                  <div>
+                    <strong>Date:</strong> {appt.date}
+                  </div>
+                  <div>
+                    <strong>Slot:</strong> {appt.slotNumber}
+                  </div>
+                  <div>
+                    <strong>Status:</strong>{" "}
+                    <span
+                      className={`badge bg-${
+                        appt.appStatus === "Completed"
+                          ? "green-500"
+                          : appt.appStatus === "Rejected"
+                          ? "red-500"
+                          : "yellow-500"
+                      } text-white`}
+                    >
+                      {appt.appStatus}
+                    </span>
+                  </div>
+                  {appt.reasonForReject && (
+                    <div className="text-red-600">
+                      <strong>Reason:</strong> {appt.reasonForReject}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  {appt.prescription && (
+                    <button
+                      className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700"
+                      onClick={() =>
+                        handleViewPrescription(appt.patientName || appt.patientId, appt.prescription)
+                      }
+                    >
+                      View Prescription
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Modals */}
+      <OverviewModal
+        show={showOverview}
+        onClose={() => setShowOverview(false)}
+        description={doctor?.overview || ""}
+        setDescription={setDescription}
+        onSave={handleSaveDescription}
+      />
+      <RejectModal
+        show={showRejectModal}
+        onClose={() => setShowRejectModal(false)}
+        rejectionReason={rejectionReason}
+        setRejectionReason={setRejectionReason}
+        onConfirm={handleRejectConfirm}
+      />
+      <PrescriptionModal
+        show={showPrescriptionModal}
+        onClose={() => setShowPrescriptionModal(false)}
+        name={todayAppointments[prescriptionIndex]?.patientId || ""}
+        prescription={currentPrescription}
+        setPrescription={setCurrentPrescription}
+        onSave={handleSavePrescription}
+      />
+      <ViewPrescriptionModal
+        show={showViewPrescription}
+        onClose={() => setShowViewPrescription(false)}
+        name={viewedPatientName}
+        prescription={viewedPrescription}
+      />
+      <JitsiMeetModal
+        show={showJitsi}
+        onHide={handleCloseJitsi}
+        roomName={jitsiRoom}
+      />
     </div>
   );
 };

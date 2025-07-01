@@ -59,16 +59,6 @@ const Sidebar = ({
       }`}
     >
       <div className="p-4 text-center border-b border-gray-800">
-        {!sidebarCollapsed && (
-          <div>
-            <img
-              src={doctor?.photo?.url || defImage}
-              alt="Doctor"
-              className="w-20 h-20 rounded-full mx-auto mb-2"
-            />
-            <h1 className="text-lg font-bold">{doctor?.name || "Doctor"}</h1>
-          </div>
-        )}
         {!effectiveCollapse && <h1 className="text-lg font-bold">Welcome</h1>}
       </div>
 

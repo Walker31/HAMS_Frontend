@@ -1,6 +1,30 @@
 import { useState } from "react";
 import Typography from "@mui/material/Typography";
 import LoginForm from "./loginForm";
+import PersonIcon from "@mui/icons-material/Person";
+import MedicalServicesIcon from "@mui/icons-material/MedicalServices";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
+
+const roles = [
+  {
+    label: "Patient",
+    value: "patient",
+    icon: <PersonIcon fontSize="large" />,
+    color: "blue",
+  },
+  {
+    label: "Doctor",
+    value: "doctor",
+    icon: <MedicalServicesIcon fontSize="large" />,
+    color: "green",
+  },
+  {
+    label: "Hospital",
+    value: "hospital",
+    icon: <LocalHospitalIcon fontSize="large" />,
+    color: "red",
+  },
+];
 
 export default function ModeSelector({ handleSubmit }) {
   const [mode, setMode] = useState("Login");
@@ -19,6 +43,17 @@ export default function ModeSelector({ handleSubmit }) {
       [name]: type === "checkbox" ? checked : value,
     }));
   };
+
+  const renderRoleButton = ({ label, value, icon, color }) => (
+    <button
+      key={value}
+      onClick={() => handleSubmit(null, null, mode, value)}
+      className={`w-full flex flex-col items-center justify-center gap-2 rounded-xl py-6 bg-${color}-50 hover:bg-${color}-100 text-${color}-800 transition duration-300 shadow`}
+    >
+      {icon}
+      <span className="font-semibold text-sm">{label}</span>
+    </button>
+  );
 
   return (
     <div className="flex items-center justify-center bg-gradient-to-br">
@@ -58,50 +93,28 @@ export default function ModeSelector({ handleSubmit }) {
           <LoginForm
             formData={formData}
             handleChange={handleChange}
-            handleLoginSubmit={(e) => handleSubmit(e, formData, mode, signUpRole)}
+            handleLoginSubmit={(e) =>
+              handleSubmit(e, formData, mode, signUpRole)
+            }
             handleBack={() => setMode("Select")}
-            handleRoleChange={(role) => setSignUpRole(role)} // sets doctor/patient role
+            handleRoleChange={(role) => setSignUpRole(role)}
           />
         )}
 
-
         {/* Sign Up Mode — Only role selection */}
         {mode === "SignUp" && (
-        <div className="space-y-6">
-          {/* Title */}
-          <Typography variant="subtitle1" className="text-center font-semibold text-lg text-gray-700">
-            Register As
-          </Typography>
+          <div className="space-y-6">
+            {/* Title */}
+            <div className="text-center text-lg font-semibold text-gray-700">
+              Register As
+            </div>
 
-          {/* Button Group */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Patient */}
-            <button
-              onClick={() => handleSubmit(null, null, mode, "patient")}
-              className="w-full rounded-md py-3 font-semibold bg-blue-600 text-white hover:bg-blue-700 transition duration-300 shadow-sm"
-            >
-              Patient
-            </button>
-
-            {/* Doctor */}
-            <button
-              onClick={() => handleSubmit(null, null, mode, "doctor")}
-              className="w-full py-3 rounded-lg font-semibold bg-green-600 text-white hover:bg-green-700 transition duration-300 shadow-sm"
-            >
-              Doctor
-            </button>
-
-            {/* Hospital */}
-            <button
-              onClick={() => handleSubmit(null, null, mode, "hospital")}
-              className="w-full py-3 rounded-lg font-semibold bg-red-600 text-white hover:bg-red-700 transition duration-300 shadow-sm"
-            >
-              Hospital
-            </button>
+            {/* Button Group */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {roles.map(renderRoleButton)}
+            </div>
           </div>
-        </div>
-      )}
-
+        )}
 
         {/* Bottom Link */}
         {mode === "Login" && (
@@ -119,5 +132,3 @@ export default function ModeSelector({ handleSubmit }) {
     </div>
   );
 }
-
-
