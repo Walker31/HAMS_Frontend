@@ -34,7 +34,7 @@ const Sidebar = ({
     { label: "Dashboard", icon: <DashboardIcon />, path: "/dashboard" },
     { label: "Appointments", icon: <LibraryBooksSharpIcon />, path: "/dashboard/appointments" },
     { label: "Slots", icon: <CalendarTodayIcon />, path: "/dashboard/slots" },
-    { label: "Overview", icon: <InsightsIcon />, action: handleOverviewClick },
+    
     { label: "EditProfile", icon: <EditIcon />, path: "/dashboard/editProfile"}
   ];
 
