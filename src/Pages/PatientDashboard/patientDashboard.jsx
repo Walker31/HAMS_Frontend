@@ -97,22 +97,31 @@ const PatientDashboard = () => {
 
   return (
     <div className="flex bg-gray-100 min-h-screen">
-      <Sidebar collapsed={collapsed} toggleSidebar={toggleSidebar} handleLogout={handleLogout} />
-
-      <main className="flex-1 p-6">
+    <Sidebar collapsed={collapsed} toggleSidebar={toggleSidebar} handleLogout={handleLogout} />
+    <div className="flex flex-col flex-1">
+      <div className="p-6 pb-0">
         <Header />
+      </div>
+    <div className="flex flex-1 p-6 gap-6">
+      <div className="flex-1 space-y-6">
         <AppointmentBanner />
         <HealthReport />
         <HeartRateGraph />
+      </div>
+
+      <div className="w-[22rem]">
         <RecentAppointments
           appointments={appointments}
           onCancel={handleCancel}
           handleOpenJitsi={handleOpenJitsi}
         />
-      </main>
-
-      <JitsiMeetModal roomName={jitsiRoom} isOpen={showJitsi} onClose={handleCloseJitsi} />
+      </div>
     </div>
+  </div>
+
+  <JitsiMeetModal roomName={jitsiRoom} isOpen={showJitsi} onClose={handleCloseJitsi} />
+</div>
+
   );
 };
 

@@ -1,4 +1,3 @@
-// components/Header.jsx
 import React, { useEffect, useState } from 'react';
 import { FaBell } from 'react-icons/fa';
 import axios from 'axios';
@@ -26,7 +25,7 @@ const Header = () => {
         <p className="text-sm text-gray-600">Welcome back, {name || 'Patient'}!</p>
       </div>
       <div className="flex items-center space-x-4">
-        <button className="bg-cyan-600 text-white px-4 py-2 rounded-md">Schedule Appointment</button>
+        <button className="bg-cyan-600 text-white px-4 py-2 rounded-md"> Schedule Appointment</button>
         <FaBell className="text-gray-500 text-xl" />
         <img className="w-8 h-8 rounded-full" src="https://i.pravatar.cc/40" alt="profile" />
       </div>
