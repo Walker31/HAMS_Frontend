@@ -80,7 +80,19 @@ export default function RegisterForm({ onClose }) {
 
     try {
       if (userType === "patient") {
-        await patientHandler(formData, login);
+        const formPayLoad = new FormData();
+        Object.entries(formData).forEach(([key, value]) => {
+          if (key !== "photo") {
+            formPayLoad.append(key, value);
+          }
+        });
+        if (formData.photo instanceof File) {
+          formPayLoad.append("photo", formData.photo);
+        }
+        for (let [key, value] of formPayLoad.entries()) {
+          console.log(`${key}:`, value);
+        }
+        await patientHandler(formPayLoad, login);
         onClose?.();
       } else if (userType === "doctor") {
         const { latitude, longitude } = await getCurrentLocation();

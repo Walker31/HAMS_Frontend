@@ -4,12 +4,33 @@ import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import PasswordField from "../../components/passwordField";
+import { useEffect,useRef,useState } from "react";
 
 export default function PatientRegisterForm({
   formData,
   handleChange,
   handleRegisterSubmit,
 }) {
+   const fileInputRef = useRef(null);
+   const [imagePreview, setImagePreview] = useState(null);
+
+  const handleFileChange = (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        handleChange({ target: { name: "photo", value: file } });
+        setImagePreview(URL.createObjectURL(file));
+      }
+    };
+  
+    // Cleanup preview URL
+    useEffect(() => {
+      return () => {
+        if (imagePreview) URL.revokeObjectURL(imagePreview);
+      };
+    }, [imagePreview]);
+
+
+
   return (
     <div className="w-full max-w-2xl mx-auto p-6 bg-white rounded-md shadow-md space-y-6">
       {/* Header */}
@@ -19,6 +40,47 @@ export default function PatientRegisterForm({
       <form onSubmit={handleRegisterSubmit} className="flex flex-col w-full">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex flex-1 flex-col gap-4">
+
+
+          <div className="flex flex-col items-center gap-2 flex-1">
+                <div
+                  className="w-32 h-32 rounded-full bg-gray-200 overflow-hidden cursor-pointer"
+                  onClick={() => fileInputRef.current.click()}
+                  title="Click to upload"
+                >
+                  {imagePreview ? (
+                    <img
+                      src={imagePreview}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-500">
+                      Upload Photo
+                    </div>
+                  )}
+                </div>
+
+                <input
+                  name="photo"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                />
+                <Button
+                  variant="outlined"
+                  onClick={() => fileInputRef.current.click()}
+                  size="small"
+                >
+                  {formData.photo ? "Change Photo" : "Upload Photo"}
+                </Button>
+              </div>
+
+
+
+
             <CommonFields formData={formData} handleChange={handleChange} />
 
             <PasswordField
