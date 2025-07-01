@@ -1,5 +1,3 @@
-// components/HealthReport.jsx
-import React from 'react';
 import { FaTint, FaHeartbeat, FaWeight, FaTemperatureHigh } from 'react-icons/fa';
 
 const HealthReport = () => (

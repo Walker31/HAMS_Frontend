@@ -1,5 +1,5 @@
-// components/Header.jsx
-import React, { useEffect, useState } from 'react';
+
+import { useEffect, useState } from 'react';
 import { FaBell } from 'react-icons/fa';
 import axios from 'axios';
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
@@ -7,11 +7,12 @@ const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const Header = () => {
   const [name, setName] = useState('');
+  const newToken = localStorage.getItem('token');
 
   useEffect(() => {
     const fetchUserName = async () => {
       try {
-        const response = await axios.get(`${base_url}/patient/profile`);
+        const response = await axios.get(`${base_url}/patients/profile`,{headers: { Authorization: `Bearer ${newToken}` }});
         setName(response.data.name);
       } catch (error) {
         console.error('Failed to fetch patient name:', error);

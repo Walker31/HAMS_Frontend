@@ -1,6 +1,3 @@
-// components/RecentAppointments.jsx
-import React from 'react';
-
 const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) => {
   const upcoming = appointments.filter((appt) => appt.appStatus === 'Pending');
   const past = appointments.filter((appt) => appt.appStatus !== 'Pending');
@@ -19,7 +16,13 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
         />
         <div>
           <p className="text-sm font-semibold text-gray-700">{appt.reason}</p>
-          <p className="text-xs text-gray-500">{appt.date} | Slot: {appt.slotNumber}</p>
+          <p className="text-xs text-gray-500">
+              {new Date(appt.date).toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+              })} | Slot: {appt.slotNumber}
+            </p>
           <p className="text-xs text-gray-500">Doctor: {appt.doctorName}</p>
           <p className="text-xs text-gray-500">Visit Mode: {appt.consultStatus}</p>
         </div>

@@ -54,9 +54,10 @@ const PatientDashboard = () => {
 
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(`${base_url}/appointments/patient`, {
+      const res = await axios.get(`${base_url}/patients/appointments`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log(res.data);
 
       const todayStr = new Date().toISOString().split("T")[0];
 
