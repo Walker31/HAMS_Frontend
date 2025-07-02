@@ -13,7 +13,13 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
       <div className="flex items-start gap-3">
         <div>
           <p className="text-sm font-semibold text-gray-700">{appt.reason}</p>
-          <p className="text-xs text-gray-500">{appt.date} | Slot: {appt.slotNumber}</p>
+          <p className="text-xs text-gray-500">
+              {new Date(appt.date).toLocaleDateString('en-IN', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric'
+              })} | Slot: {appt.slotNumber}
+            </p>
           <p className="text-xs text-gray-500">Doctor: {appt.doctorName}</p>
           <p className="text-xs text-gray-500">Visit Mode: {appt.consultStatus}</p>
         </div>

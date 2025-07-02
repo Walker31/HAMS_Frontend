@@ -140,11 +140,11 @@ const DoctorDashboard = () => {
     if (!user?.id) return;
     const today = new Date().toISOString().split("T")[0];
     try {
-      const todayURL = `${base_url}/appointments/pending/${today}?doctorId=${user.id}`;
+      const todayURL = `${base_url}/appointments/pending/${today}`;
       const prevURL = `${base_url}/appointments/previous?doctorId=${user.id}`;
       const [todayRes, prevRes] = await Promise.all([
-        axios.get(todayURL),
-        axios.get(prevURL),
+        axios.get(todayURL,{headers: { Authorization: `Bearer ${newtoken}` },}),
+        axios.get(prevURL,{headers: { Authorization: `Bearer ${newtoken}` },}),
       ]);
       setTodayAppointments(todayRes.data || []);
       setPreviousAppointments(prevRes.data || []);

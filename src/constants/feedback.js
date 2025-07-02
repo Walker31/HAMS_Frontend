@@ -1,4 +1,5 @@
 const sampleFeedbacks = [
+  
   {
     name: 'Shrudeep',
     review: 'Fast appointment scheduling and clear follow-up reminders kept me informed every step of the way.',
@@ -13,6 +14,11 @@ const sampleFeedbacks = [
     name: 'Lishanth',
     review: 'As a multi-millionare, I usually get a home consultation but because of the excellent UI of HAMSA, I started using this. I am also planning to fund for this website in the future',
     photo: 'lish.jpg',
+  },
+  {
+    name: 'Aditya',
+    review: 'Booking was seamless and the consultation felt personal and efficient. Definitely made healthcare feel more accessible.',
+    photo: 'aditya.jpg',
   },
   {
     name: 'Saajid',

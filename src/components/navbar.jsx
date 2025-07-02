@@ -29,7 +29,6 @@ const Navbar = ({ location, setLocation }) => {
   const [showRegister, setShowRegister] = useState(false);
   const navigate = useNavigate();
   const { toggle, isVisible } = useFloatingBarStore();
-
   const isLoggedIn = localStorage.getItem('token') ? true : false;
 
   return (
@@ -94,7 +93,7 @@ const Navbar = ({ location, setLocation }) => {
               
             > 
               <img
-                src={dp}
+                src={user.photo?.url || dp}
                 alt="User profile"
                 className="object-cover h-full w-full"
               />

@@ -1,24 +1,17 @@
+
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { FaBell } from 'react-icons/fa';
 import { FaHome } from "react-icons/fa";
-import { useAuth } from '../../../contexts/AuthContext';
 import axios from 'axios';
 
 const Header = () => {
   const [name, setName] = useState('');
-  const {logout} = useAuth();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/'); 
-  };
+  const newToken = localStorage.getItem('token');
 
   useEffect(() => {
     const fetchUserName = async () => {
       try {
-        const response = await axios.get('/api/patient/profile');
+        const response = await axios.get(`${base_url}/patients/profile`,{headers: { Authorization: `Bearer ${newToken}` }});
         setName(response.data.name);
       } catch (error) {
         console.error('Failed to fetch patient name:', error);
