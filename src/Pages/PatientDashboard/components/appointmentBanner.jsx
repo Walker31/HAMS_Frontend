@@ -1,4 +1,4 @@
-// components/AppointmentBanner.jsx
+
 import React from 'react';
 
 const AppointmentBanner = () => (

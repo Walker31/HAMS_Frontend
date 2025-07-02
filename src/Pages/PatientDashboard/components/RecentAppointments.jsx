@@ -11,12 +11,6 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
       className="bg-orange-50 p-4 rounded-xl mb-4 shadow-sm flex items-center justify-between"
     >
       <div className="flex items-start gap-3">
-        {/* Doctor Avatar */}
-        <img
-          className="w-10 h-10 rounded-full"
-          src={`https://i.pravatar.cc/100?img=${index + 20}`}
-          alt="doctor"
-        />
         <div>
           <p className="text-sm font-semibold text-gray-700">{appt.reason}</p>
           <p className="text-xs text-gray-500">{appt.date} | Slot: {appt.slotNumber}</p>

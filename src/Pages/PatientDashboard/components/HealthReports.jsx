@@ -1,10 +1,10 @@
-// components/HealthReport.jsx
+
 import React from 'react';
 import { FaTint, FaHeartbeat, FaWeight, FaTemperatureHigh } from 'react-icons/fa';
 
 const HealthReport = () => (
   <section className="bg-white p-4 rounded-md shadow-sm mb-6">
-    <p className="font-semibold text-md mb-4">Health Report - Last Checkup (March 07, 2024)</p>
+    <p className="font-semibold text-md mb-4">Health Report - Last Checkup (July 01, 2025)</p>
     <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
       <div className="text-center">
         <FaTint className="text-cyan-600 mx-auto" />

@@ -103,13 +103,13 @@ const PatientDashboard = () => {
         <Header />
       </div>
     <div className="flex flex-1 p-6 gap-6">
-      <div className="flex-1 space-y-6">
+      <div className="flex-2/3 space-y-6">
         <AppointmentBanner />
         <HealthReport />
         <HeartRateGraph />
       </div>
 
-      <div className="w-[22rem]">
+      <div className="flex-1/3">
         <RecentAppointments
           appointments={appointments}
           onCancel={handleCancel}

@@ -19,31 +19,24 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
         <FaBars />
       </button>
 
-      <h2 className={`text-2xl font-bold text-cyan-600 mb-6 transition-opacity duration-300 ${collapsed ? 'opacity-0 hidden' : 'opacity-100'}`}>
+      <h2 className={`text-2xl font-bold text-cyan-600 mb-6 cursor-pointer transition-opacity duration-300 ${collapsed ? 'opacity-0 hidden' : 'opacity-100'}`}>
         HAMS
       </h2>
 
-      <nav className="flex flex-col space-y-4">
+      <nav className="flex flex-col space-y-4 cursor-pointer">
         <SidebarItem icon={<FaCalendarAlt />} label="Dashboard" collapsed={collapsed} />
         <SidebarItem icon={<FaHeartbeat />} label="Appointments" collapsed={collapsed} />
-        <SidebarItem icon={<BsFileMedical />} label="Medical Records" collapsed={collapsed} />
-        <SidebarItem icon={<MdAssignment />} label="Prescriptions" collapsed={collapsed} />
-        <SidebarItem icon={<MdPayment />} label="Billing & Payments" collapsed={collapsed} />
-        <SidebarItem icon={<MdMessage />} label="Messages" collapsed={collapsed} />
-      </nav>
-
-      <div className="mt-auto space-y-2">
         <SidebarItem icon={<MdSettings />} label="Settings" collapsed={collapsed} />
         <div onClick={handleLogout} className="cursor-pointer">
           <SidebarItem icon={<MdLogout />} label="Logout" collapsed={collapsed} />
         </div>
-      </div>
+      </nav>
     </aside>
   );
 };
 
 const SidebarItem = ({ icon, label, collapsed }) => (
-  <div className="flex items-center space-x-3 text-gray-700 text-sm font-medium">
+  <div className="flex items-center space-x-4 text-gray-700 text-sm font-medium">
     {icon}
     {!collapsed && <span>{label}</span>}
   </div>
