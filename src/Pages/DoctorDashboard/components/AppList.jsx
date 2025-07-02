@@ -18,7 +18,15 @@ const QueuePage = () => {
 
   const handleRowClick = (appointmentId) => {
     navigate(`/dashboard/appointments/${appointmentId}`);
-  }
+  };
+
+  const handleJoinMeet = (meetLink) => {
+    if (meetLink) {
+      window.open(meetLink, "_blank");
+    } else {
+      alert("No meet link available.");
+    }
+  };
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -49,7 +57,6 @@ const QueuePage = () => {
 
   useEffect(() => {
     const fetchAppointments = async () => {
-
       if (!doctor?.doctorId) {
         console.warn("No doctorId found.");
         return;
@@ -57,9 +64,29 @@ const QueuePage = () => {
 
       try {
         const url = `${base_url}/appointments/previous`;
-        const res = await axios.get(url,{headers: { Authorization: `Bearer ${token}` },});
-        setAppointments(res.data || []);
-        console.log(res.data);
+        const res = await axios.get(url, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const today = new Date();
+
+        const isSameDay = (date1, date2) =>
+          date1.getDate() === date2.getDate() &&
+          date1.getMonth() === date2.getMonth() &&
+          date1.getFullYear() === date2.getFullYear();
+
+        const todayAppointments = (res.data || [])
+          .filter((appt) => {
+            const apptDate = new Date(appt.date);
+            return isSameDay(apptDate, today);
+          })
+          .sort((a, b) => {
+            const timeA = parseInt(a.slotNumber.replace(":", ""), 10);
+            const timeB = parseInt(b.slotNumber.replace(":", ""), 10);
+            return timeA - timeB;
+          });
+
+        setAppointments(todayAppointments);
       } catch (err) {
         console.error("Failed to fetch appointments:", err);
       }
@@ -83,9 +110,13 @@ const QueuePage = () => {
   });
 
   const awaiting = appointments.filter((a) => a.appStatus === "Pending").length;
-  const cancelled = appointments.filter((a) => a.appStatus === "Rejected").length;
+  const cancelled = appointments.filter(
+    (a) => a.appStatus === "Rejected"
+  ).length;
   const ended = appointments.filter((a) => a.appStatus === "Completed").length;
-  const online = appointments.filter((a) => a.consultStatus === "Online").length;
+  const online = appointments.filter(
+    (a) => a.consultStatus === "Online"
+  ).length;
 
   return (
     <div className="p-6 font-sans bg-blue-50 h-full">
@@ -123,68 +154,82 @@ const QueuePage = () => {
       </div>
 
       <div className="overflow-auto max-h-[350px] rounded-lg shadow bg-white">
-      <table className="w-full border-collapse bg-white shadow rounded-lg">
-        <thead className="bg-blue-100 text-blue-800 text-left sticky top-0 z-10">
-          <tr>
-            <th className="p-3">Patient Name</th>
-            <th className="p-3">Date</th>
-            <th className="p-3">Slot</th>
-            
-            <th className="p-3">Consult Mode</th>
-            <th className="p-3">Payment</th>
-            <th className="p-3">Status</th>
-            <th className="p-3">Reason</th>
-          </tr>
-        </thead>
-        <tbody>
-          {appointments.map((appt, index) => (
-            <tr
-              key={index}
-              className="border-t transition-colors duration-200 hover:bg-blue-100 cursor-pointer"
-              onClick={() => handleRowClick(appt.appointmentId)}
-            >
-          <td className="p-3">{appt.patientName}</td>
-          <td className="p-3">
-            {new Date(appt.date).toLocaleDateString("en-IN")}
-          </td>
-          <td className="p-3">{appt.slotNumber}</td>
-          
-          <td className="p-3">{appt.consultStatus}</td>
-          <td className="p-3">
-            <span
-              className={`px-2 py-1 text-sm rounded-full ${
-                appt.payStatus === "Paid"
-                  ? "bg-green-100 text-green-800"
-                  : "bg-yellow-100 text-yellow-800"
-              }`}
-            >
-              {appt.payStatus}
-            </span>
-          </td>
-          <td className="p-3">
-            <span
-              className={`px-2 py-1 text-sm rounded-full ${
-                appt.appStatus === "Pending"
-                  ? "bg-blue-100 text-blue-800"
-                  : appt.appStatus === "Rejected"
-                  ? "bg-red-100 text-red-800"
-                  : "bg-green-100 text-green-800"
-              }`}
-            >
-              {appt.appStatus}
-            </span>
-          </td>
-          <td className="p-3" title={appt.reason}>
-            {appt.reason?.length > 20
-              ? `${appt.reason.slice(0, 20)}...`
-              : appt.reason}
-          </td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-  </div>
-
+        <table className="w-full table-auto border-collapse bg-white shadow rounded-lg">
+          <thead className="bg-blue-100 text-blue-800 sticky top-0 z-10">
+            <tr>
+              <th className="p-3 text-left w-[15%]">Patient Name</th>
+              <th className="p-3 text-left w-[10%]">Date</th>
+              <th className="p-3 text-left w-[8%]">Slot</th>
+              <th className="p-3 text-left w-[12%]">Consult Mode</th>
+              <th className="p-3 text-left w-[10%]">Payment</th>
+              <th className="p-3 text-left w-[10%]">Status</th>
+              <th className="p-3 text-left w-[25%]">Reason</th>
+              <th className="p-3 text-center w-[10%]">Meet Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            {appointments.map((appt, index) => (
+              <tr
+                key={index}
+                className="border-t transition duration-200 hover:bg-blue-50 cursor-pointer"
+                onClick={() => handleRowClick(appt.appointmentId)}
+              >
+                <td className="p-3">{appt.patientName}</td>
+                <td className="p-3">
+                  {new Date(appt.date).toLocaleDateString("en-IN")}
+                </td>
+                <td className="p-3">{appt.slotNumber}</td>
+                <td className="p-3">{appt.consultStatus}</td>
+                <td className="p-3">
+                  <span
+                    className={`px-2 py-1 text-sm rounded-full ${
+                      appt.payStatus === "Paid"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-yellow-100 text-yellow-800"
+                    }`}
+                  >
+                    {appt.payStatus}
+                  </span>
+                </td>
+                <td className="p-3">
+                  <span
+                    className={`px-2 py-1 text-sm rounded-full ${
+                      appt.appStatus === "Pending"
+                        ? "bg-blue-100 text-blue-800"
+                        : appt.appStatus === "Rejected"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-green-100 text-green-800"
+                    }`}
+                  >
+                    {appt.appStatus}
+                  </span>
+                </td>
+                <td className="p-3 truncate" title={appt.reason}>
+                  {appt.reason?.length > 30
+                    ? `${appt.reason.slice(0, 30)}...`
+                    : appt.reason}
+                </td>
+                <td className="p-3 text-center">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleJoinMeet(appt.meetLink);
+                    }}
+                    className={`px-3 py-1 rounded ${
+                      appt.meetLink
+                        ? "bg-blue-950 text-amber-50"
+                        : "bg-white text-white cursor-not-allowed"
+                    }`}
+                    disabled={!appt.meetLink}
+                  >
+                    Join
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
