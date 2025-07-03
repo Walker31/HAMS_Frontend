@@ -78,51 +78,53 @@ export const DoctorDescription = () => {
     fetchBooked();
   }, [selectedDate, doctorId]);
 
-  const handleBookNow = async () => {
-    if (!selectedDate || !selectedSlot) {
-      alert("Please select a date and time slot before booking.");
-      return;
-    }
+const handleBookNow = async () => {
+  if (!selectedDate || !selectedSlot) {
+    alert("Please select a date and time slot before booking.");
+    return;
+  }
 
-    if (!isLoggedIn) {
-      navigate("/login");
-      return;
-    }
+  if (!isLoggedIn) {
+    navigate("/login");
+    return;
+  }
 
-    const payload = {
-      date: selectedDate,
-      doctorId,
-      Hospital: doctorDetails?.Hospital || "Own Practice",
-      slotNumber: selectedSlot,
-      reason: reason,
-      payStatus: isOn ? "Paid" : "Unpaid",
-      consultStatus: isSet ? "Online" : "Offline",
-    };
-
-    try {
-      const response = await axios.post(
-        `${base_url}/appointments/book`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 201) {
-        alert("Appointment booked successfully!");
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      if (error.response?.status === 409) {
-        alert("This slot has already been booked. Please choose another.");
-      } else {
-        alert("Failed to book appointment. Please try again.");
-      }
-      console.error("Booking error:", error);
-    }
+  const payload = {
+    date: selectedDate,
+    doctorId,
+    Hospital: doctorDetails?.Hospital || "Own Practice",
+    slotNumber: selectedSlot,
+    reason: reason,
+    payStatus: isOn ? "Paid" : "Unpaid",
+    consultStatus: isSet ? "Online" : "Offline",
+    // ❌ Do not include MeetLink here anymore
   };
+
+  try {
+    const response = await axios.post(
+      `${base_url}/appointments/book`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.status === 201) {
+      alert("Appointment booked successfully!");
+      navigate("/dashboard");
+    }
+  } catch (error) {
+    if (error.response?.status === 409) {
+      alert("This slot has already been booked. Please choose another.");
+    } else {
+      alert("Failed to book appointment. Please try again.");
+    }
+    console.error("Booking error:", error);
+  }
+};
+
 
   return (
     <div className="container my-5">
