@@ -20,6 +20,7 @@ const DashboardHome = () => {
       const res = await axios.get(`${base_url}/patients/appointments`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log(res);
 
       const todayStr = new Date().toISOString().split("T")[0];
       const upcoming = res.data.filter((a) => {
