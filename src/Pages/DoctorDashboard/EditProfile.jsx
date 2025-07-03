@@ -3,8 +3,6 @@ import {
   TextField,
   Button,
   Typography,
-  Paper,
-  Container,
   Snackbar,
 } from "@mui/material";
 import SPECIALIZATIONS from "../../constants/specializations";
