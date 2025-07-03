@@ -1,3 +1,4 @@
+
 const AppointmentBanner = () => (
   <section className="bg-gradient-to-r from-blue-100 to-blue-50 p-4 rounded-md mb-6">
     <p className="font-semibold text-lg">Stay Informed! Upcoming Appointment Details</p>

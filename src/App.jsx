@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { AuthProvider,useAuth } from "./contexts/AuthContext";
-
+import AppointmentsPage from "./Pages/PatientDashboard/appointmentsPage";
+import DashboardHome from "./Pages/PatientDashboard/DashboardHome";
 import Home from "./Pages/Home";
 import Navbar from "./components/navbar";
 import DoctorsAvailable from "./components/DoctorsAvailable";
@@ -112,14 +113,10 @@ const App = () => {
         />
 
         {/* Patient dashboard route */}
-        <Route
-          path="/dashboard/patient"
-          element={
-            <RoleBasedRoute allowedRoles={["patient"]}>
-              <PatientDashboard />
-            </RoleBasedRoute>
-          }
-        />
+        <Route path="/dashboard/patient" element={<PatientDashboard />}>
+        <Route index element={<DashboardHome />} />
+        <Route path="appointments" element={<AppointmentsPage />} />
+        </Route>
 
         {/* Doctor-specific dashboard layout and subroutes */}
         <Route
