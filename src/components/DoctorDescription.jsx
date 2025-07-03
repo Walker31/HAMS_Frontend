@@ -2,6 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import StarRating from "../components/RatingStars";
 import axios from "axios";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+import React from "react"; // Needed for forwardRef
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
@@ -16,6 +24,9 @@ export const DoctorDescription = () => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [bookedSlots, setBookedSlots] = useState([]);
   const [doctorDetails, setDoctorDetails] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("info");
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,7 +72,9 @@ export const DoctorDescription = () => {
       const dateKey = new Date(selectedDate).toISOString().split("T")[0];
       try {
         const res = await axios.get(
-          `${base_url}/doctors/${doctorId}/booked-slots?date=${encodeURIComponent(dateKey)}`
+          `${base_url}/doctors/${doctorId}/booked-slots?date=${encodeURIComponent(
+            dateKey
+          )}`
         );
         setBookedSlots(res.data.bookedSlots || []);
       } catch (error) {
@@ -74,9 +87,19 @@ export const DoctorDescription = () => {
     fetchBooked();
   }, [selectedDate, doctorId]);
 
+  const showSnackbar = (message, severity = "info") => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
   const handleBookNow = async () => {
     if (!selectedDate || !selectedSlot) {
-      alert("Please select a date and time slot before booking.");
+      showSnackbar(
+        "Please select a date and time slot before booking.",
+        "warning"
+      );
+
       return;
     }
 
@@ -107,14 +130,20 @@ export const DoctorDescription = () => {
       );
 
       if (response.status === 201) {
-        alert("Appointment booked successfully!");
-        navigate("/dashboard");
+        showSnackbar("Appointment booked successfully!", "success");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000);
+        
       }
     } catch (error) {
       if (error.response?.status === 409) {
-        alert("This slot has already been booked. Please choose another.");
+        showSnackbar(
+          "This slot has already been booked. Please choose another.",
+          "error"
+        );
       } else {
-        alert("Failed to book appointment. Please try again.");
+        showSnackbar("Failed to book appointment. Please try again.", "error");
       }
       console.error("Booking error:", error);
     }
@@ -168,8 +197,7 @@ export const DoctorDescription = () => {
                 {doctorDetails?.Hospital || "Not Provided"}
               </p>
               <p className="text-white mb-1">
-                <strong>Timings:</strong>{" "}
-                MON-FRI (
+                <strong>Timings:</strong> MON-FRI (
                 {doctorDetails?.workingHours?.from || "09:00 AM"} -{" "}
                 {doctorDetails?.workingHours?.to || "04:00 PM"})
               </p>
@@ -200,9 +228,11 @@ export const DoctorDescription = () => {
 
                   const handleClick = () => {
                     if (isBooked) {
-                      alert(
-                        "This slot is already booked. Please choose another."
+                      showSnackbar(
+                        "This slot is already booked. Please choose another.",
+                        "error"
                       );
+
                       return;
                     }
                     setSelectedSlot(slot);
@@ -294,6 +324,21 @@ export const DoctorDescription = () => {
         <h4 className="fw-bold">Overview</h4>
         <p>{doctorDetails?.overview || "No overview available."}</p>
       </div>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+  onClose={() => setSnackbarOpen(false)}
+  severity={snackbarSeverity}
+  sx={{ width: "100%" }}
+>
+  {snackbarMessage}
+</Alert>
+
+      </Snackbar>
     </div>
   );
 };

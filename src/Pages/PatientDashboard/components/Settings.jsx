@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 import axios from "axios";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
@@ -125,7 +125,7 @@ const Settings = () => {
         open={!!successMsg}
         autoHideDuration={3000}
         onClose={() => setSuccessMsg("")}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={() => setSuccessMsg("")} severity="success" sx={{ width: '100%' }}>
           {successMsg}
