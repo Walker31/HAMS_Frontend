@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'; // ✅ import navigate
+import { useNavigate } from 'react-router-dom';
 import { FaBars, FaCalendarAlt, FaHeartbeat } from 'react-icons/fa';
 import { MdMessage, MdPayment, MdAssignment, MdLogout, MdSettings } from 'react-icons/md';
 import { BsFileMedical } from 'react-icons/bs';
@@ -26,7 +26,7 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
 
       <nav className="flex flex-col space-y-4 cursor-pointer">
         <NavLink to="/dashboard/patient" className={({ isActive }) =>
-        `cursor-pointer ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
+        `${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
         }>
         <SidebarItem icon={<FaCalendarAlt />} label="Dashboard" collapsed={collapsed} />
         </NavLink>

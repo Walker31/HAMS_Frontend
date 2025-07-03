@@ -55,7 +55,7 @@ const DashboardHome = () => {
   return (
     <div className="flex flex-1 p-6 gap-6">
       <div className="w-2/3 space-y-6">
-        <AppointmentBanner />
+        <AppointmentBanner appointment={appointments[0]} />
         <HealthReport />
         <HeartRateGraph />
       </div>
