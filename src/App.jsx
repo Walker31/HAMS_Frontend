@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { AuthProvider,useAuth } from "./contexts/AuthContext";
-
+import AppointmentsPage from "./Pages/PatientDashboard/appointmentsPage";
+import DashboardHome from "./Pages/PatientDashboard/DashboardHome";
 import Home from "./Pages/Home";
 import Navbar from "./components/navbar";
 import DoctorsAvailable from "./components/DoctorsAvailable";
@@ -20,6 +21,7 @@ import DashboardLayout from "./Pages/DoctorDashboard/DashboardLayout";
 import RoleBasedRoute from "./RoleBasedRoute";
 import { getCityFromCoords } from "./utils/locationUtils";
 import Unauthorized from './components/Unauthorized';
+import QueuePage from './Pages/DoctorDashboard/components/AppList';
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -40,7 +42,7 @@ const DashboardRouter = () => {
   }
 
   if (role === "patient") {
-    return <PatientDashboard />;
+    return <Navigate to="/dashboard/patient" replace />;
   }
 
   return <Navigate to="/" replace />;
@@ -97,6 +99,7 @@ const App = () => {
           <Route path="/faqs" element={<FAQs />} />
           <Route path="/services" element={<Services />} />
           <Route path="/unauthorize" element={<Unauthorized />} />
+          <Route path="/appList" element={<QueuePage />} />
         </Route>
 
         {/* Entry route - decide between doctor or patient */}
@@ -109,6 +112,12 @@ const App = () => {
           }
         />
 
+        {/* Patient dashboard route */}
+        <Route path="/dashboard/patient" element={<PatientDashboard />}>
+        <Route index element={<DashboardHome />} />
+        <Route path="appointments" element={<AppointmentsPage />} />
+        </Route>
+
         {/* Doctor-specific dashboard layout and subroutes */}
         <Route
           path="/dashboard/*"
@@ -119,7 +128,8 @@ const App = () => {
           }
         >
           <Route path="home" element={<DoctorDashboard />} />
-          <Route path="appointments" element={<AppointmentDetails />} />
+          <Route path="appointments" element={<QueuePage />} />
+          <Route path="appointments/:appointmentId" element={<AppointmentDetails />} />
           <Route path="slots" element={<CalendarWithSlots />} />
           <Route path="editProfile" element={<EditProfile />} />
           <Route path="*" element={<div>Page Not Found</div>} />

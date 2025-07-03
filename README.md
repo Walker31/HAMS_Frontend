@@ -67,6 +67,8 @@ HAMS (Healthcare Appointment Management System) is a multi-role healthcare platf
   - Floating quick-access bar for navigation.
   - Feedback and testimonials section.
   - Comprehensive healthcare programs and packages.
+  - Role-based route protection for secure access.
+  - Video meeting integration (Jitsi Meet) for future telemedicine support.
 
 ---
 
@@ -78,9 +80,10 @@ HAMS (Healthcare Appointment Management System) is a multi-role healthcare platf
 
 ## Tech Stack
 
-- **Frontend:** React, React Router, Bootstrap, Tailwind CSS, Zustand (state management)
+- **Frontend:** React, React Router
+- **UI:** Bootstrap, Tailwind CSS, Material UI Icons, React Icons
+- **State Management:** Zustand
 - **APIs:** Axios for HTTP requests
-- **Icons:** Material UI Icons, React Icons
 - **Build Tool:** Vite
 
 ---
@@ -129,15 +132,22 @@ HAMS (Healthcare Appointment Management System) is a multi-role healthcare platf
 
 ```
 src/
-  apiControllers/    # API request logic
-  components/        # Reusable UI components (Navbar, Footer, etc.)
+  apiControllers/    # API request logic (e.g., userAPI.js)
+  assets/            # Images and static assets
+  components/        # Reusable UI components (Navbar, Footer, Sidebar, etc.)
   constants/         # Static data (doctors, programs, feedback, etc.)
-  contexts/          # React Contexts (Auth)
+  contexts/          # React Contexts (e.g., AuthContext)
   handlers/          # Business logic for forms and actions
-  Pages/             # Main pages (Home, Dashboard, Login, etc.)
+  Meeting/           # Video meeting integration (JitsiMeetModal)
+  Pages/             # Main pages and dashboards
+    Dashboard/         # Patient dashboard components
+    DoctorDashboard/   # Doctor dashboard and components
+    Login/             # Login and registration forms
+    PatientDashboard/  # Patient dashboard and components
+    Home.jsx           # Home page
+  RoleBasedRoute.jsx # Route protection for user roles
   store/             # Zustand stores for state management
   utils/             # Utility functions (location, etc.)
-  assets/            # Images and static assets
   index.css          # Global styles
   App.jsx            # Main app component and routing
   main.jsx           # Entry point
@@ -204,7 +214,7 @@ HAMS offers a variety of healthcare programs, including:
   Yes, from your dashboard, at least 2 hours before the appointment.
 
 - **Does HAMS support teleconsultation?**  
-  No, HAMS currently focuses on in-person appointments.
+  Not yet, but video meeting integration is present for future support.
 
 - **Is there a mobile app?**  
   Not yet, but the web app is mobile-optimized.
@@ -215,8 +225,7 @@ HAMS offers a variety of healthcare programs, including:
 
 ## Live Demo
 
-Try HAMS live: [https://hams-frontend-demo.example.com](#)  
-*(Replace with your actual demo link)*
+Try HAMS live: [https://main.d2sjy3evn9ox1m.amplifyapp.com/](https://main.d2sjy3evn9ox1m.amplifyapp.com/)
 
 ---
 
@@ -243,6 +252,7 @@ Try HAMS live: [https://hams-frontend-demo.example.com](#)
 - User sessions are managed using JWT tokens.
 - Sensitive actions require authentication.
 - Data privacy is enforced according to HIPAA & Indian standards.
+- Role-based route protection is implemented for secure access.
 
 ---
 
@@ -255,19 +265,13 @@ Try HAMS live: [https://hams-frontend-demo.example.com](#)
 
 ## Testing
 
-- *(If you have tests:)*  
-  Run all tests with:
-  ```bash
-  npm test
-  ```
-- *(If not:)*  
-  Automated testing is planned for future releases.
+- Automated testing is planned for future releases. (No automated tests are present as of now.)
 
 ---
 
 ## Known Issues & Roadmap
 
-- Teleconsultation is not yet supported.
+- Teleconsultation is not yet supported (video meeting integration is present for future use).
 - Mobile app is not available, but the web app is mobile-friendly.
 - Planned: Notification system, advanced analytics for hospitals, telemedicine.
 

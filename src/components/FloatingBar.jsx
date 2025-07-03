@@ -11,15 +11,11 @@ import { useNavigate } from 'react-router-dom';
 
 const navItems = [
   { label: 'Dashboard', icon: <DashboardIcon fontSize="small" />, key: 'dashboard' },
-  { label: 'Settings', icon: <SettingsIcon fontSize="small" />, key: 'settings' },
-  { label: 'History', icon: <HistoryIcon fontSize="small" />, key: 'history' },
   { label: 'Logout', icon : <LogoutIcon fontSize='small' />, key: 'logout'},
 ];
 
 const routeMap = {
   dashboard: '/dashboard',
-  settings: '/settings',
-  history: '/history',
 };
 
 const FloatingBar = () => {

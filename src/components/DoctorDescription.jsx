@@ -25,12 +25,8 @@ export const DoctorDescription = () => {
   // Extract doctor info safely
   const state = location.state || {};
   const doctor = state.doctor || null;
-  const doctorId =
-    doctor?.doctorId ||
-    state?.doctorId
-
+  const doctorId = doctor?.doctorId || state?.doctorId;
   const reason = state?.reason || "General Checkup";
-
   // Fetch doctor profile
   useEffect(() => {
     if (!doctorId) return;
@@ -67,7 +63,9 @@ export const DoctorDescription = () => {
       const dateKey = new Date(selectedDate).toISOString().split("T")[0];
       try {
         const res = await axios.get(
-          `${base_url}/doctors/${doctorId}/booked-slots?date=${encodeURIComponent(dateKey)}`
+          `${base_url}/doctors/${doctorId}/booked-slots?date=${encodeURIComponent(
+            dateKey
+          )}`
         );
         setBookedSlots(res.data.bookedSlots || []);
       } catch (error) {
@@ -80,53 +78,53 @@ export const DoctorDescription = () => {
     fetchBooked();
   }, [selectedDate, doctorId]);
 
-  const handleBookNow = async () => {
-    if (!selectedDate || !selectedSlot) {
-      alert("Please select a date and time slot before booking.");
-      return;
-    }
+const handleBookNow = async () => {
+  if (!selectedDate || !selectedSlot) {
+    alert("Please select a date and time slot before booking.");
+    return;
+  }
 
-    if (!isLoggedIn) {
-      navigate("/login");
-      return;
-    }
+  if (!isLoggedIn) {
+    navigate("/login");
+    return;
+  }
 
-    const payload = {
-      date: selectedDate,
-      doctorId,
-      hospital: doctorDetails?.Hospital,
-      slotNumber: selectedSlot,
-      reason: reason,
-      payStatus: isOn ? "Paid" : "Unpaid",
-      consultStatus: isSet ? "Online" : "Offline",
-    };
-    try {
-
-      console.log("Sending payload:", payload); // 🔍 Debug
-
-      const response = await axios.post(
-        `${base_url}/appointments/book`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (response.status === 201) {
-        alert("Appointment booked successfully!");
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      if (error.response?.status === 409) {
-        alert("This slot has already been booked. Please choose another.");
-      } else {
-        alert("Failed to book appointment. Please try again.");
-      }
-      console.error("Booking error:", error);
-    }
+  const payload = {
+    date: selectedDate,
+    doctorId,
+    Hospital: doctorDetails?.Hospital || "Own Practice",
+    slotNumber: selectedSlot,
+    reason: reason,
+    payStatus: isOn ? "Paid" : "Unpaid",
+    consultStatus: isSet ? "Online" : "Offline",
+    // ❌ Do not include MeetLink here anymore
   };
+
+  try {
+    const response = await axios.post(
+      `${base_url}/appointments/book`,
+      payload,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.status === 201) {
+      alert("Appointment booked successfully!");
+      navigate("/dashboard");
+    }
+  } catch (error) {
+    if (error.response?.status === 409) {
+      alert("This slot has already been booked. Please choose another.");
+    } else {
+      alert("Failed to book appointment. Please try again.");
+    }
+    console.error("Booking error:", error);
+  }
+};
+
 
   return (
     <div className="container my-5">
@@ -193,21 +191,40 @@ export const DoctorDescription = () => {
             <h6 className="fw-bold mb-2">Available Slots:</h6>
             <div className="d-flex flex-wrap gap-2 mb-2">
               {availableSlots.length > 0 ? (
-                availableSlots.map((slot) => (
-                  <button
-                    key={slot}
-                    className={`btn btn-sm ${
-                      selectedSlot === slot
-                        ? "btn-warning"
-                        : "btn-outline-warning"
-                    }`}
-                    onClick={() => setSelectedSlot(slot)}
-                  >
-                    {slot}
-                  </button>
-                ))
+                availableSlots.map((slot) => {
+                  const isBooked = bookedSlots.includes(slot);
+                  const isSelected = selectedSlot === slot;
+
+                  const handleClick = () => {
+                    if (isBooked) {
+                      alert(
+                        "This slot is already booked. Please choose another."
+                      );
+                      return;
+                    }
+                    setSelectedSlot(slot);
+                  };
+
+                  return (
+                    <button
+                      key={slot}
+                      className={`btn btn-sm ${
+                        isBooked
+                          ? "btn-secondary"
+                          : isSelected
+                          ? "btn-warning"
+                          : "btn-outline-warning"
+                      }`}
+                      onClick={handleClick}
+                    >
+                      {slot}
+                    </button>
+                  );
+                })
               ) : (
-                <p className="text-muted">No slots available for selected date</p>
+                <p className="text-muted">
+                  No slots available for selected date
+                </p>
               )}
             </div>
 
@@ -263,7 +280,9 @@ export const DoctorDescription = () => {
               disabled={!selectedSlot}
               title={!selectedSlot ? "Please select a slot" : ""}
             >
-              {isLoggedIn ? "BOOK APPOINTMENT" : "Please Login to book an appointment"}
+              {isLoggedIn
+                ? "BOOK APPOINTMENT"
+                : "Please Login to book an appointment"}
             </button>
           </div>
         </div>

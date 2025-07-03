@@ -20,7 +20,7 @@ export const EditProfile = () => {
     "medicalReg",
     "gender",
     "specialization",
-    "Hospital",
+    "hospital" || "Hospital",
   ];
   const { login } = useAuth();
   const [formData, setFormData] = useState({});
@@ -66,52 +66,54 @@ export const EditProfile = () => {
     fetchDoctor();
   }, []);
 
-  const handleEditSubmit = async (e) =>{
+  const handleEditSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    try{
-      console.log(formData)
-        const newToken = localStorage.getItem("token")
-        const formEdit = new FormData();
-        Object.entries(formData).forEach(([key, value]) => {
-          if (key !== "photo" && key != "location" && key != "availableSlots") {
-            formEdit.append(key, value);
-          }
-        });
-
-        const lat = localStorage.getItem("latitude");
-        const lon = localStorage.getItem("longitude");
-        const location = {
-          type: "Point",
-          coordinates: [lon, lat],
-        };
-
-        formEdit.append("location", JSON.stringify(location)); // to convert the location to a json data we need this
-        formEdit.append("availableSlots",JSON.stringify(formData.availableSlots));
-        if (formData.photo instanceof File) {
-          formEdit.append("photo", formData.photo);
+    try {
+      console.log(formData);
+      const newToken = localStorage.getItem("token");
+      const formEdit = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (key !== "photo" && key != "location" && key != "availableSlots") {
+          formEdit.append(key, value);
         }
+      });
 
+      const lat = localStorage.getItem("latitude");
+      const lon = localStorage.getItem("longitude");
+      const location = {
+        type: "Point",
+        coordinates: [lon, lat],
+      };
 
-        for (let [key, value] of formEdit.entries()) {
-          console.log(`${key}:`, value);
-        }
-        const res = await axios.put(`${base_url}/doctors/editProfile`,formEdit,{
-            headers:{
-                Authorization: `Bearer ${newToken}`,
-                "Content-Type":"multipart/form-data"
-            }
-        })
-        login(res.data.newToken)
-        setSnackbarOpen(true)
-        console.log(res.data)
-    } catch(error){
-        console.log(error)
-        alert("Failed to update profile")
-    }finally {
-        setLoading(false)
+      formEdit.append("location", JSON.stringify(location)); // to convert the location to a json data we need this
+      formEdit.append(
+        "availableSlots",
+        JSON.stringify(formData.availableSlots)
+      );
+      if (formData.photo instanceof File) {
+        formEdit.append("photo", formData.photo);
+      }
+
+      for (let [key, value] of formEdit.entries()) {
+        console.log(`${key}:`, value);
+      }
+      const res = await axios.put(`${base_url}/doctors/editProfile`, formEdit, {
+        headers: {
+          Authorization: `Bearer ${newToken}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      login(res.data.newToken);
+      setSnackbarOpen(true);
+      console.log(res.data);
+    } catch (error) {
+      console.log(error);
+      alert("Failed to update profile");
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
     if (doctor?.photo?.url) {
@@ -124,36 +126,27 @@ export const EditProfile = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 5 }}>
-      <Paper
-        elevation={3}
-        sx={{ padding: 4, backgroundColor: "white", color: "black" }}
-      >
-        <Typography  variant="h4" gutterBottom>
+    <>
+        <Typography variant="h4" gutterBottom>
           Edit Profile
         </Typography>
 
         <form onSubmit={handleEditSubmit}>
-          <div className="flex flex-row">
-            <div className="flex flex-col items-center gap-2 mr-15 mt-3 ml-2">
+          
+            <div className="flex flex-col items-center gap-2">
               <div
-                className="w-45 h-45 rounded-full bg-gray-200 overflow-hidden cursor-pointer"
+                className="w-32 h-32 rounded-full bg-gray-200 overflow-hidden shadow cursor-pointer"
                 onClick={() => fileInputRef.current.click()}
                 title="Click to upload"
               >
                 {imagePreview ? (
-                  <img
-                    src={imagePreview}
-                    alt="upload"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={imagePreview} alt="upload" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-500">
                     Upload Photo
                   </div>
                 )}
               </div>
-
               <input
                 name="photo"
                 type="file"
@@ -162,7 +155,7 @@ export const EditProfile = () => {
                 ref={fileInputRef}
                 style={{ display: "none" }}
               />
-              <p className="mb-1 text-gray-500">(No larger than 5MB)</p>
+              <p className="mb-1 text-gray-500 text-xs">(No larger than 5MB)</p>
               <Button
                 variant="outlined"
                 onClick={() => fileInputRef.current.click()}
@@ -171,6 +164,8 @@ export const EditProfile = () => {
                 {doctor.photo ? "Change Photo" : "Upload Photo"}
               </Button>
             </div>
+
+            <div className="mt-5 flex justify-around">
             <div>
               <div>
                 {Object.entries(doctor).map(([key, value]) => {
@@ -186,9 +181,9 @@ export const EditProfile = () => {
                             fullWidth
                             required
                             label="Specialization"
-                            className="w-3 mb-4"
+                            className="mb-4"
                             sx={{
-                                width: 'rem',
+                              width: "30vw",
                               input: { color: "black" },
                               label: { color: "grey" },
                               "& .MuiOutlinedInput-root": {
@@ -257,29 +252,57 @@ export const EditProfile = () => {
 
                   return null;
                 })}
-                <div xs={12}>
+                <div className="flex justify-end mt-6">
                   <Button
                     variant="contained"
                     color="primary"
                     type="submit"
                     disabled={loading}
-                    sx={{ px: 4, py: 1.5 }}
+                    sx={{ px: 2, py: 1 }}
                   >
                     {"Save Changes"}
                   </Button>
                 </div>
               </div>
             </div>
+            <div>
+              <Typography variant="subtitle1" fontWeight={600} gutterBottom>
+                Overview
+              </Typography>
+              <TextField
+                fullWidth
+                name="overview"
+                type="text"
+                value={formData.overview}
+                onChange={handleChange}
+                multiline
+                maxRows={15}
+                sx={{
+                  width:'40vw',
+                  backgroundColor: "#f9fafb",
+                  input: { color: "black" },
+                  "& .MuiInputLabel-root": { color: "grey" },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "grey",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#1976d2",
+                    },
+                  },
+                  mb: 3,
+                }}
+              />
+
+            </div>
           </div>
         </form>
-      </Paper>
       <Snackbar
         open={snackbarOpen}
         onClose={() => setSnackbarOpen(false)}
         message="Profile updated successfully!"
         autoHideDuration={3000}
-      />
-    </Container>
+      /> ,</>
   );
 };
 
