@@ -59,8 +59,8 @@ const PatientDashboard = () => {
       {/* Jitsi Modal */}
       <JitsiMeetModal
         roomName={jitsiRoom}
-        isOpen={showJitsi}
-        onClose={handleCloseJitsi}
+        show={showJitsi}
+        onHide={handleCloseJitsi}
       />
     </div>
   );

@@ -31,7 +31,7 @@ const HealthReport = () => (
       </div>
     </div>
     <div className="mt-4 text-sm text-cyan-600">
-      <a href="#">Download Health Report</a> | <a href="#">View All Reports</a>
+      <a href="#">Download Health Report</a> | <a href="#">Update your Vitals</a>
     </div>
   </section>
 );

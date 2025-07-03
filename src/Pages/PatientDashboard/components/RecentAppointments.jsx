@@ -18,7 +18,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric'
-              })} | Slot: {appt.slotNumber}
+              })} | Slot: {appt.slot}
             </p>
           <p className="text-xs text-gray-500">Doctor: {appt.doctorName}</p>
           <p className="text-xs text-gray-500">Visit Mode: {appt.consultStatus}</p>
@@ -29,8 +29,8 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
         {/* Status */}
         <span className={`text-xs font-bold ${
           appt.appStatus === 'Completed' ? 'text-green-500' :
-          appt.appStatus === 'Canceled' ? 'text-red-500' :
-          appt.appStatus === 'Reschedule' ? 'text-yellow-500' :
+          appt.appStatus === 'Cancelled' ? 'text-red-500' :
+          appt.appStatus === 'Rescheduled' ? 'text-yellow-500' :
           'text-blue-500'
         }`}>
           {appt.appStatus}
@@ -57,7 +57,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
       </div>
     </div>
   );
-
+  
   return (
     <section className="bg-white p-4 rounded-md shadow-sm mb-6">
       <h2 className="text-lg font-semibold mb-4 text-gray-800">Appointments</h2>
@@ -80,7 +80,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
 
       {/* If empty */}
       {!appointments.length && (
-        <p className="text-center text-gray-400">You have no appointments.</p>
+        <p className="text-center text-gray-400">You have currently no appointments booked for today.</p>
       )}
     </section>
   );

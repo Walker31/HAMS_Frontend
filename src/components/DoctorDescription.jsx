@@ -22,7 +22,6 @@ export const DoctorDescription = () => {
   const token = localStorage.getItem("token");
   const isLoggedIn = !!token;
 
-
   const state = location.state || {};
   const doctor = state.doctor || null;
   const doctorId = doctor?.doctorId || state?.doctorId;
@@ -43,7 +42,6 @@ export const DoctorDescription = () => {
     fetchDoctor();
   }, [doctorId]);
 
-  
   useEffect(() => {
     if (!selectedDate || !doctorId) return;
 
@@ -63,9 +61,7 @@ export const DoctorDescription = () => {
       const dateKey = new Date(selectedDate).toISOString().split("T")[0];
       try {
         const res = await axios.get(
-          `${base_url}/doctors/${doctorId}/booked-slots?date=${encodeURIComponent(
-            dateKey
-          )}`
+          `${base_url}/doctors/${doctorId}/booked-slots?date=${encodeURIComponent(dateKey)}`
         );
         setBookedSlots(res.data.bookedSlots || []);
       } catch (error) {
@@ -78,60 +74,62 @@ export const DoctorDescription = () => {
     fetchBooked();
   }, [selectedDate, doctorId]);
 
-const handleBookNow = async () => {
-  if (!selectedDate || !selectedSlot) {
-    alert("Please select a date and time slot before booking.");
-    return;
-  }
+  const handleBookNow = async () => {
+    if (!selectedDate || !selectedSlot) {
+      alert("Please select a date and time slot before booking.");
+      return;
+    }
 
-  if (!isLoggedIn) {
-    navigate("/login");
-    return;
-  }
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
 
-  const payload = {
-    date: selectedDate,
-    doctorId,
-    Hospital: doctorDetails?.Hospital || "Own Practice",
-    slotNumber: selectedSlot,
-    reason: reason,
-    payStatus: isOn ? "Paid" : "Unpaid",
-    consultStatus: isSet ? "Online" : "Offline",
-    // ❌ Do not include MeetLink here anymore
+    const payload = {
+      date: selectedDate,
+      doctorId,
+      Hospital: doctorDetails?.Hospital || "Own Practice",
+      slotNumber: selectedSlot,
+      reason,
+      payStatus: isOn ? "Paid" : "Unpaid",
+      consultStatus: isSet ? "Online" : "Offline",
+    };
+
+    try {
+      const response = await axios.post(
+        `${base_url}/appointments/book`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        alert("Appointment booked successfully!");
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      if (error.response?.status === 409) {
+        alert("This slot has already been booked. Please choose another.");
+      } else {
+        alert("Failed to book appointment. Please try again.");
+      }
+      console.error("Booking error:", error);
+    }
   };
 
-  try {
-    const response = await axios.post(
-      `${base_url}/appointments/book`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (response.status === 201) {
-      alert("Appointment booked successfully!");
-      navigate("/dashboard");
-    }
-  } catch (error) {
-    if (error.response?.status === 409) {
-      alert("This slot has already been booked. Please choose another.");
-    } else {
-      alert("Failed to book appointment. Please try again.");
-    }
-    console.error("Booking error:", error);
+  // Show loading while fetching doctorDetails
+  if (!doctorDetails) {
+    return <div className="text-center my-5">Loading doctor details...</div>;
   }
-};
-
 
   return (
     <div className="container my-5">
       <h2 className="text-center mb-4">Doctor Description</h2>
 
       <div className="flex md:flex-row flex-col justify-between p-5 bg-[#10217D] rounded-3xl">
-        {/* Left - Doctor Info */}
         <div className="col-md-8">
           <div className="d-flex align-items-start gap-4">
             <img
@@ -163,13 +161,19 @@ const handleBookNow = async () => {
                 {doctorDetails?.qualifications?.join(", ") || "MBBS"}
               </p>
               <p className="text-white mb-1">
+                <strong>Basic Fee:</strong> ₹ {doctorDetails?.basicFee || "0"}
+              </p>
+              <p className="text-white mb-1">
                 <strong>Hospital Name:</strong>{" "}
                 {doctorDetails?.Hospital || "Not Provided"}
               </p>
               <p className="text-white mb-1">
                 <strong>Timings:</strong>{" "}
-                {doctorDetails?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}
+                MON-FRI (
+                {doctorDetails?.workingHours?.from || "09:00 AM"} -{" "}
+                {doctorDetails?.workingHours?.to || "04:00 PM"})
               </p>
+
               {doctorDetails?.averageRating && (
                 <StarRating rating={doctorDetails.averageRating} />
               )}
@@ -177,7 +181,6 @@ const handleBookNow = async () => {
           </div>
         </div>
 
-        {/* Right - Booking Section */}
         <div className="flex flex-col gap-4 mt-4 mt-md-0">
           <div className="card p-3 shadow-sm">
             <h6 className="fw-bold mb-2">Select Date</h6>
@@ -207,6 +210,7 @@ const handleBookNow = async () => {
 
                   return (
                     <button
+                      disabled={isBooked}
                       key={slot}
                       className={`btn btn-sm ${
                         isBooked
@@ -228,7 +232,6 @@ const handleBookNow = async () => {
               )}
             </div>
 
-            {/* Consulting Mode */}
             <div className="flex gap-2 items-center justify-between my-2">
               <p className="m-0">Mode of Consulting:</p>
               <div className="flex gap-2 mt-2">
@@ -255,7 +258,6 @@ const handleBookNow = async () => {
               </div>
             </div>
 
-            {/* Payment Toggle */}
             <div className="d-flex align-items-center my-2">
               <p className="m-0">Payment done:</p>
               <div
@@ -288,7 +290,6 @@ const handleBookNow = async () => {
         </div>
       </div>
 
-      {/* Overview */}
       <div className="mt-5">
         <h4 className="fw-bold">Overview</h4>
         <p>{doctorDetails?.overview || "No overview available."}</p>

@@ -8,8 +8,6 @@ const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const AppointmentsPage = () => {
   const [appointments, setAppointments] = useState([]);
-  const [jitsiRoom, setJitsiRoom] = useState("");
-  const [showJitsi, setShowJitsi] = useState(false);
 
   // Fetch todays’ pending appointments
   const fetchAppointments = useCallback(async () => {
@@ -22,7 +20,7 @@ const AppointmentsPage = () => {
       const todayStr = new Date().toISOString().split("T")[0];
       const upcoming = res.data.filter((a) => {
         const apptDate = new Date(a.date).toISOString().split("T")[0];
-        return apptDate === todayStr && a.appStatus === "Pending";
+        return apptDate
       });
 
       setAppointments(upcoming);
@@ -50,16 +48,28 @@ const AppointmentsPage = () => {
     }
   };
 
-  // ←—— Your original Jitsi‑link code exactly as before
-  const handleOpenJitsi = (meetLink) => {
-    const roomName = meetLink?.split("https://meet.jit.si/")[1];
-    if (!roomName || roomName === "Link") {
-      alert("Invalid or missing Meet link for this appointment.");
-      return;
-    }
-    setJitsiRoom(roomName);
-    setShowJitsi(true);
-  };
+const handleOpenJitsi = (meetLink) => {
+  console.log("Clicked Join with meetLink:", meetLink);
+
+  if (!meetLink || meetLink === "Link") {
+    alert("Invalid or missing Meet link for this appointment.");
+    return;
+  }
+
+
+  let roomName = meetLink.startsWith("https://meet.jit.si/")
+    ? meetLink.split("https://meet.jit.si/")[1]
+    : meetLink;
+
+  if (!roomName) {
+    alert("Invalid meet link format.");
+    return;
+  }
+
+  setJitsiRoom(roomName);
+  setShowJitsi(true);
+};
+
 
   const handleCloseJitsi = () => {
     setShowJitsi(false);
