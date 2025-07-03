@@ -3,6 +3,7 @@ import { FaBars, FaCalendarAlt, FaHeartbeat } from 'react-icons/fa';
 import { MdMessage, MdPayment, MdAssignment, MdLogout, MdSettings } from 'react-icons/md';
 import { BsFileMedical } from 'react-icons/bs';
 import { useAuth } from '../../../contexts/AuthContext';
+import { NavLink } from 'react-router-dom';
 
 const Sidebar = ({ collapsed, toggleSidebar }) => {
   const {logout} = useAuth();
@@ -24,8 +25,19 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
       </h2>
 
       <nav className="flex flex-col space-y-4 cursor-pointer">
+        <NavLink to="/dashboard/patient" className={({ isActive }) =>
+        `cursor-pointer ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
+        }>
         <SidebarItem icon={<FaCalendarAlt />} label="Dashboard" collapsed={collapsed} />
-        <SidebarItem icon={<FaHeartbeat />} label="Appointments" collapsed={collapsed} />
+        </NavLink>
+        <NavLink
+          to="/dashboard/patient/appointments"
+          className={({ isActive }) =>
+            `cursor-pointer ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
+          }
+        >
+          <SidebarItem icon={<FaHeartbeat />} label="Appointments" collapsed={collapsed} />
+        </NavLink>
         <SidebarItem icon={<MdSettings />} label="Settings" collapsed={collapsed} />
         <div onClick={handleLogout} className="cursor-pointer">
           <SidebarItem icon={<MdLogout />} label="Logout" collapsed={collapsed} />

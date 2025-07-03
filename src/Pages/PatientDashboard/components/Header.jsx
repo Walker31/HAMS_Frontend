@@ -1,12 +1,18 @@
-
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { FaBell } from 'react-icons/fa';
 import { FaHome } from "react-icons/fa";
 import axios from 'axios';
 
+
 const Header = () => {
   const [name, setName] = useState('');
   const newToken = localStorage.getItem('token');
+    const navigate = useNavigate();
+  
+    const GotoHome = () => {
+      navigate('/'); 
+    };
 
   useEffect(() => {
     const fetchUserName = async () => {
@@ -30,7 +36,7 @@ const Header = () => {
       <div className="flex items-center space-x-4">
         <button className="bg-cyan-600 text-white px-4 py-2"> Schedule Appointment</button>
         <FaBell className="text-gray-500 text-xl ml-4" />
-        <button onClick={handleLogout} className=" text-gray-500 ml-4">
+        <button onClick={GotoHome} className=" text-gray-500 ml-4">
          <FaHome className="text-xl" />
         </button>
       </div>
