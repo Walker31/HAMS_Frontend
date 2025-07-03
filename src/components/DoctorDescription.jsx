@@ -94,7 +94,7 @@ export const DoctorDescription = () => {
     const payload = {
       date: selectedDate,
       doctorId,
-      hospitalId: doctorDetails?.Hospital || "Own Practice",
+      hospital: doctorDetails?.Hospital,
       slotNumber: selectedSlot,
       reason: reason,
       payStatus: isOn ? "Paid" : "Unpaid",
