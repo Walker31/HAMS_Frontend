@@ -26,7 +26,7 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
 
       <nav className="flex flex-col space-y-4">
         <NavLink to="/dashboard/patient" className={({ isActive }) =>
-        `${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
+        `cursor-pointer !no-underline ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
         }>
         <SidebarItem icon={<FaCalendarAlt />} label="Dashboard" collapsed={collapsed} />
         </NavLink>
@@ -38,7 +38,14 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
         >
           <SidebarItem icon={<FaHeartbeat />} label="Appointments" collapsed={collapsed} />
         </NavLink>
-        <SidebarItem icon={<MdSettings />} label="Settings" collapsed={collapsed} />
+        <NavLink
+          to="/dashboard/patient/settings"
+          className={({ isActive }) =>
+            `cursor-pointer !no-underline ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
+          }
+        >
+          <SidebarItem icon={<MdSettings />} label="Settings" collapsed={collapsed} />
+        </NavLink>
         <div onClick={handleLogout} className="cursor-pointer">
           <SidebarItem icon={<MdLogout />} label="Logout" collapsed={collapsed} />
         </div>

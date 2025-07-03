@@ -2,7 +2,7 @@
 const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) => {
   const upcoming = appointments.filter((appt) => appt.appStatus === 'Pending');
   const past = appointments.filter((appt) => appt.appStatus !== 'Pending');
-  
+
   const renderAppointmentCard = (appt, index) => (
     <div
       key={appt.appointmentId || index}
@@ -27,8 +27,8 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
         {/* Status */}
         <span className={`text-xs font-bold ${
           appt.appStatus === 'Completed' ? 'text-green-500' :
-          appt.appStatus === 'Canceled' ? 'text-red-500' :
-          appt.appStatus === 'Reschedule' ? 'text-yellow-500' :
+          appt.appStatus === 'Cancelled' ? 'text-red-500' :
+          appt.appStatus === 'Rescheduled' ? 'text-yellow-500' :
           'text-blue-500'
         }`}>
           {appt.appStatus}
