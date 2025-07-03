@@ -44,7 +44,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
           <div className="flex gap-2">
             <button
               className="px-2 bg-blue-500 text-white text-xs rounded py-1 hover:bg-blue-600"
-              onClick={() => handleOpenJitsi(appt.MeetLink)}
+              onClick={() => handleOpenJitsi(appt.meetLink)}
             >
               Join
             </button>
