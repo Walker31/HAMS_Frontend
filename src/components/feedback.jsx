@@ -26,13 +26,14 @@ const Feedback=() =>{
         <div className="bg-[#e8eaf6] flex flex-row h-80">
           <div className="w-1/3 mt-6 ml-0 flex justify-center">
           <div className="rounded-2xl ">
-            <div className="border-teal-600 pt-2 pl-2 border-t-2 border-l-2 rounded-2xl">
-              <img
-                src={photo}
-                alt={name}
-                className="object-cover m-2 w-full max-w-[320px] h-80 rounded-2xl"
-              />
-              
+            <div className="border-teal-600 w-78 h-78 pt-2 pl-2  border-t-2 border-l-2 rounded-2xl">
+              <div className="w-80 aspect-square flex items-center justify-center  rounded-2xl mx-auto mb-2 p-1">
+                <img
+                  src={photo}
+                  alt={name}
+                  className="w-full h-full object-cover rounded-2xl shadow"
+                />
+              </div>
             </div>
             
           </div>
