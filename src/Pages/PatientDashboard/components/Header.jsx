@@ -4,6 +4,7 @@ import { FaBell } from 'react-icons/fa';
 import { FaHome } from "react-icons/fa";
 import axios from 'axios';
 
+const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const Header = () => {
   const [name, setName] = useState('');

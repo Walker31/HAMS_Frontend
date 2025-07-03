@@ -1,5 +1,3 @@
-// components/RecentAppointments.jsx
-import React from 'react';
 
 const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) => {
   const upcoming = appointments.filter((appt) => appt.appStatus === 'Pending');
