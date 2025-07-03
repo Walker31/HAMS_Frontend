@@ -22,7 +22,7 @@ const AppointmentsPage = () => {
       const todayStr = new Date().toISOString().split("T")[0];
       const upcoming = res.data.filter((a) => {
         const apptDate = new Date(a.date).toISOString().split("T")[0];
-        return apptDate === todayStr && a.appStatus === "Pending";
+        return apptDate
       });
 
       setAppointments(upcoming);

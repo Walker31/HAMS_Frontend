@@ -24,16 +24,16 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
         HAMS
       </h2>
 
-      <nav className="flex flex-col space-y-4 cursor-pointer">
+      <nav className="flex flex-col space-y-4">
         <NavLink to="/dashboard/patient" className={({ isActive }) =>
-        `cursor-pointer ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
+        `cursor-pointer !no-underline ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
         }>
         <SidebarItem icon={<FaCalendarAlt />} label="Dashboard" collapsed={collapsed} />
         </NavLink>
         <NavLink
           to="/dashboard/patient/appointments"
           className={({ isActive }) =>
-            `cursor-pointer ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
+            `cursor-pointer !no-underline ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
           }
         >
           <SidebarItem icon={<FaHeartbeat />} label="Appointments" collapsed={collapsed} />
