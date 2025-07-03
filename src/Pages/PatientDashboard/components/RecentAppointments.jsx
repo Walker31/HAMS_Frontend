@@ -2,8 +2,10 @@
 const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) => {
   const upcoming = appointments.filter((appt) => appt.appStatus === 'Pending');
   const past = appointments.filter((appt) => appt.appStatus !== 'Pending');
+  
 
   const renderAppointmentCard = (appt, index) => (
+    
     <div
       key={appt.appointmentId || index}
       className="bg-orange-50 p-4 rounded-xl mb-4 shadow-sm flex items-center justify-between"
@@ -39,6 +41,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
           <div className="flex gap-2">
             <button
               className="px-2 bg-blue-500 text-white text-xs rounded py-1 hover:bg-blue-600"
+              
               onClick={() => handleOpenJitsi(appt.meetLink)}
             >
               Join

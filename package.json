@@ -24,6 +24,7 @@
     "chartjs": "^0.3.24",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
+    "framer-motion": "^12.23.0",
     "jwt-decode": "^4.0.0",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.10",
