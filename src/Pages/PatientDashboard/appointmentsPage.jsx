@@ -76,12 +76,12 @@ const AppointmentsPage = () => {
       />
 
       <JitsiMeetModal
+        show={showJitsi}
+        onHide={handleCloseJitsi}
         roomName={jitsiRoom}
-        isOpen={showJitsi}
-        onClose={handleCloseJitsi}
       />
     </div>
-  );
+  );npm
 };
 
 export default AppointmentsPage;

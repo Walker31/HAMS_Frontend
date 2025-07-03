@@ -22,12 +22,12 @@ export const DoctorDescription = () => {
   const token = localStorage.getItem("token");
   const isLoggedIn = !!token;
 
-  // Extract doctor info safely
+
   const state = location.state || {};
   const doctor = state.doctor || null;
   const doctorId = doctor?.doctorId || state?.doctorId;
   const reason = state?.reason || "General Checkup";
-  // Fetch doctor profile
+
   useEffect(() => {
     if (!doctorId) return;
 
@@ -43,7 +43,7 @@ export const DoctorDescription = () => {
     fetchDoctor();
   }, [doctorId]);
 
-  // Fetch available and booked slots for selected date
+  
   useEffect(() => {
     if (!selectedDate || !doctorId) return;
 
