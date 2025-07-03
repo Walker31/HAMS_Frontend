@@ -16,7 +16,6 @@ export function AuthProvider({ children }) {
       const decoded = jwtDecode(token);
       const expdate = decoded.exp
       const expda = new Date(expdate * 1000)
-      console.log("expiry date: ", expda)
       const now = Date.now() / 1000;
 
       if (decoded.exp && decoded.exp < now) {
@@ -51,7 +50,6 @@ export function AuthProvider({ children }) {
     if (decoded) {
       setUser(decoded);
       localStorage.setItem("token", token);
-      alert(`Logged in successfully as ${decoded.role}`);
     } else {
       console.error("Invalid or expired token during login");
     }
@@ -64,7 +62,7 @@ export function AuthProvider({ children }) {
 
   const value = {
     user,
-    role: user?.role || null,       // dynamic role based on token
+    role: user?.role || null,
     isLoggedIn: !!user,
     login,
     logout,

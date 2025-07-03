@@ -10,7 +10,7 @@ import hospitalHandler from "../../handlers/hospitalHandler.js";
 import { ArrowBack, Close } from "@mui/icons-material";
 import { useAuth } from "../../contexts/AuthContext.jsx";
 import { useNavigate } from "react-router-dom";
-import { IconButton } from "@mui/material";
+import { IconButton, Snackbar } from "@mui/material";
 
 function getCurrentLocation() {
   return new Promise((resolve, reject) => {
@@ -31,6 +31,9 @@ function getCurrentLocation() {
 }
 
 export default function RegisterForm({ onClose }) {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setsnackbarMessage] = useState("");
+  const [snackbarSeverity, setsnackbarSeverity] = useState("success");
   const [userType, setUserType] = useState(null);
   const [formData, setFormData] = useState({});
   const [isLogin, setIsLogin] = useState(false);
@@ -59,19 +62,27 @@ export default function RegisterForm({ onClose }) {
 
   const handleSubmit = async (e, data, mode, role) => {
     e?.preventDefault();
-
     try {
       if (mode === "Login") {
         const loginData = data || formData;
-        console.log(data)
+        console.log(data);
         const res = await loginHandler(loginData, role, login);
-        if (res?.token) navigate("dashboard");
+        if (res?.token) {
+          setSnackbarOpen(true);
+          setsnackbarMessage(`${role} Login successful`);
+          setsnackbarSeverity("success");
+          setTimeout(() => {
+            navigate("dashboard");
+          }, 1000);
+        }
       } else if (mode === "SignUp") {
         setUserType(role);
       }
     } catch (err) {
       console.error("Error:", err);
-      alert("Operation failed. Please check inputs.");
+      setSnackbarOpen(true);
+      setsnackbarMessage("Login Failed, Please try again");
+      setsnackbarSeverity("error");
     }
   };
 
@@ -92,8 +103,15 @@ export default function RegisterForm({ onClose }) {
         for (let [key, value] of formPayLoad.entries()) {
           console.log(`${key}:`, value);
         }
-        await patientHandler(formPayLoad, login);
-        onClose?.();
+        const res = await patientHandler(formPayLoad, login);
+        if (res?.token) {
+          setSnackbarOpen(true);
+          setsnackbarMessage("Patient register successful");
+          setsnackbarSeverity("success");
+          setTimeout(() => {
+            navigate("dashboard");
+          }, 1000);
+        }
       } else if (userType === "doctor") {
         const { latitude, longitude } = await getCurrentLocation();
         const formPayLoad = new FormData();
@@ -117,9 +135,16 @@ export default function RegisterForm({ onClose }) {
         for (let [key, value] of formPayLoad.entries()) {
           console.log(`${key}:`, value);
         }
-        console.log(formPayLoad)
-        await doctorHandler(formPayLoad, login);
-        onClose?.();
+        console.log(formPayLoad);
+        const res = await doctorHandler(formPayLoad, login);
+        if (res?.token) {
+          setSnackbarOpen(true);
+          setsnackbarMessage("Doctor register successful");
+          setsnackbarSeverity("success");
+          setTimeout(() => {
+            navigate("dashboard");
+          }, 1000);
+        }
       } else if (userType === "hospital") {
         const lat = localStorage.getItem("latitude");
         const lon = localStorage.getItem("longitude");
@@ -130,12 +155,21 @@ export default function RegisterForm({ onClose }) {
             longitude: lon,
           },
         };
-        await hospitalHandler(formattedData, login);
-        onClose?.();
+        const res = await hospitalHandler(formattedData, login);
+        if (res?.token) {
+          setSnackbarOpen(true);
+          setsnackbarMessage("Hospital register successful");
+          setsnackbarSeverity("success");
+          setTimeout(() => {
+            navigate("dashboard");
+          }, 1000);
+        }
       }
     } catch (err) {
       console.error("Registration failed:", err);
-      alert("Registration failed. Please try again.");
+      setSnackbarOpen(true);
+      setsnackbarMessage("Register Failed, Please try again");
+      setsnackbarSeverity("error");
     }
   };
 
@@ -178,6 +212,28 @@ export default function RegisterForm({ onClose }) {
           handleRegisterSubmit={handleRegisterSubmit}
         />
       )}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => [
+          setSnackbarOpen(false),
+          setsnackbarMessage(""),
+          setsnackbarSeverity("success"),
+        ]}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <div
+          style={{
+            backgroundColor:
+              snackbarSeverity === "error" ? "#f44336" : "#4caf50",
+            color: "white",
+            padding: "12px 16px",
+            borderRadius: "4px",
+          }}
+        >
+          {snackbarMessage}
+        </div>
+      </Snackbar>
     </div>
   );
 }

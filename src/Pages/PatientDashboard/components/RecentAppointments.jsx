@@ -16,7 +16,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric'
-              })} | Slot: {appt.slotNumber}
+              })} | Slot: {appt.slot}
             </p>
           <p className="text-xs text-gray-500">Doctor: {appt.doctorName}</p>
           <p className="text-xs text-gray-500">Visit Mode: {appt.consultStatus}</p>
@@ -39,7 +39,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
           <div className="flex gap-2">
             <button
               className="px-2 bg-blue-500 text-white text-xs rounded py-1 hover:bg-blue-600"
-              onClick={() => handleOpenJitsi(appt.MeetLink)}
+              onClick={() => handleOpenJitsi(appt.meetLink)}
             >
               Join
             </button>
@@ -77,7 +77,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
 
       {/* If empty */}
       {!appointments.length && (
-        <p className="text-center text-gray-400">You have no appointments.</p>
+        <p className="text-center text-gray-400">You have currently no appointments booked for today.</p>
       )}
     </section>
   );
