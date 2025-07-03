@@ -1,18 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import Snackbar from '@mui/material/Snackbar';
+import MuiAlert from '@mui/material/Alert';
 
-function Snackbar({ message, show }) {
-  return (
-    <div
-      className={`fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-lg shadow-lg text-white font-semibold transition-all duration-300
-        ${show ? "bg-green-600 opacity-100" : "opacity-0 pointer-events-none"}
-      `}
-      style={{ minWidth: "220px" }}
-    >
-      {message}
-    </div>
-  );
-}
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 
 const Settings = () => {
   const [formData, setFormData] = useState({
@@ -127,23 +121,19 @@ const Settings = () => {
 
   return (
     <div className=" mx-4 rounded-lg shadow-lg p-3 bg-white my-8">
-      <Snackbar message={successMsg} show={!!successMsg} />
+      <Snackbar
+        open={!!successMsg}
+        autoHideDuration={3000}
+        onClose={() => setSuccessMsg("")}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSuccessMsg("")} severity="success" sx={{ width: '100%' }}>
+          {successMsg}
+        </Alert>
+      </Snackbar>
       <div className="flex justify-center text-3xl font-semibold text-gray-800 underline mb-5">
         Settings
       </div>
-
-      {successMsg && (
-        <div className="bg-green-100 text-green-700 px-4 py-2 rounded mb-4 flex items-center justify-between">
-          <span>{successMsg}</span>
-          <button
-            className="ml-4 text-lg font-bold"
-            onClick={() => setSuccessMsg("")}
-            aria-label="Dismiss"
-          >
-            &times;
-          </button>
-        </div>
-      )}
 
       <div className=" pr-2">
         <form onSubmit={handleSubmit} className="space-y-6 mx-2">
