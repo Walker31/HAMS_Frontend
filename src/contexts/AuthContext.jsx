@@ -51,7 +51,6 @@ export function AuthProvider({ children }) {
     if (decoded) {
       setUser(decoded);
       localStorage.setItem("token", token);
-      alert(`Logged in successfully as ${decoded.role}`);
     } else {
       console.error("Invalid or expired token during login");
     }

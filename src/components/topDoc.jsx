@@ -71,14 +71,14 @@ const TopDoc = () => {
           {doctors.map((d, idx) => (
             <div
               key={idx}
-              className="flex-shrink-0 w-48 bg-white rounded-xl border border-gray-200 pt-3 text-center hover:scale-105 transition-transform shadow-sm"
+              className="topdoc-card flex-shrink-0 w-48 bg-white rounded-2xl border border-gray-200 pt-3 text-center hover:scale-105 hover:shadow-lg transition-all shadow-sm"
             >
-              <div className="w-full h-36 overflow-hidden rounded-lg mb-4">
+              <div className="w-40 h-40 flex items-center justify-center bg-gray-50 rounded-xl mx-auto mb-2 p-1">
                 <img
                   src={d.photo?.url || "/default.avif"}
                   alt={`${d.name} photo`}
                   loading="lazy"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover rounded-lg shadow"
                 />
               </div>
               <div className="mb-2">
