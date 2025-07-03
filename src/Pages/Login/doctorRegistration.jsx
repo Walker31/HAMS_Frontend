@@ -16,7 +16,6 @@ export default function DoctorRegisterForm({
   handleRegisterSubmit,
 }) {
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
-
   const fileInputRef = useRef(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [hospitals, setHospitals] = useState([]);
@@ -69,7 +68,7 @@ export default function DoctorRegisterForm({
         <div className="flex flex-col md:flex-row gap-4 w-full justify-center">
           <div className="flex flex-col gap-3 flex-1">
             <div className="flex flex-col md:flex-row items-start gap-6">
-              {/* Image Upload */}
+              
               <div className="flex flex-col items-center gap-2 flex-1">
                 <div
                   className="w-32 h-32 rounded-full bg-gray-200 overflow-hidden cursor-pointer"

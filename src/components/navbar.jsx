@@ -2,8 +2,6 @@ import { useState } from "react";
 import LocationModal from "./locationBox";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import { useNavigate } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from '@mui/icons-material/Close';
 import RegisterForm from "../Pages/Login/registerForm";
 import dp from '../assets/dp.jpg';
 import FloatingBar from "./FloatingBar";

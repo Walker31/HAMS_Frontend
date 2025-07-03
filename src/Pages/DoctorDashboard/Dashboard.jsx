@@ -453,10 +453,10 @@ const DoctorDashboard = () => {
                 <div className="text-gray-700">{appt.date}</div>
                 <div className="text-gray-700">{appt.slotNumber}</div>
                 <div>
-                  {appt.consultStatus === "Online" && appt.MeetLink ? (
+                  {appt.consultStatus === "Online" && appt.meetLink ? (
                     <button
                       className="sm pl-1.5 pr-1.5 bg-blue-500 rounded-1 pt-0.5 pb-0.5 text-white"
-                      onClick={() => handleOpenJitsi(appt.MeetLink)}
+                      onClick={() => handleOpenJitsi(appt.meetLink)}
                     >
                       <VideocamIcon className="mx-2 text-white" />
                       Join Meet
