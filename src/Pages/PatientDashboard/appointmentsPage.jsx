@@ -38,8 +38,8 @@ const AppointmentsPage = () => {
   const handleCancel = async (appointmentId) => {
     try {
       const token = localStorage.getItem("token");
-      await axios.put(
-        `${base_url}/appointments/cancel`,
+      await axios.post(
+        `${base_url}/patients/cancel-appointment`,
         { appointmentId },
         { headers: { Authorization: `Bearer ${token}` } }
       );

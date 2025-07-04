@@ -37,7 +37,7 @@ const PatientDashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100">
       {/* Sidebar */}
       <Sidebar
         collapsed={collapsed}
@@ -46,7 +46,7 @@ const PatientDashboard = () => {
       />
 
       {/* Main Content */}
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1 overflow-y-auto">
         {/* Header */}
         <div className="p-6 pb-0">
           <Header />
