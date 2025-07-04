@@ -35,10 +35,13 @@ const Header = () => {
         <p className="text-sm text-gray-600">Welcome back, {name || 'Patient'}!</p>
       </div>
       <div className="flex items-center space-x-4">
-        <button className="bg-cyan-600 text-white px-4 py-2"> Schedule Appointment</button>
-        <FaBell className="text-gray-500 text-xl ml-4" />
-        <button onClick={GotoHome} className=" text-gray-500 ml-4">
-         <FaHome className="text-xl" />
+        <button
+        onClick={() => navigate("/dashboard/patient/settings")}
+        className="bg-cyan-600 hover:bg-cyan-800 text-white px-4 py-2 rounded-md">
+        Edit Profile
+        </button>
+        <button onClick={GotoHome} className=" text-gray-500">
+         <FaHome className="text-xl ml-4" />
         </button>
       </div>
     </header>

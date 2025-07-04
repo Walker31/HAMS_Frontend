@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthContext";
 import { OverviewModal } from "./DoctorModals"; // ✅ Import modal
+import { Snackbar } from "@mui/material";
 
 const DashboardLayout = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -15,6 +16,8 @@ const DashboardLayout = () => {
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const [snackbarOpen,setSnackbarOpen] = useState(false)
+  const [snackbarMessage,setsnackbarMessage] = useState("")
 
   const toggleSidebar = () => {
     setSidebarCollapsed((prev) => !prev);
@@ -58,9 +61,12 @@ const DashboardLayout = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
-    navigate("/", { replace: true });
+    setSnackbarOpen(true)
+    setsnackbarMessage("Logged Out Successfully")
+    setTimeout(() => {
+      navigate("/", { replace: true });
+    }, 1000);
     logout();
-    alert("Logged out successfully");
   };
 
   return (
@@ -91,6 +97,26 @@ const DashboardLayout = () => {
         setDescription={setOverviewText}
         onSave={handleSaveOverview}
       />
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => [
+          setSnackbarOpen(false),
+          setsnackbarMessage(""),
+        ]}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <div
+          style={{
+            backgroundColor: "#4caf50",
+            color: "white",
+            padding: "12px 16px",
+            borderRadius: "4px",
+          }}
+        >
+          {snackbarMessage}
+        </div>
+      </Snackbar>
     </div>
   );
 };

@@ -3,11 +3,8 @@ import { useState, useEffect } from "react";
 import LibraryBooksSharpIcon from '@mui/icons-material/LibraryBooksSharp';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import InsightsIcon from '@mui/icons-material/Insights';
 import LogoutIcon from '@mui/icons-material/Logout';
 import EditIcon from '@mui/icons-material/Edit';
-//import defImage from "../../assets/default-profile.jpg"; // Make sure this path is correct
-import defImage from "/default.avif";
 
 const Sidebar = ({
   doctor,
@@ -55,7 +52,7 @@ const Sidebar = ({
   return (
     <div
       className={`bg-gray-900 text-white shadow-md transition-all duration-300 ease-in-out h-screen flex flex-col ${
-        effectiveCollapse ? "w-24" : "w-64"
+        effectiveCollapse ? "w-24" : "w-54"
       }`}
     >
       <div className="p-4 text-center border-b border-gray-800">

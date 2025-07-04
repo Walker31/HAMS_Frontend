@@ -2,6 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import StarRating from "../components/RatingStars";
 import axios from "axios";
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+import React from "react"; // Needed for forwardRef
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
+
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
@@ -16,6 +24,9 @@ export const DoctorDescription = () => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [bookedSlots, setBookedSlots] = useState([]);
   const [doctorDetails, setDoctorDetails] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("info");
   const [reviews, setReviews] = useState([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
 
@@ -24,12 +35,11 @@ export const DoctorDescription = () => {
   const token = localStorage.getItem("token");
   const isLoggedIn = !!token;
 
-  // Extract doctor info safely
   const state = location.state || {};
   const doctor = state.doctor || null;
   const doctorId = doctor?.doctorId || state?.doctorId;
   const reason = state?.reason || "General Checkup";
-  // Fetch doctor profile
+
   useEffect(() => {
     if (!doctorId) return;
 
@@ -65,7 +75,6 @@ export const DoctorDescription = () => {
     fetchReviews();
   }, [doctorId]);
 
-  // Fetch available and booked slots for selected date
   useEffect(() => {
     if (!selectedDate || !doctorId) return;
 
@@ -100,60 +109,78 @@ export const DoctorDescription = () => {
     fetchBooked();
   }, [selectedDate, doctorId]);
 
-const handleBookNow = async () => {
-  if (!selectedDate || !selectedSlot) {
-    alert("Please select a date and time slot before booking.");
-    return;
-  }
-
-  if (!isLoggedIn) {
-    navigate("/login");
-    return;
-  }
-
-  const payload = {
-    date: selectedDate,
-    doctorId,
-    Hospital: doctorDetails?.Hospital || "Own Practice",
-    slotNumber: selectedSlot,
-    reason: reason,
-    payStatus: isOn ? "Paid" : "Unpaid",
-    consultStatus: isSet ? "Online" : "Offline",
-    // ❌ Do not include MeetLink here anymore
+  const showSnackbar = (message, severity = "info") => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
   };
 
-  try {
-    const response = await axios.post(
-      `${base_url}/appointments/book`,
-      payload,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+  const handleBookNow = async () => {
+    if (!selectedDate || !selectedSlot) {
+      showSnackbar(
+        "Please select a date and time slot before booking.",
+        "warning"
+      );
+
+      return;
+    }
+
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+
+    const payload = {
+      date: selectedDate,
+      doctorId,
+      Hospital: doctorDetails?.Hospital || "Own Practice",
+      slotNumber: selectedSlot,
+      reason,
+      payStatus: isOn ? "Paid" : "Unpaid",
+      consultStatus: isSet ? "Online" : "Offline",
+    };
+
+    try {
+      const response = await axios.post(
+        `${base_url}/appointments/book`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        showSnackbar("Appointment booked successfully!", "success");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000);
+        
       }
-    );
+    } catch (error) {
+      if (error.response?.status === 409) {
+        showSnackbar(
+          "This slot has already been booked. Please choose another.",
+          "error"
+        );
+      } else {
+        showSnackbar("Failed to book appointment. Please try again.", "error");
+      }
+      console.error("Booking error:", error);
+    }
+  };
 
-    if (response.status === 201) {
-      alert("Appointment booked successfully!");
-      navigate("/dashboard");
-    }
-  } catch (error) {
-    if (error.response?.status === 409) {
-      alert("This slot has already been booked. Please choose another.");
-    } else {
-      alert("Failed to book appointment. Please try again.");
-    }
-    console.error("Booking error:", error);
+  // Show loading while fetching doctorDetails
+  if (!doctorDetails) {
+    return <div className="text-center my-5">Loading doctor details...</div>;
   }
-};
-
 
   return (
     <div className="container my-5">
       <h2 className="text-center mb-4">Doctor Description</h2>
 
       <div className="flex md:flex-row flex-col justify-between p-5 bg-[#10217D] rounded-3xl">
-        {/* Left - Doctor Info */}
         <div className="col-md-8">
           <div className="d-flex align-items-start gap-4">
             <img
@@ -185,13 +212,18 @@ const handleBookNow = async () => {
                 {doctorDetails?.qualifications?.join(", ") || "MBBS"}
               </p>
               <p className="text-white mb-1">
+                <strong>Basic Fee:</strong> ₹ {doctorDetails?.basicFee || "0"}
+              </p>
+              <p className="text-white mb-1">
                 <strong>Hospital Name:</strong>{" "}
                 {doctorDetails?.Hospital || "Not Provided"}
               </p>
               <p className="text-white mb-1">
-                <strong>Timings:</strong>{" "}
-                {doctorDetails?.timings || "MON-SAT (09:00 AM - 04:00 PM)"}
+                <strong>Timings:</strong> MON-FRI (
+                {doctorDetails?.workingHours?.from || "09:00 AM"} -{" "}
+                {doctorDetails?.workingHours?.to || "04:00 PM"})
               </p>
+
               {doctorDetails?.averageRating && (
                 <StarRating rating={doctorDetails.averageRating} />
               )}
@@ -199,7 +231,6 @@ const handleBookNow = async () => {
           </div>
         </div>
 
-        {/* Right - Booking Section */}
         <div className="flex flex-col gap-4 mt-4 mt-md-0">
           <div className="card p-3 shadow-sm">
             <h6 className="fw-bold mb-2">Select Date</h6>
@@ -219,9 +250,11 @@ const handleBookNow = async () => {
 
                   const handleClick = () => {
                     if (isBooked) {
-                      alert(
-                        "This slot is already booked. Please choose another."
+                      showSnackbar(
+                        "This slot is already booked. Please choose another.",
+                        "error"
                       );
+
                       return;
                     }
                     setSelectedSlot(slot);
@@ -229,6 +262,7 @@ const handleBookNow = async () => {
 
                   return (
                     <button
+                      disabled={isBooked}
                       key={slot}
                       className={`btn btn-sm ${
                         isBooked
@@ -250,7 +284,6 @@ const handleBookNow = async () => {
               )}
             </div>
 
-            {/* Consulting Mode */}
             <div className="flex gap-2 items-center justify-between my-2">
               <p className="m-0">Mode of Consulting:</p>
               <div className="flex gap-2 mt-2">
@@ -277,7 +310,6 @@ const handleBookNow = async () => {
               </div>
             </div>
 
-            {/* Payment Toggle */}
             <div className="d-flex align-items-center my-2">
               <p className="m-0">Payment done:</p>
               <div
@@ -310,11 +342,25 @@ const handleBookNow = async () => {
         </div>
       </div>
 
-      {/* Overview */}
       <div className="mt-5">
         <h4 className="fw-bold">Overview</h4>
         <p>{doctorDetails?.overview || "No overview available."}</p>
       </div>
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+  onClose={() => setSnackbarOpen(false)}
+  severity={snackbarSeverity}
+  sx={{ width: "100%" }}
+>
+  {snackbarMessage}
+</Alert>
+
+      </Snackbar>
 
       {/* Reviews Section */}
       <div className="mt-5">

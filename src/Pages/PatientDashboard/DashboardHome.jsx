@@ -20,6 +20,7 @@ const DashboardHome = () => {
       const res = await axios.get(`${base_url}/patients/appointments`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log(res);
 
       const todayStr = new Date().toISOString().split("T")[0];
       const upcoming = res.data.filter((a) => {
@@ -55,7 +56,7 @@ const DashboardHome = () => {
   return (
     <div className="flex flex-1 p-6 gap-6">
       <div className="w-2/3 space-y-6">
-        <AppointmentBanner />
+        <AppointmentBanner appointment={appointments[0]} />
         <HealthReport />
         <HeartRateGraph />
       </div>

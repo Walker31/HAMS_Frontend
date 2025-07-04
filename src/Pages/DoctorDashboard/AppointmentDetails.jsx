@@ -5,6 +5,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useParams } from "react-router-dom";
+import { format } from "date-fns";
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
@@ -13,6 +14,9 @@ const AppointmentDetails = () => {
   const [appointmentData, setAppointmentData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [rescheduleLoading, setRescheduleLoading] = useState(false);
+  const [rescheduleError, setRescheduleError] = useState("");
+  var formattedDate = '';
 
   useEffect(() => {
     const fetchAppointmentData = async () => {
@@ -28,11 +32,34 @@ const AppointmentDetails = () => {
         setLoading(false);
       }
     };
-    
+
     if (appointmentId) {
       fetchAppointmentData();
     }
   }, [appointmentId]);
+
+  const handleReschedule = async () => {
+    if (!appointmentData?.appointmentDetails?.appointmentId) return;
+    setRescheduleLoading(true);
+    setRescheduleError("");
+    try {
+      await axios.put(
+        `${base_url}/appointments/update-status/${appointmentData.appointmentDetails.appointmentId}`,
+        { appStatus: "Rescheduled" }
+      );
+      setAppointmentData((prev) => ({
+        ...prev,
+        appointmentDetails: {
+          ...prev.appointmentDetails,
+          status: "Rescheduled",
+        },
+      }));
+    } catch (err) {
+      setRescheduleError("Failed to reschedule appointment");
+    } finally {
+      setRescheduleLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -41,7 +68,7 @@ const AppointmentDetails = () => {
       </div>
     );
   }
-  
+
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen text-red-500">
@@ -88,6 +115,8 @@ const AppointmentDetails = () => {
                         ? "bg-green-500"
                         : appointmentDetails.status === "Rejected"
                         ? "bg-red-500"
+                        : appointmentDetails.status === "Rescheduled"
+                        ? "bg-yellow-500"
                         : "bg-gray-400"
                     }`}
                   >
@@ -153,15 +182,36 @@ const AppointmentDetails = () => {
               </div>
             </div>
             <hr />
+            {appointmentDetails.status !== "Completed" && (
             <div className="flex justify-end gap-4 p-4">
-              <Button variant="contained">Reschedule</Button>
+              
+                  <Button
+                    variant="contained"
+                    onClick={handleReschedule}
+                    disabled={
+                      rescheduleLoading || appointmentDetails.status === "Rescheduled"
+                    }
+                  >
+                    {rescheduleLoading ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      "Reschedule"
+                    )}
+                  </Button>
+                
+
               <Button
                 variant="outlined"
                 style={{ borderColor: "red", color: "red" }}
+                // Add cancel logic if needed
               >
                 Cancel
               </Button>
             </div>
+            )}
+            {rescheduleError && (
+              <div className="text-red-500 text-sm mt-2 px-4">{rescheduleError}</div>
+            )}
           </div>
 
           {/* Patient Details Box */}
@@ -220,26 +270,24 @@ const AppointmentDetails = () => {
                 </div>
               </>
             )}
-            ;
           </div>
 
-          {/* Placeholder for future section */}
+          {/* Additional Information / Prescription */}
           <div className="border rounded-xl shadow-sm bg-white h-40 flex flex-col items-center justify-center text-gray-400">
-            {/* Empty for now */}
             <h3 className="text-lg font-semibold mb-2">
               Additional Information
             </h3>
-            {appointmentDetails?.notes ? (
+            {appointmentDetails?.prescription ? (
               <p className="text-gray-700">{appointmentDetails.prescription}</p>
             ) : (
               <p className="text-gray-400 italic">
                 No Prescription available for this appointment.
               </p>
             )}
-            {/* Similarly, add remarks or prescriptions if available */}
           </div>
         </div>
 
+        {/* Right Section: Appointment History */}
         <div className="w-1/3">
           <div className="flex flex-col border rounded-xl shadow-sm bg-white max-h-[700px] overflow-y-auto">
             <div className="p-4">
@@ -249,17 +297,20 @@ const AppointmentDetails = () => {
             </div>
             <hr />
             <div className="px-4 py-2 space-y-6">
-              {!previousAppointments || previousAppointments.length === 0 ? (
+              {
+              !previousAppointments || previousAppointments.length === 0 ? (
+                
                 <div className="text-center text-gray-600 font-medium py-8">
                   First appointment with the patient
                 </div>
               ) : (
                 previousAppointments.map((appt, idx) => (
+                  formattedDate = format(new Date(appt.date), 'dd/MM/yyyy'),
                   <div key={idx} className="flex items-start relative">
                     {/* Left: Date & Time */}
                     <div className="w-[90px] text-xs text-right pr-2 flex flex-col pt-1">
-                      <span className="text-gray-500">{appt.date}</span>
-                      <span className="text-gray-500">{appt.time}</span>
+                      <span className="text-gray-500">{formattedDate}</span>
+                      <span className="text-gray-500">{appt.slotNumber}</span>
                     </div>
 
                     {/* Center: Timeline */}
@@ -267,7 +318,7 @@ const AppointmentDetails = () => {
                       {/* Vertical Line */}
                       <div
                         className={`absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-full z-0 ${
-                          appt.status === "done"
+                          appt.appStatus === "Completed"
                             ? "bg-green-300"
                             : "bg-yellow-300"
                         }`}
@@ -275,7 +326,7 @@ const AppointmentDetails = () => {
                       {/* Dot */}
                       <div
                         className={`w-3 h-3 mt-1 rounded-full z-10 ${
-                          appt.status === "done"
+                          appt.appStatus === "Completed"
                             ? "bg-green-500"
                             : "bg-yellow-400"
                         }`}

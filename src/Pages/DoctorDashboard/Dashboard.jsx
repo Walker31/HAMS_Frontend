@@ -7,6 +7,7 @@ import VideocamIcon from "@mui/icons-material/Videocam";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import PersonAddAltIcon from "@mui/icons-material/PersonAddAlt";
+import { format } from 'date-fns';
 import {
   Chart as ChartJS,
   LineElement,
@@ -97,6 +98,7 @@ const doughnutOptions = {
 const DoctorDashboard = () => {
   const { user } = useAuth();
   const [doctor, setDoctor] = useState({});
+  const [rev,setRev] = useState(0);
   const [todayAppointments, setTodayAppointments] = useState([]);
   const [previousAppointments, setPreviousAppointments] = useState([]);
 
@@ -127,6 +129,7 @@ const DoctorDashboard = () => {
         const res = await axios.get(`${base_url}/doctors/profile`, {
           headers: { Authorization: `Bearer ${newtoken}` },
         });
+        setRev(res.data.revenue);
         setDoctor(res.data.doctor);
       } catch (err) {
         console.error("Failed to fetch doctor profile", err);
@@ -272,7 +275,7 @@ const DoctorDashboard = () => {
       alert("Failed to save overview");
     }
   };
-
+  var formattedDate = '';
   return (
     <div className="flex flex-col gap-3">
       <div className="flex flex-col lg:flex-row rounded-2xl">
@@ -280,12 +283,6 @@ const DoctorDashboard = () => {
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <div className="text-3xl font-bold text-gray-900">Dashboard</div>
-            <button
-              className="text-blue-500 underline"
-              onClick={() => setShowOverview(true)}
-            >
-              Edit Overview
-            </button>
           </div>
 
           {/* Stat Cards */}
@@ -296,7 +293,6 @@ const DoctorDashboard = () => {
                   <CalendarMonthIcon className="text-green-500" />
                   Appointments
                 </div>
-                <span className="text-green-600 text-xs">+2.5%</span>
               </div>
               <div className="mt-2 text-2xl font-bold text-gray-800">{todayAppointments.length}</div>
             </div>
@@ -308,9 +304,8 @@ const DoctorDashboard = () => {
                   </span>
                   Revenue
                 </div>
-                <span className="text-red-600 text-xs">-1%</span>
               </div>
-              <div className="mt-2 text-2xl font-bold text-gray-800">$982</div>
+              <div className="mt-2 text-2xl font-bold text-gray-800">₹ {rev}</div>
             </div>
             <div className="bg-white rounded-xl p-4 shadow border border-gray-100">
               <div className="flex items-center justify-between text-gray-500 text-sm">
@@ -318,7 +313,6 @@ const DoctorDashboard = () => {
                   <PeopleAltIcon className="text-green-500" />
                   Total Patients
                 </div>
-                <span className="text-red-600 text-xs">-1.8%</span>
               </div>
               <div className="mt-2 text-2xl font-bold text-gray-800">
                 {previousAppointments.filter((a) => a.appStatus === "Completed").length}
@@ -330,7 +324,6 @@ const DoctorDashboard = () => {
                   <PersonAddAltIcon className="text-green-500" />
                   New Patients
                 </div>
-                <span className="text-green-600 text-xs">+3.7%</span>
               </div>
               <div className="mt-2 text-2xl font-bold text-gray-800">32</div>
             </div>
@@ -437,6 +430,7 @@ const DoctorDashboard = () => {
             </div>
             {/* Appointment Rows */}
             {todayAppointments.map((appt, i) => (
+              formattedDate = format(new Date(appt.date), 'dd/MM/yyyy'),
               <div
                 key={i}
                 className="grid min-w-[600px] grid-cols-6 gap-4 items-center py-3 border-b"
@@ -450,7 +444,7 @@ const DoctorDashboard = () => {
                   {appt.patientName}
                 </div>
                 <div className="text-gray-700">{appt.reason}</div>
-                <div className="text-gray-700">{appt.date}</div>
+                <div className="text-gray-700">{formattedDate}</div>
                 <div className="text-gray-700">{appt.slotNumber}</div>
                 <div>
                   {appt.consultStatus === "Online" && appt.meetLink ? (
@@ -490,67 +484,7 @@ const DoctorDashboard = () => {
           </>
         )}
       </div>
-      {/* Previous Appointments */}
-      <div className="bg-white rounded-xl shadow border border-gray-100 p-6 mt-6">
-        <div className="text-xl font-semibold text-gray-900 mb-4">
-          Previous Appointments
-        </div>
-        {previousAppointments.length === 0 ? (
-          <div>No Previous Appointments.</div>
-        ) : (
-          previousAppointments.map((appt, idx) => (
-            <div
-              key={idx}
-              className="mb-3 border-l-4 pl-4 border-blue-500 shadow-sm bg-gray-50 rounded py-2"
-            >
-              <div className="flex flex-wrap gap-4 items-center justify-between">
-                <div>
-                  <div>
-                    <strong>Patient ID:</strong> {appt.patientId}
-                  </div>
-                  <div>
-                    <strong>Date:</strong> {appt.date}
-                  </div>
-                  <div>
-                    <strong>Slot:</strong> {appt.slotNumber}
-                  </div>
-                  <div>
-                    <strong>Status:</strong>{" "}
-                    <span
-                      className={`badge bg-${
-                        appt.appStatus === "Completed"
-                          ? "green-500"
-                          : appt.appStatus === "Rejected"
-                          ? "red-500"
-                          : "yellow-500"
-                      } text-white`}
-                    >
-                      {appt.appStatus}
-                    </span>
-                  </div>
-                  {appt.reasonForReject && (
-                    <div className="text-red-600">
-                      <strong>Reason:</strong> {appt.reasonForReject}
-                    </div>
-                  )}
-                </div>
-                <div>
-                  {appt.prescription && (
-                    <button
-                      className="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700"
-                      onClick={() =>
-                        handleViewPrescription(appt.patientName || appt.patientId, appt.prescription)
-                      }
-                    >
-                      View Prescription
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
+      
 
       {/* Modals */}
       <OverviewModal
@@ -570,7 +504,7 @@ const DoctorDashboard = () => {
       <PrescriptionModal
         show={showPrescriptionModal}
         onClose={() => setShowPrescriptionModal(false)}
-        name={todayAppointments[prescriptionIndex]?.patientId || ""}
+        name={todayAppointments[prescriptionIndex]?.patientName || ""}
         prescription={currentPrescription}
         setPrescription={setCurrentPrescription}
         onSave={handleSavePrescription}

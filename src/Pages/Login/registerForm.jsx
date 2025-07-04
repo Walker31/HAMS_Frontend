@@ -220,7 +220,7 @@ export default function RegisterForm({ onClose }) {
           setsnackbarMessage(""),
           setsnackbarSeverity("success"),
         ]}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <div
           style={{

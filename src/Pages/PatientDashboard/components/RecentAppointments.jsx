@@ -2,8 +2,10 @@
 const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) => {
   const upcoming = appointments.filter((appt) => appt.appStatus === 'Pending');
   const past = appointments.filter((appt) => appt.appStatus !== 'Pending');
+  
 
   const renderAppointmentCard = (appt, index) => (
+    
     <div
       key={appt.appointmentId || index}
       className="bg-orange-50 p-4 rounded-xl mb-4 shadow-sm flex items-center justify-between"
@@ -16,7 +18,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric'
-              })} | Slot: {appt.slotNumber}
+              })} | Slot: {appt.slot}
             </p>
           <p className="text-xs text-gray-500">Doctor: {appt.doctorName}</p>
           <p className="text-xs text-gray-500">Visit Mode: {appt.consultStatus}</p>
@@ -27,8 +29,8 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
         {/* Status */}
         <span className={`text-xs font-bold ${
           appt.appStatus === 'Completed' ? 'text-green-500' :
-          appt.appStatus === 'Canceled' ? 'text-red-500' :
-          appt.appStatus === 'Reschedule' ? 'text-yellow-500' :
+          appt.appStatus === 'Cancelled' ? 'text-red-500' :
+          appt.appStatus === 'Rescheduled' ? 'text-yellow-500' :
           'text-blue-500'
         }`}>
           {appt.appStatus}
@@ -39,6 +41,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
           <div className="flex gap-2">
             <button
               className="px-2 bg-blue-500 text-white text-xs rounded py-1 hover:bg-blue-600"
+              
               onClick={() => handleOpenJitsi(appt.meetLink)}
             >
               Join
@@ -54,7 +57,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
       </div>
     </div>
   );
-
+  
   return (
     <section className="bg-white p-4 rounded-md shadow-sm mb-6">
       <h2 className="text-lg font-semibold mb-4 text-gray-800">Appointments</h2>
@@ -77,7 +80,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
 
       {/* If empty */}
       {!appointments.length && (
-        <p className="text-center text-gray-400">You have no appointments.</p>
+        <p className="text-center text-gray-400">You have currently no appointments booked for today.</p>
       )}
     </section>
   );

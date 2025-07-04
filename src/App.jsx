@@ -3,6 +3,7 @@ import { Routes, Route, Outlet, Navigate } from "react-router-dom";
 import { AuthProvider,useAuth } from "./contexts/AuthContext";
 import AppointmentsPage from "./Pages/PatientDashboard/appointmentsPage";
 import DashboardHome from "./Pages/PatientDashboard/DashboardHome";
+import Settings from "./Pages/PatientDashboard/components/Settings";
 import Home from "./Pages/Home";
 import Navbar from "./components/navbar";
 import DoctorsAvailable from "./components/DoctorsAvailable";
@@ -22,6 +23,7 @@ import RoleBasedRoute from "./RoleBasedRoute";
 import { getCityFromCoords } from "./utils/locationUtils";
 import Unauthorized from './components/Unauthorized';
 import QueuePage from './Pages/DoctorDashboard/components/AppList';
+import PatientReviews from "./Pages/PatientDashboard/PatientReviews";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -116,6 +118,8 @@ const App = () => {
         <Route path="/dashboard/patient" element={<PatientDashboard />}>
         <Route index element={<DashboardHome />} />
         <Route path="appointments" element={<AppointmentsPage />} />
+        <Route path="reviews" element={<PatientReviews />} />
+        <Route path="/dashboard/patient/settings" element={<Settings />} />
         </Route>
 
         {/* Doctor-specific dashboard layout and subroutes */}

@@ -1,11 +1,11 @@
-import { useNavigate } from 'react-router-dom'; // ✅ import navigate
+import { useNavigate } from 'react-router-dom';
 import { FaBars, FaCalendarAlt, FaHeartbeat } from 'react-icons/fa';
 import { MdMessage, MdPayment, MdAssignment, MdLogout, MdSettings } from 'react-icons/md';
 import { BsFileMedical } from 'react-icons/bs';
 import { useAuth } from '../../../contexts/AuthContext';
 import { NavLink } from 'react-router-dom';
 
-const Sidebar = ({ collapsed, toggleSidebar, onAddReviewClick, onDeleteReviewClick }) => {
+const Sidebar = ({ collapsed, toggleSidebar, onReviewClick }) => {
   const {logout} = useAuth();
   const navigate = useNavigate();
 
@@ -24,27 +24,36 @@ const Sidebar = ({ collapsed, toggleSidebar, onAddReviewClick, onDeleteReviewCli
         HAMS
       </h2>
 
-      <nav className="flex flex-col space-y-4 cursor-pointer">
+      <nav className="flex flex-col space-y-4">
         <NavLink to="/dashboard/patient" className={({ isActive }) =>
-        `cursor-pointer ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
+        `cursor-pointer !no-underline ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
         }>
         <SidebarItem icon={<FaCalendarAlt />} label="Dashboard" collapsed={collapsed} />
         </NavLink>
         <NavLink
           to="/dashboard/patient/appointments"
           className={({ isActive }) =>
-            `cursor-pointer ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
+            `cursor-pointer !no-underline ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
           }
         >
           <SidebarItem icon={<FaHeartbeat />} label="Appointments" collapsed={collapsed} />
         </NavLink>
-        <div onClick={onAddReviewClick} className="cursor-pointer">
-          <SidebarItem icon={<MdMessage />} label="Add Review" collapsed={collapsed} />
-        </div>
-        <div onClick={onDeleteReviewClick} className="cursor-pointer">
-          <SidebarItem icon={<MdAssignment />} label="Delete Review" collapsed={collapsed} />
-        </div>
-        <SidebarItem icon={<MdSettings />} label="Settings" collapsed={collapsed} />
+        <NavLink
+          to="/dashboard/patient/reviews"
+          className={({ isActive }) =>
+            `cursor-pointer !no-underline ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
+          }
+        >
+          <SidebarItem icon={<MdMessage />} label="Reviews" collapsed={collapsed} />
+        </NavLink>
+        <NavLink
+          to="/dashboard/patient/settings"
+          className={({ isActive }) =>
+            `cursor-pointer !no-underline ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
+          }
+        >
+          <SidebarItem icon={<MdSettings />} label="Settings" collapsed={collapsed} />
+        </NavLink>
         <div onClick={handleLogout} className="cursor-pointer">
           <SidebarItem icon={<MdLogout />} label="Logout" collapsed={collapsed} />
         </div>
