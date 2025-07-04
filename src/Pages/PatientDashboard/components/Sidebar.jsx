@@ -1,11 +1,10 @@
 import { useNavigate } from 'react-router-dom';
 import { FaBars, FaCalendarAlt, FaHeartbeat } from 'react-icons/fa';
-import { MdMessage, MdPayment, MdAssignment, MdLogout, MdSettings } from 'react-icons/md';
-import { BsFileMedical } from 'react-icons/bs';
+import { MdLogout, MdSettings } from 'react-icons/md';
 import { useAuth } from '../../../contexts/AuthContext';
 import { NavLink } from 'react-router-dom';
 
-const Sidebar = ({ collapsed, toggleSidebar }) => {
+const Sidebar = ({ collapsed, toggleSidebar, onReviewClick }) => {
   const {logout} = useAuth();
   const navigate = useNavigate();
 
@@ -37,6 +36,14 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
           }
         >
           <SidebarItem icon={<FaHeartbeat />} label="Appointments" collapsed={collapsed} />
+        </NavLink>
+        <NavLink
+          to="/dashboard/patient/reviews"
+          className={({ isActive }) =>
+            `cursor-pointer !no-underline ${isActive ? "bg-gray-100 font-semibold rounded-md" : ""}`
+          }
+        >
+          <SidebarItem icon={<MdMessage />} label="Reviews" collapsed={collapsed} />
         </NavLink>
         <NavLink
           to="/dashboard/patient/settings"

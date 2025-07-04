@@ -24,6 +24,7 @@ import { getCityFromCoords } from "./utils/locationUtils";
 import Unauthorized from './components/Unauthorized';
 import QueuePage from './Pages/DoctorDashboard/components/AppList';
 import HeartBeatLine from "./components/heartBeat";
+import PatientReviews from "./Pages/PatientDashboard/PatientReviews";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -119,6 +120,7 @@ const App = () => {
         <Route path="/dashboard/patient" element={<PatientDashboard />}>
         <Route index element={<DashboardHome />} />
         <Route path="appointments" element={<AppointmentsPage />} />
+        <Route path="reviews" element={<PatientReviews />} />
         <Route path="/dashboard/patient/settings" element={<Settings />} />
         </Route>
 

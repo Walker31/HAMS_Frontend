@@ -1,9 +1,9 @@
-import React,{ useEffect, useState } from "react";
+import react,{ useEffect, useState } from "react";
 import axios from "axios";
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
 
-const Alert = React.forwardRef(function Alert(props, ref) {
+const Alert = react.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
@@ -125,7 +125,7 @@ const Settings = () => {
         open={!!successMsg}
         autoHideDuration={3000}
         onClose={() => setSuccessMsg("")}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={() => setSuccessMsg("")} severity="success" sx={{ width: '100%' }}>
           {successMsg}
