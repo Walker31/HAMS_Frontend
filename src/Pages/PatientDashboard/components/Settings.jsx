@@ -125,7 +125,7 @@ const Settings = () => {
         open={!!successMsg}
         autoHideDuration={3000}
         onClose={() => setSuccessMsg("")}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       >
         <Alert onClose={() => setSuccessMsg("")} severity="success" sx={{ width: '100%' }}>
           {successMsg}

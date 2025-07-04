@@ -23,9 +23,7 @@ export default async function hospitalHandler(formData, login) {
   try {
     const response = await createHospital(formatData, login);
     console.log("Hospital registered successfully:", response);
-    alert("Hospital registration successful!");
   } catch (error) {
     console.error("Hospital registration error:", error);
-    alert("Hospital registration failed.");
   }
 }

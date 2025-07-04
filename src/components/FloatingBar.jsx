@@ -80,7 +80,7 @@ const FloatingBar = () => {
         open={snackbarOpen}
         autoHideDuration={3000}
         onClose={() => [setSnackbarOpen(false), setsnackbarMessage("")]}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <div
           style={{
