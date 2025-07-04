@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { fetchAllAppointments } from './fetchAllAppointments';
 import axios from 'axios';
+import { fetchAllAppointments } from './fetchAllAppointments';
 import { useAuth } from '../../contexts/AuthContext';
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
@@ -35,6 +35,7 @@ const PatientReviews = () => {
   // Fetch reviews by patient
   useEffect(() => {
     if (user?.patientId || user?.id) {
+      setLoading(true);
       axios.get(`${base_url}/reviews/patient/${user.patientId || user.id}`)
         .then(res => setReviews(res.data))
         .finally(() => setLoading(false));
@@ -121,13 +122,12 @@ const PatientReviews = () => {
   };
 
   return (
-    <div className="p-6 w-full max-w-5xl">
+    <div className="p-6 w-full max-w-5xl mx-auto">
       <h2 className="text-2xl font-bold mb-6 text-left">My Reviews</h2>
       {/* Add Review Form */}
       <form
         onSubmit={handleAddReview}
         className="mb-8 bg-white rounded-lg shadow-lg p-6 w-full space-y-4 text-left"
-        style={{ marginLeft: 0 }}
       >
         <div className="text-xl font-semibold text-cyan-700 mb-2">Add a Review</div>
         <div>
@@ -165,7 +165,7 @@ const PatientReviews = () => {
         >
           Submit Review
         </button>
-        {addMsg && <div className="mt-2 text-green-600">{addMsg}</div>}
+        {addMsg && <div className={`mt-2 ${addMsg.includes('failed') ? 'text-red-600' : 'text-green-600'}`}>{addMsg}</div>}
       </form>
       {/* Reviews List */}
       <div className="w-full">
@@ -175,12 +175,13 @@ const PatientReviews = () => {
         ) : reviews.length === 0 ? (
           <div className="text-gray-500">You have not given any reviews yet.</div>
         ) : (
+          console.log(reviews),
           <ul className="space-y-4">
             {reviews.map(review => (
               <li key={review._id} className="border rounded p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white shadow w-full">
                 <div className="flex-1 text-left">
                   <div className="font-semibold text-lg">
-                    {review.doctorId?.name || review.doctorName || review.doctorId || 'Unknown Doctor'}
+                    {review.doctorName || review.doctorId || 'Unknown Doctor'}
                   </div>
                   <div className="flex items-center mb-1">
                     {renderStars(review.rating)}
@@ -225,10 +226,10 @@ const PatientReviews = () => {
             ))}
           </ul>
         )}
-        {deleteMsg && <div className="mt-2 text-green-600">{deleteMsg}</div>}
+        {deleteMsg && <div className={`mt-2 ${deleteMsg.includes('failed') ? 'text-red-600' : 'text-green-600'}`}>{deleteMsg}</div>}
       </div>
     </div>
   );
 };
 
-export default PatientReviews; 
+export default PatientReviews;
