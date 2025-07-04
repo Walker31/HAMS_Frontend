@@ -73,7 +73,7 @@ const RecentAppointments = ({ appointments = [], onCancel, handleOpenJitsi }) =>
       {/* Past */}
       {past.length > 0 && (
         <>
-          <h3 className="text-sm font-medium text-gray-600 mt-6 mb-2">Past</h3>
+          <h3 className="text-sm font-medium text-gray-600 mt-6 mb-2">History </h3>
           {past.map(renderAppointmentCard)}
         </>
       )}

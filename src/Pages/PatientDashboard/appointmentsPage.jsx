@@ -8,7 +8,9 @@ const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const AppointmentsPage = () => {
   const [appointments, setAppointments] = useState([]);
-  
+  const [jitsiRoom, setJitsiRoom] = useState("");
+  const [showJitsi, setShowJitsi] = useState(false);
+
   // Fetch todays’ pending appointments
   const fetchAppointments = useCallback(async () => {
     try {
