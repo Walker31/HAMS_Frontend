@@ -3,6 +3,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import { FaRegHospital } from "react-icons/fa";
+import HeartBeatLine from "./heartBeat.jsx"; 
+
 import { useAuth } from "../contexts/AuthContext";
 import { Snackbar } from "@mui/material";
 
@@ -109,27 +111,24 @@ const HeaderSection = () => {
       style={sectionStyle}
       className="d-flex justify-content-center align-items-center flex-column text-center m-0 p-0"
     >
-      <div
-        onClick={() => {
-          if (user?.role === "patient") {
-            handleBookClick();
-          } else {
-            setSnackbarMessage("Login as patient first");
-            setSnackbarOpen(true);
-          }
-        }}
-        className={`w-[300px] bg-blue-50 border border-blue-300 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer p-6 text-center group`}
-      >
-        <div className="text-blue-600 mb-3 group-hover:text-blue-700 transition">
-          <EventAvailableIcon fontSize="large" />
-        </div>
-        <h5 className="text-lg font-semibold text-blue-800 group-hover:text-blue-900">
-          Book Appointment
-        </h5>
-        <p className={"text-sm text-gray-600 mt-1"}>
-          {appointmentMessage(user)}
-        </p>
-      </div>
+  <div
+  onClick={handleBookClick}
+  className="relative w-[320px] h-[180px] bg-gradient-to-br from-pink-100 via-blue-100 to-purple-200 border border-blue-00 rounded-2xl overflow-hidden shadow-2xl hover:scale-105 transition-transform duration-300 cursor-pointer group glowing-border"
+>
+  <HeartBeatLine />
+
+  <div className="absolute inset-0 flex flex-col justify-center items-center z-10 text-center px-6">
+    
+
+    <h5 className="pulse-title heartbeat-text text-white text-lg font-semibold bg-gradient-to-r from-blue-500 to-blue-900 px-5 py-2 rounded-xl shadow-lg">
+      Book Appointment
+    </h5>
+  </div>
+</div>
+
+
+
+
 
       {showPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
