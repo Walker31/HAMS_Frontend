@@ -1,4 +1,3 @@
-// Pages/PatientDashboard/DashboardHome.jsx
 
 import AppointmentBanner from "./components/appointmentBanner";
 import HealthReport from "./components/HealthReports";

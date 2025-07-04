@@ -1,5 +1,5 @@
 // src/Pages/PatientDashboard/appointmentsPage.jsx
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import RecentAppointments from "./components/RecentAppointments";
 import JitsiMeetModal from "../../Meeting/JitsiMeetModal";
@@ -8,6 +8,8 @@ const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
 const AppointmentsPage = () => {
   const [appointments, setAppointments] = useState([]);
+  const [jitsiRoom, setJitsiRoom] = useState("");
+  const [showJitsi, setShowJitsi] = useState(false);
 
   // Fetch todays’ pending appointments
   const fetchAppointments = useCallback(async () => {
@@ -91,7 +93,7 @@ const handleOpenJitsi = (meetLink) => {
         roomName={jitsiRoom}
       />
     </div>
-  );npm
+  );
 };
 
 export default AppointmentsPage;

@@ -1,7 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { FaBars, FaCalendarAlt, FaHeartbeat } from 'react-icons/fa';
-import { MdMessage, MdPayment, MdAssignment, MdLogout, MdSettings } from 'react-icons/md';
-import { BsFileMedical } from 'react-icons/bs';
+import { MdLogout, MdSettings } from 'react-icons/md';
 import { useAuth } from '../../../contexts/AuthContext';
 import { NavLink } from 'react-router-dom';
 
