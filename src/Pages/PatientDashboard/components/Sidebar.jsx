@@ -5,7 +5,7 @@ import { BsFileMedical } from 'react-icons/bs';
 import { useAuth } from '../../../contexts/AuthContext';
 import { NavLink } from 'react-router-dom';
 
-const Sidebar = ({ collapsed, toggleSidebar }) => {
+const Sidebar = ({ collapsed, toggleSidebar, onAddReviewClick, onDeleteReviewClick }) => {
   const {logout} = useAuth();
   const navigate = useNavigate();
 
@@ -38,6 +38,12 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
         >
           <SidebarItem icon={<FaHeartbeat />} label="Appointments" collapsed={collapsed} />
         </NavLink>
+        <div onClick={onAddReviewClick} className="cursor-pointer">
+          <SidebarItem icon={<MdMessage />} label="Add Review" collapsed={collapsed} />
+        </div>
+        <div onClick={onDeleteReviewClick} className="cursor-pointer">
+          <SidebarItem icon={<MdAssignment />} label="Delete Review" collapsed={collapsed} />
+        </div>
         <SidebarItem icon={<MdSettings />} label="Settings" collapsed={collapsed} />
         <div onClick={handleLogout} className="cursor-pointer">
           <SidebarItem icon={<MdLogout />} label="Logout" collapsed={collapsed} />

@@ -9,6 +9,8 @@ const PatientDashboard = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [jitsiRoom, setJitsiRoom] = useState("");
   const [showJitsi, setShowJitsi] = useState(false);
+  const [showAddReview, setShowAddReview] = useState(false);
+  const [showDeleteReview, setShowDeleteReview] = useState(false);
 
   const navigate = useNavigate();
   const { logout } = useAuth();
@@ -36,6 +38,11 @@ const PatientDashboard = () => {
     setShowJitsi(false);
   };
 
+  const handleAddReviewClick = () => setShowAddReview(true);
+  const handleDeleteReviewClick = () => setShowDeleteReview(true);
+  const handleCloseAddReview = () => setShowAddReview(false);
+  const handleCloseDeleteReview = () => setShowDeleteReview(false);
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}
@@ -43,6 +50,8 @@ const PatientDashboard = () => {
         collapsed={collapsed}
         toggleSidebar={toggleSidebar}
         handleLogout={handleLogout}
+        onAddReviewClick={handleAddReviewClick}
+        onDeleteReviewClick={handleDeleteReviewClick}
       />
 
       {/* Main Content */}
@@ -62,6 +71,27 @@ const PatientDashboard = () => {
         isOpen={showJitsi}
         onClose={handleCloseJitsi}
       />
+
+      {/* Add Review Modal (placeholder) */}
+      {showAddReview && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg min-w-[300px]">
+            <h2 className="text-lg font-bold mb-4">Add Review</h2>
+            {/* TODO: Add review form here */}
+            <button onClick={handleCloseAddReview} className="mt-4 px-4 py-2 bg-gray-300 rounded">Close</button>
+          </div>
+        </div>
+      )}
+      {/* Delete Review Modal (placeholder) */}
+      {showDeleteReview && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg min-w-[300px]">
+            <h2 className="text-lg font-bold mb-4">Delete Review</h2>
+            {/* TODO: Add delete review form here */}
+            <button onClick={handleCloseDeleteReview} className="mt-4 px-4 py-2 bg-gray-300 rounded">Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

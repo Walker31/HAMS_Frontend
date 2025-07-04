@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import sampleFeedbacks from "../constants/feedback";
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
@@ -6,6 +6,15 @@ const Feedback=() =>{
     const feedbacks = sampleFeedbacks;
     const [current,setCurrent] = useState(0);
     const length = feedbacks.length;
+    const intervalRef = useRef();
+
+    useEffect(() => {
+      // Start auto-slide
+      intervalRef.current = setInterval(() => {
+        setCurrent(prev => (prev === length - 1 ? 0 : prev + 1));
+      }, 4000);
+      return () => clearInterval(intervalRef.current);
+    }, [length]);
 
     if(!Array.isArray(feedbacks) || length ===0) return null;
 
@@ -23,7 +32,15 @@ const Feedback=() =>{
        
       
       <div className="bg-white">
-        <div className="bg-[#e8eaf6] flex flex-row h-80">
+        <div
+          className="bg-[#e8eaf6] flex flex-row h-80"
+          onMouseEnter={() => clearInterval(intervalRef.current)}
+          onMouseLeave={() => {
+            intervalRef.current = setInterval(() => {
+              setCurrent(prev => (prev === length - 1 ? 0 : prev + 1));
+            }, 4000);
+          }}
+        >
           <div className="w-1/3 mt-6 ml-0 flex justify-center">
           <div className="rounded-2xl ">
             <div className="border-teal-600 w-78 h-78 pt-2 pl-2  border-t-2 border-l-2 rounded-2xl">

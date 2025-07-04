@@ -16,6 +16,8 @@ export const DoctorDescription = () => {
   const [availableSlots, setAvailableSlots] = useState([]);
   const [bookedSlots, setBookedSlots] = useState([]);
   const [doctorDetails, setDoctorDetails] = useState(null);
+  const [reviews, setReviews] = useState([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,6 +43,26 @@ export const DoctorDescription = () => {
     };
 
     fetchDoctor();
+  }, [doctorId]);
+
+  // Fetch reviews for the doctor
+  useEffect(() => {
+    if (!doctorId) return;
+
+    const fetchReviews = async () => {
+      setLoadingReviews(true);
+      try {
+        const res = await axios.get(`${base_url}/reviews/${doctorId}`);
+        setReviews(res.data);
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+        setReviews([]);
+      } finally {
+        setLoadingReviews(false);
+      }
+    };
+
+    fetchReviews();
   }, [doctorId]);
 
   // Fetch available and booked slots for selected date
@@ -292,6 +314,53 @@ const handleBookNow = async () => {
       <div className="mt-5">
         <h4 className="fw-bold">Overview</h4>
         <p>{doctorDetails?.overview || "No overview available."}</p>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="mt-5">
+        <h4 className="fw-bold">Patient Reviews</h4>
+        {loadingReviews ? (
+          <div className="text-center py-4">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        ) : reviews.length > 0 ? (
+          <div className="row">
+            {reviews.map((review) => (
+              <div key={review._id} className="col-md-6 col-lg-4 mb-3">
+                <div className="card h-100 shadow-sm">
+                  <div className="card-body">
+                    <div className="d-flex align-items-center mb-3">
+                      <img
+                        src={review.patientId?.photo?.url || "/default.avif"}
+                        alt="Patient"
+                        className="rounded-circle me-3"
+                        style={{ width: "40px", height: "40px", objectFit: "cover" }}
+                      />
+                      <div>
+                        <h6 className="mb-0 fw-bold">
+                          {review.patientId?.name || "Anonymous"}
+                        </h6>
+                        <small className="text-muted">
+                          {new Date(review.date).toLocaleDateString()}
+                        </small>
+                      </div>
+                    </div>
+                    <div className="mb-2">
+                      <StarRating rating={review.rating} />
+                    </div>
+                    <p className="card-text">{review.comment}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-4">
+            <p className="text-muted">No reviews yet. Be the first to review this doctor!</p>
+          </div>
+        )}
       </div>
     </div>
   );
