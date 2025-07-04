@@ -13,9 +13,9 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
   };
 
   const navItems = [
-    { label: 'Dashboard', path: '/dashboard/patient', icon: <FaCalendarAlt />,end: true },
+    { label: 'Dashboard', path: '/dashboard/patient', icon: <FaCalendarAlt /> },
     { label: 'Appointments', path: '/dashboard/patient/appointments', icon: <FaHeartbeat /> },
-    { label: 'Settings', path: '/dashboard/patient/settings', icon: <MdSettings /> },
+    { label: 'Settings', path: '/dashboard/patient/settings', icon: <MdSettings /> }
   ];
 
   return (
@@ -38,16 +38,17 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
         HAMS
       </h2>
 
-      {/* Navigation */}
-      <nav className="flex flex-col gap-3 flex-1">
-        {navItems.map(({ label, path, icon,end }) => (
+      {/* Navigation Links */}
+      <nav className="flex flex-col space-y-4 flex-1">
+        {navItems.map(({ label, path, icon }) => (
           <NavLink
             key={label}
-            end={end}
             to={path}
+            end
             className={({ isActive }) =>
-              `flex items-center gap-4 px-3 py-2 rounded-lg text-gray-700 text-sm font-medium !no-underline transition-colors
-               ${isActive ? 'bg-cyan-100 text-cyan-700 font-semibold' : 'hover:bg-gray-100'}`
+              `flex items-center gap-4 px-3 py-2 rounded-md !no-underline text-gray-700 text-sm font-medium transition-all ${
+                isActive ? 'bg-gray-100 font-semibold' : 'hover:bg-gray-50'
+              }`
             }
           >
             <div className="text-lg">{icon}</div>
@@ -55,10 +56,10 @@ const Sidebar = ({ collapsed, toggleSidebar }) => {
           </NavLink>
         ))}
 
-        {/* Logout */}
+        {/* Logout Button */}
         <div
           onClick={handleLogout}
-          className="flex items-center gap-4 px-3 py-2 rounded-lg text-red-500 text-sm font-medium cursor-pointer hover:bg-red-50 transition"
+          className="flex items-center gap-4 px-3 py-2 rounded-md text-red-500 text-sm font-medium cursor-pointer hover:bg-red-50 transition-all"
         >
           <div className="text-lg">
             <MdLogout />
