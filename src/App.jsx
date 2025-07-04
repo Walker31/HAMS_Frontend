@@ -23,6 +23,7 @@ import RoleBasedRoute from "./RoleBasedRoute";
 import { getCityFromCoords } from "./utils/locationUtils";
 import Unauthorized from './components/Unauthorized';
 import QueuePage from './Pages/DoctorDashboard/components/AppList';
+import HeartBeatLine from "./components/heartBeat";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -101,6 +102,7 @@ const App = () => {
           <Route path="/services" element={<Services />} />
           <Route path="/unauthorize" element={<Unauthorized />} />
           <Route path="/appList" element={<QueuePage />} />
+          <Route path="/heart" element={<HeartBeatLine />} />
         </Route>
 
         {/* Entry route - decide between doctor or patient */}
