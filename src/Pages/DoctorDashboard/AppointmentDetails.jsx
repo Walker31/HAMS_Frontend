@@ -21,7 +21,7 @@ const AppointmentDetails = () => {
   useEffect(() => {
     const fetchAppointmentData = async () => {
       try {
-        const response = await axios.get(`${base_url}/appointments/detail`, {
+        const response = await axios.get(`${base_url}/Appointments/detail`, {
           params: { appointmentId },
         });
         setAppointmentData(response.data);

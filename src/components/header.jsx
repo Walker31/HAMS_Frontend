@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import { FaRegHospital } from "react-icons/fa";
+import { useAuth } from "../contexts/AuthContext";
+import { Snackbar } from "@mui/material";
 
 import axios from "axios";
 
@@ -13,10 +15,23 @@ const HeaderSection = () => {
   const [step, setStep] = useState(1);
   const [hospitals, setHospitals] = useState([]);
   const navigate = useNavigate();
+  const user = useAuth();
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
   const handleBookClick = () => setShowPopup(true);
+
+  const appointmentMessage = (user) => {
+    if (user.role === null) {
+      return "Login as a patient to Book Appointment";
+    } else if (user.role === "doctor") {
+      return "Login as a patient to Book Appointment";
+    } else {
+      return "Click to Book Appointments";
+    }
+  };
 
   const handleClose = () => {
     setShowPopup(false);
@@ -81,8 +96,8 @@ const HeaderSection = () => {
   const currentReasons = reasonMap[selectedSpecialization] || [];
 
   useEffect(() => {
-    const lat = localStorage.getItem('latitude');
-    const lon = localStorage.getItem('longitude');
+    const lat = localStorage.getItem("latitude");
+    const lon = localStorage.getItem("longitude");
     axios
       .get(`${base_url}/hospitals/getAll/${lat}/${lon}`)
       .then((response) => setHospitals(response.data))
@@ -95,8 +110,15 @@ const HeaderSection = () => {
       className="d-flex justify-content-center align-items-center flex-column text-center m-0 p-0"
     >
       <div
-        onClick={handleBookClick}
-        className="w-[300px] bg-blue-50 border border-blue-300 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer p-6 text-center group"
+        onClick={() => {
+          if (user?.role === "patient") {
+            handleBookClick();
+          } else {
+            setSnackbarMessage("Login as patient first");
+            setSnackbarOpen(true);
+          }
+        }}
+        className={`w-[300px] bg-blue-50 border border-blue-300 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer p-6 text-center group`}
       >
         <div className="text-blue-600 mb-3 group-hover:text-blue-700 transition">
           <EventAvailableIcon fontSize="large" />
@@ -104,8 +126,8 @@ const HeaderSection = () => {
         <h5 className="text-lg font-semibold text-blue-800 group-hover:text-blue-900">
           Book Appointment
         </h5>
-        <p className="text-sm text-gray-600 mt-1">
-          Click to proceed with booking.
+        <p className={"text-sm text-gray-600 mt-1"}>
+          {appointmentMessage(user)}
         </p>
       </div>
 
@@ -259,6 +281,23 @@ const HeaderSection = () => {
           </div>
         </div>
       )}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={() => [setSnackbarOpen(false), setSnackbarMessage("")]}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <div
+          style={{
+            backgroundColor: "red",
+            color: "white",
+            padding: "12px 16px",
+            borderRadius: "4px",
+          }}
+        >
+          {snackbarMessage}
+        </div>
+      </Snackbar>
     </div>
   );
 };
