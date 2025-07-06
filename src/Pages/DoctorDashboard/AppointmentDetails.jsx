@@ -109,14 +109,22 @@ const AppointmentDetails = () => {
                 {appointmentDetails?.status && (
                   <span
                     className={`px-2 py-1 rounded text-white ${
-                      appointmentDetails.status === "Upcoming"
+                      appointmentDetails.status === "Pending"
                         ? "bg-blue-500"
-                        : appointmentDetails.status === "Completed"
+                        : appointmentDetails.status === "Confirmed"
                         ? "bg-green-500"
-                        : appointmentDetails.status === "Rejected"
-                        ? "bg-red-500"
+                        : appointmentDetails.status === "Completed"
+                        ? "bg-green-600"
+                        : appointmentDetails.status === "Request for Rescheduling"
+                        ? "bg-orange-500"
                         : appointmentDetails.status === "Rescheduled"
                         ? "bg-yellow-500"
+                        : appointmentDetails.status === "Cancelled"
+                        ? "bg-red-500"
+                        : appointmentDetails.status === "Rejected"
+                        ? "bg-red-600"
+                        : appointmentDetails.status === "Incomplete"
+                        ? "bg-gray-500"
                         : "bg-gray-400"
                     }`}
                   >
@@ -182,14 +190,16 @@ const AppointmentDetails = () => {
               </div>
             </div>
             <hr />
-            {appointmentDetails.status !== "Completed" && (
+            {appointmentDetails.status !== "Completed" && appointmentDetails.status !== "Cancelled" && appointmentDetails.status !== "Rejected" && (
             <div className="flex justify-end gap-4 p-4">
               
                   <Button
                     variant="contained"
                     onClick={handleReschedule}
                     disabled={
-                      rescheduleLoading || appointmentDetails.status === "Rescheduled"
+                      rescheduleLoading || 
+                      appointmentDetails.status === "Rescheduled" ||
+                      appointmentDetails.status === "Request for Rescheduling"
                     }
                   >
                     {rescheduleLoading ? (
@@ -320,7 +330,11 @@ const AppointmentDetails = () => {
                         className={`absolute top-0 left-1/2 -translate-x-1/2 w-[2px] h-full z-0 ${
                           appt.appStatus === "Completed"
                             ? "bg-green-300"
-                            : "bg-yellow-300"
+                            : appt.appStatus === "Cancelled" || appt.appStatus === "Rejected"
+                            ? "bg-red-300"
+                            : appt.appStatus === "Rescheduled"
+                            ? "bg-yellow-300"
+                            : "bg-blue-300"
                         }`}
                       />
                       {/* Dot */}
@@ -328,7 +342,11 @@ const AppointmentDetails = () => {
                         className={`w-3 h-3 mt-1 rounded-full z-10 ${
                           appt.appStatus === "Completed"
                             ? "bg-green-500"
-                            : "bg-yellow-400"
+                            : appt.appStatus === "Cancelled" || appt.appStatus === "Rejected"
+                            ? "bg-red-500"
+                            : appt.appStatus === "Rescheduled"
+                            ? "bg-yellow-500"
+                            : "bg-blue-500"
                         }`}
                       />
                     </div>
@@ -337,20 +355,24 @@ const AppointmentDetails = () => {
                     <div className="flex-1 ml-4">
                       <div
                         className={`text-sm flex justify-between items-center font-medium px-3 py-2 rounded-md shadow w-full ${
-                          appt.status === "done"
+                          appt.appStatus === "Completed"
                             ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
+                            : appt.appStatus === "Cancelled" || appt.appStatus === "Rejected"
+                            ? "bg-red-100 text-red-800"
+                            : appt.appStatus === "Rescheduled"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-blue-100 text-blue-800"
                         }`}
                       >
                         {appt.reason}
-                        {appt.status === "done" ? (
+                        {appt.appStatus === "Completed" ? (
                           <CheckCircleIcon
                             className="text-green-500"
                             fontSize="small"
                           />
                         ) : (
                           <AccessTimeIcon
-                            className="text-yellow-500"
+                            className="text-blue-500"
                             fontSize="small"
                           />
                         )}

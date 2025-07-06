@@ -83,8 +83,12 @@ const QueuePage = () => {
   });
 
   const awaiting = appointments.filter((a) => a.appStatus === "Pending").length;
+  const confirmed = appointments.filter((a) => a.appStatus === "Confirmed").length;
+  const rescheduleRequests = appointments.filter((a) => a.appStatus === "Request for Rescheduling").length;
   const cancelled = appointments.filter((a) => a.appStatus === "Rejected").length;
   const ended = appointments.filter((a) => a.appStatus === "Completed").length;
+  const rescheduled = appointments.filter((a) => a.appStatus === "Rescheduled").length;
+  const incomplete = appointments.filter((a) => a.appStatus === "Incomplete").length;
   const online = appointments.filter((a) => a.consultStatus === "Online").length;
 
   return (
@@ -166,9 +170,21 @@ const QueuePage = () => {
               className={`px-2 py-1 text-sm rounded-full ${
                 appt.appStatus === "Pending"
                   ? "bg-blue-100 text-blue-800"
+                  : appt.appStatus === "Confirmed"
+                  ? "bg-green-100 text-green-800"
+                  : appt.appStatus === "Request for Rescheduling"
+                  ? "bg-orange-100 text-orange-800"
+                  : appt.appStatus === "Rescheduled"
+                  ? "bg-yellow-100 text-yellow-800"
+                  : appt.appStatus === "Completed"
+                  ? "bg-green-100 text-green-800"
+                  : appt.appStatus === "Cancelled"
+                  ? "bg-red-100 text-red-800"
                   : appt.appStatus === "Rejected"
                   ? "bg-red-100 text-red-800"
-                  : "bg-green-100 text-green-800"
+                  : appt.appStatus === "Incomplete"
+                  ? "bg-gray-100 text-gray-800"
+                  : "bg-gray-100 text-gray-800"
               }`}
             >
               {appt.appStatus}

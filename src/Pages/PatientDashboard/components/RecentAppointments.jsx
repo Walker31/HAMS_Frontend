@@ -48,8 +48,16 @@ const RecentAppointments = ({
     }
   };
 
-  const upcoming = appointments.filter((appt) => appt.appStatus === "Pending");
-  const past = appointments.filter((appt) => appt.appStatus !== "Pending");
+  const upcoming = appointments.filter((appt) => 
+    appt.appStatus === "Pending" || 
+    appt.appStatus === "Confirmed" || 
+    appt.appStatus === "Request for Rescheduling"
+  );
+  const past = appointments.filter((appt) => 
+    appt.appStatus !== "Pending" && 
+    appt.appStatus !== "Confirmed" && 
+    appt.appStatus !== "Request for Rescheduling"
+  );
 
   const renderAppointmentCard = (appt, index) => {
     const appointmentDateTimeString = `${appt.date}T${appt.slot}:00`;
@@ -87,8 +95,16 @@ const RecentAppointments = ({
                   ? "bg-green-100 text-green-700 border border-green-300"
                   : appt.appStatus === "Cancelled"
                   ? "bg-red-100 text-red-700 border border-red-300"
+                  : appt.appStatus === "Rejected"
+                  ? "bg-red-100 text-red-700 border border-red-300"
                   : appt.appStatus === "Rescheduled"
                   ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
+                  : appt.appStatus === "Request for Rescheduling"
+                  ? "bg-orange-100 text-orange-700 border border-orange-300"
+                  : appt.appStatus === "Confirmed"
+                  ? "bg-green-100 text-green-700 border border-green-300"
+                  : appt.appStatus === "Incomplete"
+                  ? "bg-gray-100 text-gray-700 border border-gray-300"
                   : "bg-blue-100 text-blue-700 border border-blue-300"
               }
             `}
@@ -96,8 +112,8 @@ const RecentAppointments = ({
             {appt.appStatus}
           </span>
 
-          {/* Actions for Pending */}
-          {appt.appStatus === "Pending" && (
+          {/* Actions for Pending, Confirmed, and Request for Rescheduling */}
+          {(appt.appStatus === "Pending" || appt.appStatus === "Confirmed") && (
             <>
             <div className= ''>
               <div className="flex flex-row gap-1 w-full justify-around">

@@ -21,6 +21,8 @@ import {
 import { Line, Doughnut } from "react-chartjs-2";
 import IconButton from "@mui/material/IconButton";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 import {
   OverviewModal,
@@ -208,7 +210,7 @@ const DoctorDashboard = () => {
   // Handle appointment status change
   const handleStatusChange = (index, status) => {
     setCurrentIndex(index);
-    if (status === "Done") {
+    if (status === "Completed") {
       setPrescriptionIndex(index);
       setShowPrescriptionModal(true);
     } else if (status === "Rejected") {
@@ -443,7 +445,19 @@ const DoctorDashboard = () => {
                   />
                   {appt.patientName}
                 </div>
-                <div className="text-gray-700">{appt.reason}</div>
+                <div
+                  className={`text-sm flex justify-between items-center font-medium px-3 py-2 rounded-md shadow w-full ${
+                    appt.appStatus === "Completed"
+                      ? "bg-green-100 text-green-800"
+                      : appt.appStatus === "Cancelled" || appt.appStatus === "Rejected"
+                      ? "bg-red-100 text-red-800"
+                      : appt.appStatus === "Rescheduled"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : "bg-blue-100 text-blue-800"
+                  }`}
+                >
+                  {appt.reason}
+                </div>
                 <div className="text-gray-700">{formattedDate}</div>
                 <div className="text-gray-700">{appt.slotNumber}</div>
                 <div>
@@ -462,7 +476,7 @@ const DoctorDashboard = () => {
                 <div className="flex items-center gap-2">
                   <button
                     className="px-2 rounded bg-green-500 text-white hover:bg-green-600 transition"
-                    onClick={() => handleStatusChange(i, "Done")}
+                    onClick={() => handleStatusChange(i, "Completed")}
                   >
                     Done
                   </button>

@@ -1,4 +1,3 @@
-
 import AppointmentBanner from "./components/appointmentBanner";
 import HealthReport from "./components/HealthReports";
 import HeartRateGraph from "./components/HeartRateGraph";
@@ -24,7 +23,11 @@ const DashboardHome = () => {
       const todayStr = new Date().toISOString().split("T")[0];
       const upcoming = res.data.filter((a) => {
         const apptDate = new Date(a.date).toISOString().split("T")[0];
-        return apptDate === todayStr && a.appStatus === "Pending";
+        return apptDate === todayStr && (
+          a.appStatus === "Pending" || 
+          a.appStatus === "Confirmed" || 
+          a.appStatus === "Request for Rescheduling"
+        );
       });
 
       setAppointments(upcoming);

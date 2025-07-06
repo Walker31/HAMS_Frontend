@@ -14,6 +14,7 @@ import {
 } from "./DoctorModals";
 
 import JitsiMeetModal from "../../Meeting/JitsiMeetModal";
+import { CheckCircleIcon, AccessTimeIcon } from "@mui/icons-material";
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
@@ -150,7 +151,7 @@ const DoctorDashboard = () => {
 
   const handleStatusChange = (index, status) => {
     setCurrentIndex(index);
-    if (status === "Done") {
+    if (status === "Completed") {
       setPrescriptionIndex(index);
       setShowPrescriptionModal(true);
     } else if (status === "Rejected") {
@@ -265,7 +266,7 @@ const DoctorDashboard = () => {
                           className="me-2"
                           size="sm"
                           variant="success"
-                          onClick={() => handleStatusChange(idx, "Done")}
+                          onClick={() => handleStatusChange(idx, "Completed")}
                         >
                           Done
                         </Button>

@@ -8,6 +8,7 @@ import {
   PrescriptionModal,
   ViewPrescriptionModal
 } from "./DoctorModals";
+import { CheckCircleIcon, AccessTimeIcon } from "@mui/icons-material";
 
 const base_url = import.meta.env.VITE_BASE_URL || "http://localhost:3000";
 
@@ -95,7 +96,7 @@ const DoctorDashboard = () => {
     setCurrentIndex(index);
 
     switch(status) {
-      case "Done":
+      case "Completed":
         setPrescriptionIndex(index);
         setShowPrescriptionModal(true);
         break;
@@ -265,7 +266,7 @@ const DashboardHome = ({
                     className="me-2"
                     size="sm"
                     variant="success"
-                    onClick={() => handleStatusChange(idx, "Done")}
+                    onClick={() => handleStatusChange(idx, "Completed")}
                   >
                     Done
                   </Button>
