@@ -153,16 +153,13 @@ const RecentAppointments = ({
                   </IconButton>
                 </Tooltip>
               </div>
-              <div className="w-full flex justify-center">
-                <Button
-                  style={{backgroundColor : '#fef9c3', margin : 10 ,padding: 5}}
-                  variant="text"
-                  color="warning"
-                  sx={{ textTransform: "none", fontWeight: 500, fontSize: 16}}
+              <div className="flex justify-center !rounded-2xl">
+                <button
                   onClick={() => handleRescheduleClick(appt)}
+                  className="bg-yellow-300 !rounded-3xl my-3 hover:bg-yellow-200 text-yellow-800 font-semibold px-4 py-2 shadow-sm border border-yellow-400 transition-colors duration-200"
                 >
                   Request Reschedule
-                </Button>
+                </button>
               </div>
               </div>
             </>

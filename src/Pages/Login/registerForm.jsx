@@ -69,7 +69,7 @@ export default function RegisterForm({ onClose }) {
         const res = await loginHandler(loginData, role, login);
         if (res?.token) {
           setSnackbarOpen(true);
-          setsnackbarMessage(`${role} Login successful`);
+          setsnackbarMessage(`Login successful`);
           setsnackbarSeverity("success");
           setTimeout(() => {
             navigate("dashboard");

@@ -32,17 +32,14 @@ export default function PatientRegisterForm({
 
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-6 bg-white rounded-md shadow-md space-y-6">
+    <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-md shadow-md space-y-6">
       {/* Header */}
       <h2 className="text-2xl font-bold text-center">Patient Registration</h2>
 
       {/* Form */}
       <form onSubmit={handleRegisterSubmit} className="flex flex-col w-full">
         <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex flex-1 flex-col gap-4">
-
-
-          <div className="flex flex-col items-center gap-2 flex-1">
+          <div className="flex flex-col items-center gap-2 flex-1 justify-center">
                 <div
                   className="w-32 h-32 rounded-full bg-gray-200 overflow-hidden cursor-pointer"
                   onClick={() => fileInputRef.current.click()}
@@ -77,10 +74,7 @@ export default function PatientRegisterForm({
                   {formData.photo ? "Change Photo" : "Upload Photo"}
                 </Button>
               </div>
-
-
-
-
+          <div className="flex flex-1 flex-col gap-2">
             <CommonFields formData={formData} handleChange={handleChange} />
 
             <PasswordField
