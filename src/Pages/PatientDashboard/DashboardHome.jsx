@@ -26,7 +26,8 @@ const DashboardHome = () => {
         return apptDate === todayStr && (
           a.appStatus === "Pending" || 
           a.appStatus === "Confirmed" || 
-          a.appStatus === "Request for Rescheduling"
+          a.appStatus === "Request for Rescheduling" ||
+          a.appStatus === "Requested"
         );
       });
 

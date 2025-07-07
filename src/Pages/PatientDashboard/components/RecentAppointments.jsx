@@ -47,16 +47,13 @@ const RecentAppointments = ({
       alert(err.message || "Error while requesting reschedule");
     }
   };
+  console.log(appointments);
 
-  const upcoming = appointments.filter((appt) => 
-    appt.appStatus === "Pending" || 
-    appt.appStatus === "Confirmed" || 
-    appt.appStatus === "Request for Rescheduling"
+  const upcoming = appointments.filter((appt) =>
+    ["Pending", "Requested", "Confirmed", "Request for Rescheduling"].includes(appt.appStatus)
   );
-  const past = appointments.filter((appt) => 
-    appt.appStatus !== "Pending" && 
-    appt.appStatus !== "Confirmed" && 
-    appt.appStatus !== "Request for Rescheduling"
+  const past = appointments.filter((appt) =>
+    !["Pending", "Confirmed", "Request for Rescheduling", "Requested"].includes(appt.appStatus)
   );
 
   const renderAppointmentCard = (appt, index) => {
@@ -113,7 +110,7 @@ const RecentAppointments = ({
           </span>
 
           {/* Actions for Pending, Confirmed, and Request for Rescheduling */}
-          {(appt.appStatus === "Pending" || appt.appStatus === "Confirmed") && (
+          {(appt.appStatus === "Pending" || appt.appStatus === "Confirmed" || appt.appStatus === "Requested") && (
             <>
             <div className= ''>
               <div className="flex flex-row gap-1 w-full justify-around">
